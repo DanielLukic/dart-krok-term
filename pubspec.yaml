@@ -1,0 +1,22 @@
+name: krok_term
+description: Kraken Crypto API TUI. Pretty much a fun side project to learn me some more Dart.
+version: 0.0.1
+homepage: https://github.com/DanielLukic/dart-krok-term
+repository: https://github.com/DanielLukic/dart-krok-term
+topics: [ kraken, crypto, console, terminal, tui ]
+
+environment:
+  sdk: ^3.3.1
+
+dependencies:
+  ansi: ^0.4.2
+  console: ^4.1.0
+  dart_console2: ^3.1.0
+  dart_consul: ^0.0.8
+  krok: ^0.0.2
+  rxdart: ^0.27.7
+  stream_transform: ^2.1.0
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
