@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "6.4.1"
   ansi:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: ansi
       sha256: "070af96189f9da6f996cee46049682bdcd1d191b483e13f9d2a2600729d8b2a1"
@@ -82,7 +82,7 @@ packages:
     source: hosted
     version: "1.18.0"
   console:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: console
       sha256: e04e7824384c5b39389acdd6dc7d33f3efe6b232f6f16d7626f194f6a01ad69a
@@ -114,7 +114,7 @@ packages:
     source: hosted
     version: "3.0.3"
   dart_console2:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: dart_console2
       sha256: f7636b74f19910a20e3d03262190ad78546a33dfc972dba7bb9fe1530826269e
