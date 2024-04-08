@@ -6,8 +6,8 @@ import 'package:stream_transform/stream_transform.dart';
 
 import '../common/functions.dart';
 import '../common/window.dart';
-import '../core/currencies.dart';
 import '../core/krok_core.dart';
+import '../core/selected_currency.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';

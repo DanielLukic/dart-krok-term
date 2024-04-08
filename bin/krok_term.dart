@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_consul/dart_consul.dart';
 import 'package:dart_consul/src/util/log.dart';
-import 'package:krok_term/src/krok_term/core/currencies.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
+import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';

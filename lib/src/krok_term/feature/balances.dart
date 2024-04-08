@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dart_consul/dart_consul.dart';
 
 import '../common/window.dart';
-import '../core/currencies.dart';
 import '../core/krok_core.dart';
+import '../core/selected_currency.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/assets_repo.dart';
 import '../repository/balances_repo.dart';

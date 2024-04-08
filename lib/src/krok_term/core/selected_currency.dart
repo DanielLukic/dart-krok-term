@@ -12,7 +12,7 @@ initCurrency(Storage storage) {
   logEvent('init krok currency');
   _currency = TimestampedStorage<Currency>(
     storage: storage,
-    key: "currency",
+    key: "selected_currency",
     restore: (e) => e,
     log: logEvent,
     restoreDefault: 'USD',

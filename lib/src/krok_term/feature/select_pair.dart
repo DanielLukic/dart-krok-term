@@ -3,8 +3,8 @@ import 'package:dart_consul/src/util/common.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/window.dart';
-import '../core/currencies.dart';
 import '../core/krok_core.dart';
+import '../core/selected_currency.dart';
 import '../core/selected_pair.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
