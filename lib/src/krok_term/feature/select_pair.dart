@@ -58,10 +58,18 @@ void _navigate(int delta) {
 }
 
 void _stolen(KeyEvent it) {
-  if (it is InputKey) {
+  if (it.printable == "<C-u>") {
+    _filter.value = "";
+  } else if (it.printable == "<C-k>") {
+    _navigate(-1);
+  } else if (it.printable == "<Enter>" /*<C-j>*/) {
+    _navigate(1);
+  } else if (it is InputKey) {
     _filter.value = _filter.value + it.char;
-  } else if (it is ControlKey && it.printable == "<Backspace>") {
+  } else if (it.printable == "<Backspace>" || it.printable == "<C-h>") {
     _filter.value = _filter.value.dropLast(1);
+  } else if (it.printable == "<C-u>") {
+    _filter.value = "";
   } else if (it is ControlKey && it.printable == "<Escape>") {
     desktop.minimizeWindow(_window);
   } else if (it is ControlKey && it.printable == "<Up>") {
