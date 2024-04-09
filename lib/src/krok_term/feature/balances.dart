@@ -82,10 +82,8 @@ List<String> _toEntries(
 ) {
   final result = <String>[];
   for (var b in balances.values) {
-    final zCurrency =
-        assets.values.where((e) => e.altname == currency).singleOrNull?.name;
     final ap = assetPairs.values
-        .where((e) => e.base == b.asset && e.quote == zCurrency)
+        .where((e) => e.base == b.asset && e.quote == currency)
         .singleOrNull;
     final pair = ap?.altname;
     final td = tickers[pair];

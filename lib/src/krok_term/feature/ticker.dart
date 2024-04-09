@@ -42,8 +42,10 @@ void _create() {
 List<_TickerData> _filter(Tickers result, AssetPairs ap, Currency currency) {
   final List<_TickerData> data = [];
   for (final it in result.values) {
-    if (!it.pair.endsWith(currency)) continue;
-    data.add(_TickerData(it, currency, ap));
+    final ap_ = ap[it.pair];
+    if (ap_ == null) continue;
+    if (ap_.quote != currency) continue;
+    data.add(_TickerData(it, ap_.wsname));
   }
   data.sort((a, b) => (b.percent.abs() - a.percent.abs()).sign.toInt());
   return data;
@@ -103,9 +105,8 @@ class _TickerData {
   late double percent;
   late String _string;
 
-  _TickerData(TickerData data, Currency currency, AssetPairs ap) {
-    final pair = ap[data.pair]?.wsname ?? data.pair;
-    final name = pair.highlightSuffix().fixDisplayPair();
+  _TickerData(TickerData data, String wsname) {
+    final name = wsname.highlightSuffix().fixDisplayPair();
     final percent = data.ansiPercent;
     _string = "$name $percent";
 

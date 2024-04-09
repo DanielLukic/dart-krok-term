@@ -41,7 +41,7 @@ void _create() {
 }
 
 AssetPairData _pickAssetPair(Pair selected, AssetPairs ap) {
-  final match = ap.values.where((e) => e.pair == selected).singleOrNull;
+  final match = ap.values.where((e) => e.wsname == selected).singleOrNull;
   if (match == null) {
     throw ArgumentError("selected asset pair not found in $ap", selected);
   }

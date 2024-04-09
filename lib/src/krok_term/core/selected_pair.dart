@@ -4,9 +4,12 @@ late final TimestampedStorage<Pair> _selectedPair;
 
 Stream<Pair> get selectedPair => _selectedPair.stream;
 
-selectPair(Pair it) {
-  logEvent("select pair: $it");
-  return _selectedPair.store(it);
+selectPair(Pair wsname) {
+  if (!wsname.contains("/")) {
+    throw ArgumentError("must use wsname instead of $wsname", "wsname");
+  }
+  logEvent("select pair (wsname): $wsname");
+  return _selectedPair.store(wsname);
 }
 
 initSelectedPair(Storage storage) {
@@ -16,7 +19,7 @@ initSelectedPair(Storage storage) {
     key: "selected_pair",
     restore: (e) => e,
     log: logEvent,
-    restoreDefault: 'XXBTZUSD',
+    restoreDefault: 'XBT/USD',
   );
   _selectedPair.restore();
 }
