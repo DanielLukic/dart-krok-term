@@ -1,6 +1,6 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-import '../common/desktop.dart';
 import '../common/storage.dart';
 import '../core/selected_pair.dart';
 import 'asset_pairs_repo.dart';
@@ -33,7 +33,7 @@ AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
 }
 
 initKrokRepos(Storage storage) {
-  logEvent('init krok repos');
+  logInfo('init krok repos');
   assetsRepo = AssetsRepo(storage);
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);

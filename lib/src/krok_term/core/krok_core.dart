@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dart_consul/common.dart';
 import 'package:dart_consul/dart_consul.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok/krok.dart';
-import 'package:krok_term/src/krok_term/common/desktop.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 export 'package:dart_consul/common.dart';
@@ -15,7 +15,7 @@ export '../common/storage.dart';
 export '../common/types.dart';
 
 void initKrokCore() async {
-  logEvent('init krok core');
+  logInfo('init krok core');
   await for (final it in _queue.stream) {
     await _process(it);
   }
@@ -35,7 +35,7 @@ final _api = KrakenApi.fromFile("~/.config/clikraken/kraken.key");
 
 Future _process(QueuedRequest it) async {
   if (it.canceled) {
-    logEvent("[W] skip $it");
+    logWarn('skip $it');
   } else {
     await _throttle(it);
     try {
@@ -44,7 +44,7 @@ Future _process(QueuedRequest it) async {
     } catch (error) {
       if (!it.canceled) {
         it.completeError(error);
-        logEvent("[E] fail $it: $error");
+        logError('fail $it: $error');
       }
     }
   }
@@ -56,7 +56,7 @@ Future _throttle(it) async {
   final seconds = now.difference(_throttleTimestamp).inSeconds;
   _throttleTimestamp = DateTime.now();
   if (seconds == 0) {
-    logEvent("[W] delay $it");
+    logWarn('delay $it');
     await Future.delayed(1.seconds);
   }
 }

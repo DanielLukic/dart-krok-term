@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_consul/dart_consul.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 
 import '../core/krok_core.dart';
 
@@ -43,14 +44,14 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
       storage: storage,
       key: key,
       restore: (e) => _restore(e),
-      log: logEvent,
+      log: logVerbose,
     );
     _storage.restore();
     refresh();
   }
 
   void refresh() {
-    logEvent('[V] $_key refresh');
+    logVerbose('$_key refresh');
     autoDispose("refresh", Timer.periodic(_duration, _retrieve));
     _retrieve();
   }
@@ -58,7 +59,7 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   void _retrieve([_]) => retrieve(_request(), (e) => _update(e));
 
   void _update(dynamic result) {
-    logEvent('[V] $_key retrieved');
+    logVerbose('$_key retrieved');
     _storage.store(_preform(result));
   }
 

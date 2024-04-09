@@ -1,3 +1,4 @@
+import 'package:dart_consul/common.dart';
 import 'package:dart_consul/dart_consul.dart';
 
 import '../common/desktop.dart';
@@ -39,7 +40,7 @@ bool filterLogEntry(String msg) => msg.toLogLevel() >= _level;
 
 extension StringToLogLevel on String {
   int toLogLevel() {
-    final m = _matcher.matchAsPrefix(this);
+    final m = _matcher.matchAsPrefix(ansiStripped(this));
     final l = m?.group(1) ?? 'I';
     return _levels.indexOf(l);
   }

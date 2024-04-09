@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'functions.dart';
@@ -38,7 +39,6 @@ class TimestampedStorage<T> {
   final Storage _storage;
   final String _key;
   final T Function(dynamic) _restore;
-  final void Function(dynamic) _log;
   final T? _restoreDefault;
 
   TimestampedStorage({
@@ -50,10 +50,14 @@ class TimestampedStorage<T> {
   })  : _storage = storage,
         _key = key,
         _restore = restore,
-        _log = log,
         _restoreDefault = restoreDefault;
 
   final BehaviorSubject<_Cached<T>> _cache = BehaviorSubject();
+
+  bool stillFresh(Duration maxAge) {
+    final limit = DateTime.timestamp().subtract(maxAge);
+    return _storage.lastModified(_key).isAfter(limit);
+  }
 
   Stream<T> get stream => _cache.stream.map((e) => e.value);
 
@@ -61,11 +65,11 @@ class TimestampedStorage<T> {
     final loaded = await _storage.load(_key);
     if (loaded == null) {
       if (_restoreDefault != null && _cache.valueOrNull == null) {
-        _log('[V] $_key default');
+        logVerbose('$_key default');
         store(_restoreDefault);
         return;
       }
-      _log('[W] $_key not found');
+      logWarn('$_key not found');
       return;
     }
     final current = _cache.valueOrNull;
@@ -74,12 +78,12 @@ class TimestampedStorage<T> {
       try {
         final data = loaded['data'];
         _cache.value = _Cached(timestamp, _restore(data));
-        _log('[V] $_key restored');
-      } catch (it) {
-        _log('[E] $_key restore failed: $it');
+        logVerbose('$_key restored');
+      } catch (it, trace) {
+        logError('$_key restore failed: $it', trace);
       }
     } else {
-      _log('[V] $_key outdated');
+      logVerbose('$_key outdated');
     }
   }
 

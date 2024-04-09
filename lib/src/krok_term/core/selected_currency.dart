@@ -1,3 +1,5 @@
+import 'package:dart_minilog/dart_minilog.dart';
+
 import 'krok_core.dart';
 
 extension type Currency(String _plain) {
@@ -23,12 +25,12 @@ late final TimestampedStorage<Currency> _currency;
 Stream<Currency> get currency => _currency.stream;
 
 initCurrency(Storage storage) {
-  logEvent('init krok currency');
+  logInfo('init krok currency');
   _currency = TimestampedStorage<Currency>(
     storage: storage,
     key: "selected_currency",
     restore: (e) => e,
-    log: logEvent,
+    log: logVerbose,
     restoreDefault: Currency.fromPlain('USD'),
   );
   _currency.restore();

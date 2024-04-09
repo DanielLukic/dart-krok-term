@@ -6,3 +6,4 @@ cache/
 krok/
 *.exe
 *.iml
+*.log

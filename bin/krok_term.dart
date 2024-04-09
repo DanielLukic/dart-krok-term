@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_consul/dart_consul.dart';
-import 'package:dart_consul/src/util/log.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
@@ -19,6 +19,7 @@ void main(List<String> args) async {
     desktop.setDefaultKeys();
     desktop.onKey("q", description: "Quit", action: desktop.exit);
     _addAutoHelp();
+    _initLog();
     _initKrokTerm();
     await desktop.run();
   } finally {
@@ -33,10 +34,17 @@ _addAutoHelp() => addAutoHelp(
       position: RelativePosition.fromBottomRight(),
     );
 
-_initKrokTerm() async {
-  sink = fileSink('krok/krok.log');
+_initLog() {
+  final logfile = fileSink("krok.log");
+  sink = (e) {
+    eventDebugLog.add(e);
+    logfile(e);
+  };
+  logLevel = LogLevel.verbose;
+}
 
-  logEvent('init krok storage');
+_initKrokTerm() async {
+  logInfo('init krok storage');
   final storage = Storage(path: 'krok');
 
   initCurrency(storage);
