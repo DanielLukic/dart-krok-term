@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:ansi/ansi.dart';
-import 'package:dart_consul/src/util/common.dart';
+import 'package:dart_consul/common.dart';
 
 import 'functions.dart';
 

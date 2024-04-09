@@ -1,5 +1,4 @@
 import 'package:dart_consul/dart_consul.dart';
-import 'package:dart_consul/src/util/common.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/window.dart';

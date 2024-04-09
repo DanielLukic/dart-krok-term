@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
-import 'package:dart_consul/src/util/common.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/functions.dart';
