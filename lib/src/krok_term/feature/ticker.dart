@@ -44,7 +44,7 @@ List<_TickerData> _filter(Tickers result, AssetPairs ap, Currency currency) {
   for (final it in result.values) {
     final ap_ = ap[it.pair];
     if (ap_ == null) continue;
-    if (ap_.quote != currency) continue;
+    if (ap_.quote != currency.z) continue;
     data.add(_TickerData(it, ap_.wsname));
   }
   data.sort((a, b) => (b.percent.abs() - a.percent.abs()).sign.toInt());

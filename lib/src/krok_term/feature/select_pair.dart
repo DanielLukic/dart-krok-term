@@ -137,7 +137,7 @@ _select(AssetPairData it) {
 ) {
   filter = filter.toUpperCase();
 
-  final currencyMatched = ap.values.where((e) => e.quote == c);
+  final currencyMatched = ap.values.where((e) => e.quote == c.z);
   final startMatched = currencyMatched.where(
     (e) =>
         e.pair.startsWith(filter) ||
@@ -158,7 +158,7 @@ _select(AssetPairData it) {
   final result = matches.map((e) {
     final ansiPair = e.wsname.highlightSuffix();
     final price = t[e.pair]?.last.toString();
-    final currency = c.substring(1).gray();
+    final currency = c.plain.gray();
     final ansiPercent = t[e.pair]?.ansiPercent ?? "";
     return (e, "$ansiPair $price$currency $ansiPercent");
   }).toList();

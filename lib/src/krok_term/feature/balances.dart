@@ -49,7 +49,7 @@ List<String> _toEntries(
   final result = <String>[];
   for (var b in balances.values) {
     final ap = assetPairs.values
-        .where((e) => e.base == b.asset && e.quote == currency)
+        .where((e) => e.base == b.asset && e.quote == currency.z)
         .singleOrNull;
     final pair = ap?.altname;
     final td = tickers[pair];
