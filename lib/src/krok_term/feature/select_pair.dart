@@ -142,12 +142,18 @@ _select(AssetPairData it) {
 ) {
   filter = filter.toUpperCase();
 
-  final currencyMatched = ap.values.where((e) => e.quote == c.z);
+  final currencyMatched = ap.values.where(
+    (e) => e.quote == c.z,
+  );
+
   final startMatched = currencyMatched.where(
-    (e) =>
-        e.pair.startsWith(filter) ||
-        e.altname.startsWith(filter) ||
-        e.wsname.startsWith(filter),
+    (e) => filter.length > 1
+        ? e.wsname.split("/").first.fixDisplayPair().contains(filter)
+        : false ||
+            e.wsname.fixDisplayPair().startsWith(filter) ||
+            e.pair.startsWith(filter) ||
+            e.altname.startsWith(filter) ||
+            e.wsname.startsWith(filter),
   );
   final containsMatched = currencyMatched.where(
     (e) => e.toString().contains(filter),
@@ -161,14 +167,20 @@ _select(AssetPairData it) {
   };
 
   final result = matches.map((e) {
-    final ansiPair = e.wsname.highlightSuffix();
+    final ansiPair = e.wsname.highlightSuffix().fixDisplayPair();
     final price = t[e.pair]?.last.toString();
     final currency = c.plain.gray();
     final ansiPercent = t[e.pair]?.ansiPercent ?? "";
     return (e, "$ansiPair $price$currency $ansiPercent");
   }).toList();
 
-  result.sort((a, b) => a.$1.wsname.compareTo(b.$1.wsname));
+  result.sort((a, b) {
+    final aa = a.$1.wsname.fixDisplayPair();
+    final bb = b.$1.wsname.fixDisplayPair();
+    final order = aa.compareTo(bb);
+    if (order == 0) return aa.length - bb.length;
+    return order;
+  });
 
   final it = _resolveSelection(
       selection: selection, data: result.mapList((e) => e.$1));
@@ -182,7 +194,9 @@ _updateResult((List<(AssetPairData, String)>, int?) it) {
 
   _data = entries.mapList((e) => e.$1);
 
-  final rows = entries.map((e) => e.$2.columns("L15|R15|R15")).toList();
+  final rows = entries
+      .map((e) => e.$2.columns("L15|R15|R15").ansiPadRight(_window.width))
+      .toList();
   if (selectedIndex != null) {
     rows[selectedIndex] = rows[selectedIndex].inverse();
   }
