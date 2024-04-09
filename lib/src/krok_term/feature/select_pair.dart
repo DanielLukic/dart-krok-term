@@ -94,7 +94,8 @@ void _stolen(KeyEvent it) {
 }
 
 void _create() {
-  _scrolled = scrolled(_window, () => _buffer);
+  _scrolled =
+      scrolled(_window, () => _buffer, nameExtension: " ≡ ▼/▲ <C-j>/<C-k>");
 
   _window.onFocusChanged.add(() {
     if (_window.isFocused) {
