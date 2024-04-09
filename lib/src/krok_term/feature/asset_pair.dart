@@ -60,7 +60,7 @@ _updateResult((AssetPairData, TickerData) data) {
   final ap = data.$1;
   final t = data.$2;
   final currency = ap.wsname.split("/").last;
-  final name = ap.wsname.highlightSuffix(currency).fixDisplayPair().bold();
+  final name = ap.wsname.highlightSuffix().fixDisplayPair().bold();
   var last = t.last.toStringAsFixed(2);
   if (t.last < t.priceToday) last = last.red();
   if (t.last > t.priceToday) last = last.green();

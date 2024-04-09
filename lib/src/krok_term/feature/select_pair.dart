@@ -156,7 +156,7 @@ _select(AssetPairData it) {
   };
 
   final result = matches.map((e) {
-    final ansiPair = e.wsname.highlightSuffix(c);
+    final ansiPair = e.wsname.highlightSuffix();
     final price = t[e.pair]?.last.toString();
     final currency = c.gray();
     final ansiPercent = t[e.pair]?.ansiPercent ?? "";

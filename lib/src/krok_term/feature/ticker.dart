@@ -105,7 +105,7 @@ class _TickerData {
 
   _TickerData(TickerData data, Currency currency, AssetPairs ap) {
     final pair = ap[data.pair]?.wsname ?? data.pair;
-    final name = pair.highlightSuffix(currency).fixDisplayPair();
+    final name = pair.highlightSuffix().fixDisplayPair();
     final percent = data.ansiPercent;
     _string = "$name $percent";
 

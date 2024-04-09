@@ -7,7 +7,7 @@ void main() {
     //given
     final it = "XBT";
     //when
-    final actual = it.highlightSuffix("USD");
+    final actual = it.highlightSuffix(suffix: "USD");
     //then
     expect(actual, equals("XBT${"/USD".gray()}"));
   });
@@ -16,7 +16,7 @@ void main() {
     //given
     final it = "XBTUSD";
     //when
-    final actual = it.highlightSuffix("USD");
+    final actual = it.highlightSuffix(suffix: "USD");
     //then
     expect(actual, equals("XBT${"/USD".gray()}"));
   });
@@ -25,8 +25,26 @@ void main() {
     //given
     final it = "XBT/USD";
     //when
-    final actual = it.highlightSuffix("USD");
+    final actual = it.highlightSuffix(suffix: "USD");
     //then
     expect(actual, equals("XBT${"/USD".gray()}"));
+  });
+
+  test("highlights part after /", () {
+    //given
+    final it = "XBT/USD";
+    //when
+    final actual = it.highlightSuffix();
+    //then
+    expect(actual, equals("XBT${"/USD".gray()}"));
+  });
+
+  test("highlights part after #", () {
+    //given
+    final it = "XBT#USD";
+    //when
+    final actual = it.highlightSuffix(separator: '#');
+    //then
+    expect(actual, equals("XBT${"#USD".gray()}"));
   });
 }

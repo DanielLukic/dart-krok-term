@@ -59,8 +59,9 @@ extension StringColumns on String {
 }
 
 extension HighlightPairString on String {
-  String highlightSuffix(String suffix, {String separator = '/'}) {
+  String highlightSuffix({String? suffix, String separator = '/'}) {
     var prefix = this;
+    suffix ??= split(separator).last;
     if (endsWith(suffix)) prefix = prefix.dropLast(suffix.length);
     if (prefix.endsWith(separator)) prefix = prefix.dropLast(1);
     return prefix + "$separator$suffix".gray();
