@@ -3,7 +3,6 @@ import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
-import '../core/selected_pair.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';
@@ -32,20 +31,10 @@ void _create() {
 
   _window.autoDispose(
     "update",
-    selectedPair
-        .combineLatest(assetPairs, _pickAssetPair)
+    selectedAssetPair
         .combineLatest(tickers, _pickTicker)
-        .whereNotNull()
         .listenSafely(_updateResult),
   );
-}
-
-AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
-  final match = ap.values.where((e) => e.wsname == it.wsname).singleOrNull;
-  if (match == null) {
-    throw ArgumentError("selected asset pair not found in $ap", it.wsname);
-  }
-  return match;
 }
 
 (AssetPairData, TickerData) _pickTicker(AssetPairData ap, Tickers t) {
