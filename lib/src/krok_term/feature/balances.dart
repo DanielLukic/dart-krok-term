@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:dart_consul/dart_consul.dart';
+import 'package:rxdart/streams.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
@@ -31,53 +30,20 @@ void _create() {
   _window.onKey("u",
       description: "Update balances now", action: balancesRepo.refresh);
 
-  // TODO Seems rxdart is broken. Have not investigated much.
-  // final b = balancesRepo.subscribe();
-  // final c = currency.startWith("USD");
-  // final a = assetsRepo.subscribe().startWith({});
-  // final ap = assetPairsRepo.subscribe().startWith({});
-  // final t = tickersRepo.subscribe().startWith({});
-  // final s = b.withLatestFrom4(c, a, ap, t, _toEntries);
-  // _window.autoDispose("update", s.listen(_updateResult));
-
-  // TODO This works as expected:
-  _window.autoDispose("update", _combined());
-}
-
-Disposable _combined() {
-  final dispose = CompositeDisposable();
-  Assets? a;
-  AssetPairs? ap;
-  Balances? b;
-  Currency? c;
-  Tickers? t;
-
-  update<T>(Stream<T> stream, Function(T) update) {
-    dispose.wrap(stream.listen((it) {
-      update(it);
-      if (a == null) return;
-      if (ap == null) return;
-      if (b == null) return;
-      if (c == null) return;
-      if (t == null) return;
-      _updateResult(_toEntries(b!, c!, a!, ap!, t!));
-    }));
-  }
-
-  update(assetsRepo.subscribe(), (it) => a = it);
-  update(assetPairsRepo.subscribe(), (it) => ap = it);
-  update(balancesRepo.subscribe(), (it) => b = it);
-  update(currency, (it) => c = it);
-  update(tickersRepo.subscribe(), (it) => t = it);
-
-  return dispose;
+  _window.autoDispose(
+    "update",
+    CombineLatestStream.list<dynamic>(
+            [assets, assetPairs, balances, currency, tickers])
+        .map((e) => _toEntries(e[0], e[1], e[2], e[3], e[4]))
+        .listen((e) => _updateResult(e)),
+  );
 }
 
 List<String> _toEntries(
-  Balances balances,
-  Currency currency,
   Assets assets,
   AssetPairs assetPairs,
+  Balances balances,
+  Currency currency,
   Tickers tickers,
 ) {
   final result = <String>[];
