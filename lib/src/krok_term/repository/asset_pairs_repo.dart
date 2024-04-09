@@ -1,4 +1,5 @@
 import '../core/krok_core.dart';
+import '../core/selected_pair.dart';
 import 'auto_repo.dart';
 
 typedef AssetPairs = Map<Pair, AssetPairData>;
@@ -29,6 +30,8 @@ class AssetPairData {
         lot_decimals = json['lot_decimals'],
         ordermin = double.parse(json['ordermin']),
         costmin = double.parse(json['costmin']);
+
+  AssetPair get ap => AssetPair.fromWsName(wsname);
 
   @override
   String toString() => _json.toString();

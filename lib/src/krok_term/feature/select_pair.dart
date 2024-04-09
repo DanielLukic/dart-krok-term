@@ -122,7 +122,7 @@ void _create() {
 
 _select(AssetPairData it) {
   desktop.minimizeWindow(_window);
-  return selectPair(it.wsname);
+  return selectPair(it.ap);
 }
 
 (List<(AssetPairData, String)>, int?) _toEntries(

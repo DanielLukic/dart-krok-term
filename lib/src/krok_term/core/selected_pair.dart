@@ -1,25 +1,30 @@
 import 'krok_core.dart';
 
-late final TimestampedStorage<Pair> _selectedPair;
+extension type AssetPair(String _wsname) {
+  AssetPair.fromWsName(String wsname)
+      : assert(wsname.contains("/")),
+        _wsname = wsname;
 
-Stream<Pair> get selectedPair => _selectedPair.stream;
+  String get wsname => _wsname;
+}
 
-selectPair(Pair wsname) {
-  if (!wsname.contains("/")) {
-    throw ArgumentError("must use wsname instead of $wsname", "wsname");
-  }
-  logEvent("select pair (wsname): $wsname");
-  return _selectedPair.store(wsname);
+late final TimestampedStorage<AssetPair> _selectedPair;
+
+Stream<AssetPair> get selectedPair => _selectedPair.stream;
+
+selectPair(AssetPair pair) {
+  logEvent("select pair (wsname): $pair");
+  return _selectedPair.store(pair);
 }
 
 initSelectedPair(Storage storage) {
   logEvent('init selected pair');
-  _selectedPair = TimestampedStorage<Pair>(
+  _selectedPair = TimestampedStorage<AssetPair>(
     storage: storage,
     key: "selected_pair",
     restore: (e) => e,
     log: logEvent,
-    restoreDefault: 'XBT/USD',
+    restoreDefault: AssetPair.fromWsName('XBT/USD'),
   );
   _selectedPair.restore();
 }
