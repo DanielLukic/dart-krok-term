@@ -61,11 +61,11 @@ class TimestampedStorage<T> {
     final loaded = await _storage.load(_key);
     if (loaded == null) {
       if (_restoreDefault != null && _cache.valueOrNull == null) {
-        _log("$_key default");
+        _log('[V] $_key default');
         store(_restoreDefault);
         return;
       }
-      _log("$_key not found");
+      _log('[W] $_key not found');
       return;
     }
     final current = _cache.valueOrNull;
@@ -74,12 +74,12 @@ class TimestampedStorage<T> {
       try {
         final data = loaded['data'];
         _cache.value = _Cached(timestamp, _restore(data));
-        _log('$_key restored');
+        _log('[V] $_key restored');
       } catch (it) {
-        _log("$_key restore failed: $it");
+        _log('[E] $_key restore failed: $it');
       }
     } else {
-      _log('$_key outdated');
+      _log('[V] $_key outdated');
     }
   }
 

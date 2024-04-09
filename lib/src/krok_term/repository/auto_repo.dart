@@ -50,7 +50,7 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   }
 
   void refresh() {
-    logEvent("$_key refresh");
+    logEvent('[V] $_key refresh');
     autoDispose("refresh", Timer.periodic(_duration, _retrieve));
     _retrieve();
   }
@@ -58,7 +58,7 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   void _retrieve([_]) => retrieve(_request(), (e) => _update(e));
 
   void _update(dynamic result) {
-    logEvent("$_key retrieved");
+    logEvent('[V] $_key retrieved');
     _storage.store(_preform(result));
   }
 

@@ -35,17 +35,16 @@ final _api = KrakenApi.fromFile("~/.config/clikraken/kraken.key");
 
 Future _process(QueuedRequest it) async {
   if (it.canceled) {
-    logEvent("skip $it");
+    logEvent("[W] skip $it");
   } else {
     await _throttle(it);
-    logEvent("process $it");
     try {
       final response = await _api.retrieve(it._request);
       it.complete(response);
     } catch (error) {
       if (!it.canceled) {
         it.completeError(error);
-        logEvent("fail $it: $error");
+        logEvent("[E] fail $it: $error");
       }
     }
   }
@@ -57,7 +56,7 @@ Future _throttle(it) async {
   final seconds = now.difference(_throttleTimestamp).inSeconds;
   _throttleTimestamp = DateTime.now();
   if (seconds == 0) {
-    logEvent("delay $it");
+    logEvent("[W] delay $it");
     await Future.delayed(1.seconds);
   }
 }
