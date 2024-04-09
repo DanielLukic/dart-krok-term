@@ -51,17 +51,14 @@ final _selection = BehaviorSubject<(int?, AssetPairData?)>.seeded((null, null));
 void _navigate(int delta) {
   final selection = _resolveSelection(selection: _selection.value, data: _data);
   final currentIndex = selection.$1;
-  logEvent("_navigate $currentIndex $delta");
   if (currentIndex == null) return;
   final target = currentIndex + delta;
   if (target < 0 || target >= _data.length) return;
   _selection.value = (target, _data[target]);
-  logEvent("_navigate => $target ${_data[target]}");
   _window.requestRedraw();
 }
 
 void _stolen(KeyEvent it) {
-  logEvent("${it.printable} $it");
   if (it is InputKey) {
     _filter.value = _filter.value + it.char;
   } else if (it is ControlKey && it.printable == "<Backspace>") {
@@ -73,8 +70,8 @@ void _stolen(KeyEvent it) {
   } else if (it is ControlKey && it.printable == "<Down>") {
     _navigate(1);
   } else if (it is ControlKey && it.printable == "<Return>") {
-    logEvent("return? ${_selection.value}");
-    final selection = _resolveSelection(selection: _selection.value, data: _data);
+    final selection =
+        _resolveSelection(selection: _selection.value, data: _data);
     final selected = selection.$2;
     if (selected != null) _select(selected);
   } else {
