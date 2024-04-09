@@ -20,11 +20,11 @@ void _create() {
       description: "Update data", action: () => tickersRepo.refresh());
 
   var maybeTrigger = false;
-  _window.chainOnMouseEvent((p0) {
-    if (p0.x <= 10) {
-      if (p0.isDown) maybeTrigger = true;
-      if (p0.isUp && maybeTrigger) selectAssetPair();
-    } else if (p0.isDown || p0.isUp) {
+  _window.chainOnMouseEvent((e) {
+    if (e.x <= 10) {
+      if (e.isDown) maybeTrigger = true;
+      if (e.isUp && maybeTrigger) selectAssetPair();
+    } else if (e.isDown || e.isUp) {
       maybeTrigger = false;
     }
     return null;
