@@ -77,3 +77,19 @@ extension LargeNumberFormat on double {
     return toStringAsFixed(defaultDecimals);
   }
 }
+
+extension SnakeCaseExtension on String {
+  String toSnakeCase() {
+    final result = StringBuffer();
+    for (var i = 0; i < length; i++) {
+      final c = this[i];
+      if (c == c.toUpperCase()) {
+        if (i > 0) result.write('_');
+        result.write(c.toLowerCase());
+      } else {
+        result.write(c);
+      }
+    }
+    return result.toString();
+  }
+}

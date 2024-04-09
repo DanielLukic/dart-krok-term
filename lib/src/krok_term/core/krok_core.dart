@@ -4,6 +4,7 @@ import 'package:dart_consul/common.dart';
 import 'package:dart_consul/dart_consul.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/desktop.dart';
+import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 export 'package:dart_consul/common.dart';
 export 'package:krok/krok.dart';
@@ -89,12 +90,8 @@ class QueuedRequest {
   @override
   String toString() {
     final prefix = canceled ? "[CANCELED] " : "";
-    return "$prefix${_request.string}";
+    return "$prefix${_request.path.toSnakeCase()}";
   }
-}
-
-extension on KrakenRequest {
-  String get string => "${scope.name}/$path/$params";
 }
 
 extension SafeStreamExtension<T> on Stream<T> {
