@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/rxdart.dart' hide SwitchMapExtension;
+import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
+import '../repository/ohlc_repo.dart';
 
 final _window = window('chart', 61, 25) //
   ..name = "Chart [$cKey] [1-9]"
@@ -15,56 +17,110 @@ final _window = window('chart', 61, 25) //
 
 void openChart() => autoWindow(_window, () => _create());
 
-final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
-final _zoom = BehaviorSubject.seeded(1.0);
-final _scroll = BehaviorSubject.seeded(0);
-
-Stream<List<dynamic>> combine(List<Stream<dynamic>> l) =>
-    CombineLatestStream.list(l);
-
 void _create() {
-  // _window.onKey("u",
-  //     description: "Update data", action: () => tickersRepo.refresh());
+  _window.onKey("u",
+      description: "Update data",
+      action: () => _refresh.value = DateTime.timestamp());
+
+  _window.onKey('<S-h>', //
+      description: 'Jump left',
+      action: () => _scroll_(10));
+  _window.onKey('<S-l>',
+      description: 'Jump right', action: () => _scroll_(-10));
+  _window.onKey('h', //
+      description: 'Scroll left',
+      action: () => _scroll_(1));
+  _window.onKey('l', //
+      description: 'Scroll right',
+      action: () => _scroll_(-1));
+
+  _window.onKey('<Left>', //
+      aliases: ['i'],
+      description: 'Smaller interval',
+      action: () => _interval_(-1));
+  _window.onKey('<Right>', //
+      aliases: ['<S-i>'],
+      description: 'Bigger interval',
+      action: () => _interval_(1));
+
+  _window.onKey('-', description: 'Zoom out', action: () => _zoom_(-1));
+  _window.onKey('+', description: 'Zoom in', action: () => _zoom_(1));
+  _window.onKey('=', description: 'Reset zoom', action: () => _zoom_(0));
+  _window.onKey('r', description: 'Reset scroll and zoom', action: _reset);
+
+  for (final i in OhlcInterval.values) {
+    _window.onKey((i.index + 1).toString(),
+        description: 'Switch to ${i.label}', action: () => _interval.value = i);
+  }
 
   _window.chainOnMouseEvent(_changeInterval);
+  _window.onWheelDown(() => _zoom_(-1));
+  _window.onWheelUp(() => _zoom_(1));
+
+  _window.chainOnMouseEvent((e) {
+    if (e.isDown) return _DragChartAction(_window, e, _scroll.value);
+    return null;
+  });
+
+  Stream<_PairDataInterval> retrieve(AssetPairData s, OhlcInterval i) =>
+      ohlc(s, i).map((list) => (s, list, i));
 
   final chartData = combine([selectedAssetPair, _interval])
-      .distinct((a, b) => a.toString() == b.toString()) // ‾\_('')_/‾
-      .switchMap((e) => _retrieve(e[0], e[1]));
+      .distinctUntilChanged()
+      .switchMap((e) => retrieve(e[0], e[1]))
+      .doOnData((e) => _maxScroll.value = e.$2.length);
 
-  final withZoomAndScroll = combine([chartData, _interval, _zoom, _scroll])
-      .distinct((a, b) => a.toString() == b.toString()) // ‾\_('')_/‾
+  final withZoomAndScroll = combine([chartData, _interval, _zoom, _validScroll])
+      .distinctUntilChanged()
       .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
 
-  _window.autoDispose("update", withZoomAndScroll.listenSafely(_updateResult));
+  _window.autoDispose("update",
+      withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
 }
 
-OngoingMouseAction? _changeInterval(MouseEvent event) {
-  // TODO Not sure I'm OK with the decorated 1 instead of 0...
-  if (event.y == 1) {
-    final check = event.x % 4;
-    if (check < 3) {
-      final index = event.x ~/ 4;
-      if (index < OhlcInterval.values.length) {
-        _interval.value = OhlcInterval.values[index];
-        return NopMouseAction(_window);
-      }
-    }
-  }
-  return null;
+final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
+final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
+final _zoom = BehaviorSubject.seeded(1);
+final _maxZoom = 10;
+final _scroll = BehaviorSubject.seeded(0);
+final _maxScroll = BehaviorSubject.seeded(0);
+final _validScroll = _scroll.combineLatest(_maxScroll, (s, m) => s.clamp(0, m));
+
+void _scroll_(int d) {
+  _scroll.value = (_scroll.value + d).clamp(0, _maxScroll.value);
 }
 
-typedef _PairDataInterval = (AssetPairData, List, OhlcInterval);
+void _reset() {
+  _scroll.value = 0;
+  _zoom.value = 1;
+}
 
-Stream<_PairDataInterval> _retrieve(AssetPairData s, OhlcInterval i) =>
-    retrieve(KrakenRequest.ohlc(pair: s.pair, interval: i))
-        .map((json) => json[s.pair] as List)
-        .map((list) => (s, list, i));
+void _zoom_(int delta) {
+  if (delta == -1) _zoom.value = (_zoom.value - 1).clamp(1, _maxZoom);
+  if (delta == 1) _zoom.value = (_zoom.value + 1).clamp(1, _maxZoom);
+  if (delta == 0) _zoom.value = 1;
+}
+
+void _interval_(int delta) {
+  final now = _interval.value.index;
+  final change = (now + delta).clamp(0, OhlcInterval.values.length - 1);
+  _interval.value = OhlcInterval.values[change];
+}
+
+typedef _PairDataInterval = (AssetPairData, List<OHLC>, OhlcInterval);
+
+// ‾\_('')_/‾
+OHLC _merged(OHLC a, OHLC b) => OHLC(
+    (a.timestamp + b.timestamp) ~/ 2,
+    (a.open + b.open) / 2,
+    max(a.high, b.high),
+    min(a.low, b.low),
+    (a.close + b.close) / 2);
 
 String _renderChart(
   _PairDataInterval pdi,
   OhlcInterval interval,
-  double zoom,
+  int zoom,
   int scroll,
 ) {
   final pair = pdi.$1;
@@ -78,15 +134,15 @@ String _renderChart(
   final ch = (buffer.height - 3) * 4;
   final canvas = DrawingCanvas(cw, ch);
 
-  final snip = data
-      .takeLast(canvas.width)
-      .reversed
-      .map((e) => e as List<dynamic>)
-      .toList();
+  final scrolled = data.reversedList().skip(scroll);
+
+  final zoomed = scrolled.windowed(zoom).map((e) => e.reduce(_merged));
+
+  final snip = zoomed.take(canvas.width);
 
   // final opens = snip.map((e) => double.parse(e[1]));
-  final highs = snip.mapList((e) => double.parse(e[2]));
-  final lows = snip.mapList((e) => double.parse(e[3]));
+  final highs = snip.mapList((e) => e.high);
+  final lows = snip.mapList((e) => e.low);
   // final closes = snip.map((e) => double.parse(e[4]));
   final max_ = highs.reduce((a, b) => max(a, b));
   final min_ = lows.reduce((a, b) => min(a, b));
@@ -119,13 +175,11 @@ String _renderChart(
   buffer.drawBuffer(0, divider, "".padRight(dividerLength, "┈"));
   buffer.drawBuffer(0, buffer.height - 1, "".padRight(dividerLength, " "));
 
-  final left = DateTime.fromMillisecondsSinceEpoch(snip.last[0] * 1000)
-      .toIso8601String();
+  final left = snip.last.timestamp.toKrakenDateTime().toTimestamp();
   buffer.drawBuffer(0, buffer.height - 1, left);
 
-  final right = DateTime.fromMillisecondsSinceEpoch(snip.first[0] * 1000)
-      .toIso8601String();
-  buffer.drawBuffer(buffer.width - right.length, buffer.height - 1, right);
+  final right = snip.first.timestamp.toKrakenDateTime().toTimestamp();
+  buffer.drawBuffer(buffer.width - right.length - 10, buffer.height - 1, right);
 
   final intervals = OhlcInterval.values
       .map((e) => e == interval ? e.label.inverse() : e.label);
@@ -133,21 +187,30 @@ String _renderChart(
 
   if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
+  final sl = buffer.height - 3;
+  final zl = buffer.height - 4;
+  buffer.drawBuffer(0, sl, "scroll $scroll of ${_maxScroll.value}".gray());
+  buffer.drawBuffer(0, zl, "zoom $zoom of $_maxZoom".gray());
+
   return buffer.frame();
 }
 
-_updateResult(String chart) => _window.update(() => chart);
+OngoingMouseAction? _changeInterval(MouseEvent event) {
+  // check we are in the first line. then check we are not on a third char.
+  // because these are the spaces between intervals. then take the x/4 to get
+  // the clicked interval. finally, make sure we allow only existing intervals.
+  // TODO Not sure I'm OK with the decorated 1 instead of 0...
 
-extension on Buffer {
-  drawColumn(int x, String char) {
-    for (var y = 0; y < height; y++) {
-      set(x, y, char);
-    }
-  }
+  if (event.y != 1) return null;
 
-  set(int x, int y, String char) {
-    drawBuffer(x, y, char);
-  }
+  final check = event.x % 4;
+  if (check == 3) return null;
+
+  final index = event.x ~/ 4;
+  if (index >= OhlcInterval.values.length) return null;
+
+  _interval.value = OhlcInterval.values[index];
+  return NopMouseAction(_window);
 }
 
 extension on OhlcInterval {
@@ -162,4 +225,18 @@ extension on OhlcInterval {
         OhlcInterval.oneWeek => ' 7d',
         OhlcInterval.fifteenDays => '15d',
       };
+}
+
+class _DragChartAction extends BaseOngoingMouseAction {
+  final int _startScroll;
+
+  _DragChartAction(super.window, super.event, this._startScroll);
+
+  @override
+  void onMouseEvent(MouseEvent event) {
+    if (event.isUp) done = true;
+
+    final dx = event.x - this.event.x;
+    _scroll.value = (_startScroll + dx * 2).clamp(0, _maxScroll.value);
+  }
 }

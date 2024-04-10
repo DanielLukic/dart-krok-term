@@ -1,12 +1,24 @@
 import 'dart:io';
 
-import 'package:ansi/ansi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
+import 'package:dart_consul/dart_consul.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'functions.dart';
+
+extension BufferExtensions on Buffer {
+  drawColumn(int x, String char) {
+    for (var y = 0; y < height; y++) {
+      set(x, y, char);
+    }
+  }
+
+  set(int x, int y, String char) {
+    drawBuffer(x, y, char);
+  }
+}
 
 extension DistinctUntilChanged<E> on Stream<E> {
   Stream<E> distinctUntilChanged() => distinct(DeepCollectionEquality().equals);
