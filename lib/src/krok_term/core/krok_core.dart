@@ -48,10 +48,14 @@ Future _process(QueuedRequest it) async {
   return it;
 }
 
-Future _throttle(it) async {
+Future _throttle(QueuedRequest it) async {
   final now = DateTime.now();
   final seconds = now.difference(_throttleTimestamp).inSeconds;
   _throttleTimestamp = DateTime.now();
+  if (it._request.path == "OHLC" && seconds < 2) {
+    logWarn('delay $it');
+    await Future.delayed((2 - seconds).seconds);
+  }
   if (seconds == 0) {
     logWarn('delay $it');
     await Future.delayed(1.seconds);
