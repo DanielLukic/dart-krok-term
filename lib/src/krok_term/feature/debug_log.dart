@@ -15,7 +15,7 @@ void openLog() {
 _openLog() {
   final w = addDebugLog(
     desktop,
-    name: "Log [$lKey] [v,i,w,e] [x]",
+    name: "Log [$lKey] [v,d,i,w,e] [x]",
     key: "",
     position: AbsolutePosition(56, 31),
     filter: filterLogEntry,
@@ -27,6 +27,7 @@ _openLog() {
   }
 
   w.onKey("v", description: "Show verbose level", action: () => set(0));
+  w.onKey("d", description: "Show debug level", action: () => set(0));
   w.onKey("i", description: "Show info level", action: () => set(1));
   w.onKey("w", description: "Show warning level", action: () => set(2));
   w.onKey("e", description: "Show error level", action: () => set(3));
@@ -38,7 +39,7 @@ _openLog() {
 }
 
 var _level = 1;
-final _levels = ['V', 'I', 'W', 'E'];
+final _levels = ['V', 'D', 'I', 'W', 'E'];
 final _matcher = RegExp(r"^\d\d:\d\d:\d\d \[(.)]");
 
 bool filterLogEntry(String msg) => msg.toLogLevel() >= _level;
