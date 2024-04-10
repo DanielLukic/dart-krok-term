@@ -12,11 +12,15 @@ class Storage {
 
   Storage({required String path}) : _directory = Directory(path);
 
+  File _file(String key) => File(joinPath([_directory.path, key]));
+
+  DateTime lastModified(String key) => _file(key).lastModifiedSync();
+
   Future<JsonObject?> load(String key) async {
     final exists = await _directory.exists();
     if (!exists) return null;
 
-    final file = File(joinPath([_directory.path, key]));
+    final file = _file(key);
     if (!await file.exists()) return null;
 
     return jsonDecode(await file.readAsString());
@@ -26,7 +30,7 @@ class Storage {
     final exists = await _directory.exists();
     if (!exists) await _directory.create();
 
-    final file = File(joinPath([_directory.path, key]));
+    final file = _file(key);
     if (await file.exists()) {
       await file.rename("${file.path}.bak");
     }
@@ -35,6 +39,7 @@ class Storage {
   }
 }
 
+// TODO Switch to lastModified
 class TimestampedStorage<T> {
   final Storage _storage;
   final String _key;
