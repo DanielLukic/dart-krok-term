@@ -15,7 +15,7 @@ void openLog() {
 _openLog() {
   final w = addDebugLog(
     desktop,
-    name: "Log [gl] [v,i,w,e]",
+    name: "Log [gl] [v,i,w,e] [x]",
     key: "",
     position: AbsolutePosition(56, 31),
     filter: filterLogEntry,
@@ -30,6 +30,11 @@ _openLog() {
   w.onKey("i", description: "Show info level", action: () => set(1));
   w.onKey("w", description: "Show warning level", action: () => set(2));
   w.onKey("e", description: "Show error level", action: () => set(3));
+
+  w.onKey("x", description: "Clear log", action: () {
+    eventDebugLog.clear();
+    w.requestRedraw();
+  });
 }
 
 var _level = 1;
