@@ -38,6 +38,8 @@ class AssetPairData {
 
   AssetPair get ap => AssetPair.fromWsName(wsname);
 
+  String price(double price) => price.toStringAsFixed(pair_decimals);
+
   @override
   int get hashCode => Object.hashAll(_fields);
 

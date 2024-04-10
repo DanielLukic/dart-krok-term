@@ -7,6 +7,7 @@ import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
+import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/ticker.dart';
@@ -59,11 +60,13 @@ _initKrokTerm() async {
 
   desktop.onKey("/", description: "Select asset pair", action: selectPair);
   desktop.onKey("gb", description: "Go to balances", action: openBalances);
+  desktop.onKey("gc", description: "Go to chart", action: openChart);
   desktop.onKey("gl", description: "Go to log", action: openLog);
   desktop.onKey("gt", description: "Go to ticker", action: openTicker);
 
   openAssetPair();
   openBalances();
+  openChart();
   openLog();
   openTicker();
 }
