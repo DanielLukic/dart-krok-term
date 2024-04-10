@@ -52,11 +52,9 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
 
   void refresh() {
     logVerbose('$_key refresh');
-    autoDispose("refresh", Timer.periodic(_duration, _retrieve));
-    _retrieve();
+    autoDispose("refresh", Timer(_duration, refresh));
+    autoDispose("retrieve", retrieve(_request()).listenSafely(_update));
   }
-
-  void _retrieve([_]) => retrieve(_request(), (e) => _update(e));
 
   void _update(dynamic result) {
     logVerbose('$_key retrieved');

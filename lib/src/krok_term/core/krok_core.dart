@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dart_consul/common.dart';
-import 'package:dart_consul/dart_consul.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
@@ -21,10 +20,10 @@ void initKrokCore() async {
   }
 }
 
-Disposable retrieve(KrakenRequest request, Function(dynamic) onResult) {
-  final it = QueuedRequest(request, onResult);
+Stream<dynamic> retrieve(KrakenRequest request) {
+  final it = QueuedRequest(request);
   _queue.add(it);
-  return Disposable.wrap(it.cancel);
+  return it.stream;
 }
 
 var _throttleTimestamp = DateTime.now().subtract(2.seconds);
@@ -40,12 +39,10 @@ Future _process(QueuedRequest it) async {
     await _throttle(it);
     try {
       final response = await _api.retrieve(it._request);
-      it.complete(response);
+      if (!it.canceled) it.complete(response);
     } catch (error) {
-      if (!it.canceled) {
-        it.completeError(error);
-        logError('fail $it: $error');
-      }
+      logError('fail $it: $error');
+      if (!it.canceled) it.completeError(error);
     }
   }
   return it;
@@ -64,27 +61,31 @@ Future _throttle(it) async {
 class QueuedRequest {
   final KrakenRequest _request;
 
-  final _result = Completer<Result>();
-
-  late final StreamSubscription<Result> _subscription;
+  late final StreamController<dynamic> _result;
 
   bool canceled = false;
 
-  QueuedRequest(this._request, void Function(dynamic) onResult) {
-    _subscription = _result.future.asStream().listen(onResult);
+  QueuedRequest(this._request) {
+    _result = StreamController(onCancel: () => canceled = true);
   }
 
-  void cancel() {
-    canceled = true;
-    _subscription.cancel();
+  Stream<dynamic> get stream => _result.stream;
+
+  void complete(dynamic result) {
+    if (_result.isClosed) {
+      logWarn('queued request already closed: $this');
+    } else {
+      _result.add(result);
+    }
   }
 
-  void complete(Result result) {
-    if (_result.isCompleted) throw StateError("already completed");
-    _result.complete(result);
+  void completeError(Object error) {
+    if (_result.isClosed) {
+      logWarn('queued request already closed: $this');
+    } else {
+      _result.addError(error);
+    }
   }
-
-  void completeError(Object error) => _result.completeError(error);
 
   @override
   String toString() {
