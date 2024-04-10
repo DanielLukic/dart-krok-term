@@ -10,6 +10,15 @@ class BalanceData {
   BalanceData(this.asset, this.volume);
 
   @override
+  int get hashCode => Object.hash(asset, volume);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! BalanceData) return false;
+    return asset == other.asset && volume == other.volume;
+  }
+
+  @override
   String toString() => "{asset: $asset, volume: $volume}";
 }
 

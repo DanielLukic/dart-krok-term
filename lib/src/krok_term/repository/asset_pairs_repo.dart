@@ -18,6 +18,11 @@ class AssetPairData {
 
   final JsonObject _json;
 
+  List get _fields => [
+        pair, altname, wsname, base, quote, cost_decimals, pair_decimals, //
+        lot_decimals, ordermin, costmin
+      ];
+
   AssetPairData(JsonObject json)
       : _json = json,
         pair = json['pair'],
@@ -32,6 +37,15 @@ class AssetPairData {
         costmin = double.parse(json['costmin']);
 
   AssetPair get ap => AssetPair.fromWsName(wsname);
+
+  @override
+  int get hashCode => Object.hashAll(_fields);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! AssetPairData) return false;
+    return _fields == other._fields;
+  }
 
   @override
   String toString() => _json.toString();

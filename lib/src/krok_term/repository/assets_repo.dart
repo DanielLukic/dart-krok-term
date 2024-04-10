@@ -19,6 +19,18 @@ class AssetData {
         display = json['display_decimals'];
 
   @override
+  int get hashCode => Object.hashAll([name, altname, decimals, display]);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! AssetData) return false;
+    return name == other.name &&
+        altname == other.altname &&
+        decimals == other.decimals &&
+        display == other.display;
+  }
+
+  @override
   String toString() => _json.toString();
 }
 

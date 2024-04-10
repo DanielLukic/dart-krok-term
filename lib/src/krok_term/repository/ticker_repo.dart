@@ -24,6 +24,12 @@ class TickerData {
   final Price highLast24;
   final Price opening;
 
+  List get _fields => [
+        pair, ask, bid, last, volumeToday, volumeLast24, priceToday, //
+        priceLast24, tradesToday, tradesLast24, lowToday, lowLast24, //
+        highToday, highLast24, opening
+      ];
+
   TickerData(this.pair, JsonObject json)
       : _json = json,
         ask = double.parse(json['a'][0]),
@@ -55,6 +61,15 @@ class TickerData {
       _ when p > 0 => pp.green(),
       _ => pp,
     };
+  }
+
+  @override
+  int get hashCode => Object.hashAll(_fields);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! TickerData) return false;
+    return _fields == other._fields;
   }
 
   @override
