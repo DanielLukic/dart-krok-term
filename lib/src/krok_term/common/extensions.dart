@@ -19,6 +19,24 @@ extension StringListExtension on List<String> {
   String joinPath() => join(Platform.pathSeparator);
 }
 
+extension IterableExtensions<E> on Iterable<E> {
+  List<R> mapList<R>(R Function(E) mapper) => map(mapper).toList();
+
+  Iterable<List<E>> windowed(int size) {
+    final input = toList();
+    final result = <List<E>>[];
+    var current = <E>[];
+    for (var i = 0; i < input.length; i++) {
+      current.add(input[i]);
+      if (current.length == size) {
+        result.add(current);
+        current = [];
+      }
+    }
+    return result;
+  }
+}
+
 extension ListExtensions<E> on List<E> {
   void fillLength(int targetLength, E it) {
     while (length < targetLength) {
