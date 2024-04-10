@@ -9,7 +9,7 @@ import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';
 
-final _window = window("select-pair", 61, 20) //
+final _window = window("select-pair", 61, 25) //
   ..name = "Select Pair"
   ..position = AbsolutePosition(43, 4);
 
