@@ -45,6 +45,8 @@ extension ListExtensions<E> on List<E> {
   }
 
   List<R> mapList<R>(R Function(E) transform) => map(transform).toList();
+
+  List<E> reversedList() => reversed.toList();
 }
 
 extension MapExtension<K, V> on Map<K, V> {
