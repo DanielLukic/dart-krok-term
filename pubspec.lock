@@ -221,10 +221,10 @@ packages:
     dependency: "direct main"
     description:
       name: krok
-      sha256: a1ee3f2b61b8d8c69112e45c843820f1746809e52508ebf10634c7b69d0f651c
+      sha256: "9a7235e56e6d9e7445785dd7b94fe9bbf083a037e1adf4532949074061d1f932"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.3"
   lints:
     dependency: "direct dev"
     description:
