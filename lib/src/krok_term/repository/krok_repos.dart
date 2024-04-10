@@ -13,16 +13,16 @@ late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
 late TickersRepo tickersRepo;
 
-Stream<Assets> get assets => assetsRepo.subscribe();
+Stream<Assets> get assets => assetsRepo.subscribe().distinct();
 
-Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe();
+Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe().distinct();
 
-Stream<Balances> get balances => balancesRepo.subscribe();
+Stream<Balances> get balances => balancesRepo.subscribe().distinct();
 
-Stream<Tickers> get tickers => tickersRepo.subscribe();
+Stream<Tickers> get tickers => tickersRepo.subscribe().distinct();
 
 Stream<AssetPairData> get selectedAssetPair =>
-    selectedPair.combineLatest(assetPairs, _pickAssetPair);
+    selectedPair.combineLatest(assetPairs, _pickAssetPair).distinct();
 
 AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
   final match = ap.values.where((e) => e.wsname == it.wsname).singleOrNull;
