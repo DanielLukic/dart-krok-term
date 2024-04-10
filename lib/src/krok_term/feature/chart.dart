@@ -109,14 +109,6 @@ void _interval_(int delta) {
 
 typedef _PairDataInterval = (AssetPairData, List<OHLC>, OhlcInterval);
 
-// ‾\_('')_/‾
-OHLC _merged(OHLC a, OHLC b) => OHLC(
-    (a.timestamp + b.timestamp) ~/ 2,
-    (a.open + b.open) / 2,
-    max(a.high, b.high),
-    min(a.low, b.low),
-    (a.close + b.close) / 2);
-
 String _renderChart(
   _PairDataInterval pdi,
   OhlcInterval interval,
@@ -127,72 +119,86 @@ String _renderChart(
   final data = pdi.$2;
   if (data.isEmpty) return "";
 
-  final Buffer buffer = Buffer(_window.width, _window.height);
-  buffer.fill(32);
-
-  final cw = (buffer.width - 10) * 2;
-  final ch = (buffer.height - 3) * 4;
-  final canvas = DrawingCanvas(cw, ch);
+  final canvasWidth = (_window.width - 10) * 2;
+  final canvasHeight = (_window.height - 3) * 4;
 
   final scrolled = data.reversedList().skip(scroll);
+  final zoomed = _zoomed(scrolled, zoom);
+  final snip = zoomed.take(canvasWidth);
+  final snapshot = _ChartSnapshot.fromSnip(snip);
 
-  final zoomed = scrolled.windowed(zoom).map((e) => e.reduce(_merged));
-
-  final snip = zoomed.take(canvas.width);
-
-  // final opens = snip.map((e) => double.parse(e[1]));
-  final highs = snip.mapList((e) => e.high);
-  final lows = snip.mapList((e) => e.low);
-  // final closes = snip.map((e) => double.parse(e[4]));
-  final max_ = highs.reduce((a, b) => max(a, b));
-  final min_ = lows.reduce((a, b) => min(a, b));
-
-  final normY = (1.0 / (max_ - min_)) * canvas.height;
-  final invertX = canvas.width - 1;
-  final invertY = canvas.height - 1;
-  final count = min(snip.length, canvas.width);
-  for (var x = 0; x < count; x++) {
-    final yTop = (highs[x] - min_) * normY;
-    final yBottom = (lows[x] - min_) * normY;
-    for (var y = yBottom; y <= yTop; y++) {
-      canvas.set(invertX - x, invertY - y.round());
-    }
-  }
-
-  final prices = Buffer(10, _window.height);
-  prices.fill(32);
-  prices.drawBuffer(1, 1, pair.price(max_));
-  prices.drawBuffer(1, prices.height - 3, pair.price(min_));
-  prices.drawColumn(0, '┊');
-  prices.set(0, prices.height - 2, '┘');
-  prices.set(0, prices.height - 1, ' ');
-
-  buffer.drawBuffer(0, 1, canvas.frame());
-  buffer.drawBuffer(buffer.width - 10, 0, prices.frame());
-
-  final divider = buffer.height - 2;
-  final dividerLength = buffer.width - 10;
-  buffer.drawBuffer(0, divider, "".padRight(dividerLength, "┈"));
-  buffer.drawBuffer(0, buffer.height - 1, "".padRight(dividerLength, " "));
-
-  final left = snip.last.timestamp.toKrakenDateTime().toTimestamp();
-  buffer.drawBuffer(0, buffer.height - 1, left);
-
-  final right = snip.first.timestamp.toKrakenDateTime().toTimestamp();
-  buffer.drawBuffer(buffer.width - right.length - 10, buffer.height - 1, right);
-
-  final intervals = OhlcInterval.values
-      .map((e) => e == interval ? e.label.inverse() : e.label);
-  buffer.drawBuffer(0, 0, intervals.join(" "));
-
-  if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
+  final Buffer buffer = Buffer(_window.width, _window.height);
+  buffer.fill(32);
+  buffer.drawBuffer(0, 0, _renderIntervalSelection(interval));
+  buffer.drawBuffer(0, 1, _renderCanvas(canvasWidth, canvasHeight, snapshot));
+  buffer.drawBuffer(_window.width - 10, 0, _renderPrices(pair, snapshot));
+  buffer.drawBuffer(0, _window.height - 2, _renderTimeline(snapshot));
 
   final sl = buffer.height - 3;
   final zl = buffer.height - 4;
   buffer.drawBuffer(0, sl, "scroll $scroll of ${_maxScroll.value}".gray());
   buffer.drawBuffer(0, zl, "zoom $zoom of $_maxZoom".gray());
+  if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
   return buffer.frame();
+}
+
+/// Simply get data windows defined by zoom (count) and average them into new
+/// OHLCs. Averaging via [_merge] for timestamp, open and close. Min and max
+/// for high and low.
+Iterable<OHLC> _zoomed(Iterable<OHLC> data, int zoom) =>
+    data.windowed(zoom).map((e) => e.reduce(_merged));
+
+// ‾\_('')_/‾
+OHLC _merged(OHLC a, OHLC b) => OHLC(
+    (a.timestamp + b.timestamp) ~/ 2,
+    (a.open + b.open) / 2,
+    max(a.high, b.high),
+    min(a.low, b.low),
+    (a.close + b.close) / 2);
+
+String _renderTimeline(_ChartSnapshot snapshot) {
+  final timeline = Buffer(_window.width - 10, 2);
+  timeline.drawBuffer(0, 0, "".padRight(timeline.width, "┈"));
+  timeline.drawBuffer(0, 1, "".padRight(timeline.width, " "));
+  timeline.drawBuffer(0, 1, snapshot.oldest);
+  timeline.drawBuffer(timeline.width - 11, 1, snapshot.newest);
+  return timeline.frame();
+}
+
+String _renderIntervalSelection(OhlcInterval interval) => OhlcInterval.values
+    .map((e) => e == interval ? e.label.inverse() : e.label)
+    .join(" ");
+
+String _renderCanvas(
+  int canvasWidth,
+  int canvasHeight,
+  _ChartSnapshot snapshot,
+) {
+  final canvas = DrawingCanvas(canvasWidth, canvasHeight);
+  final normY = (1.0 / (snapshot.maxHigh - snapshot.minLow)) * canvas.height;
+  final invertX = canvas.width - 1;
+  final invertY = canvas.height - 1;
+  final count = min(snapshot.length, canvas.width);
+  for (var x = 0; x < count; x++) {
+    final yTop = (snapshot.highs[x] - snapshot.minLow) * normY;
+    final yBottom = (snapshot.lows[x] - snapshot.minLow) * normY;
+    for (var y = yBottom; y <= yTop; y++) {
+      canvas.set(invertX - x, invertY - y.round());
+    }
+  }
+  return canvas.frame();
+}
+
+String _renderPrices(AssetPairData pair, _ChartSnapshot snapshot) {
+  final prices = Buffer(10, _window.height);
+  prices.fill(32);
+  prices.drawBuffer(1, 1, pair.price(snapshot.maxHigh));
+  prices.drawBuffer(1, prices.height - 3, pair.price(snapshot.minLow));
+  prices.drawColumn(0, '┊');
+  prices.set(0, prices.height - 2, '┘');
+  prices.set(0, prices.height - 1, ' ');
+  return prices.frame();
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {
@@ -225,6 +231,36 @@ extension on OhlcInterval {
         OhlcInterval.oneWeek => ' 7d',
         OhlcInterval.fifteenDays => '15d',
       };
+}
+
+class _ChartSnapshot {
+  final List<int> times;
+  final List<double> opens;
+  final List<double> highs;
+  final List<double> lows;
+  final List<double> closes;
+  final double maxHigh;
+  final double minLow;
+
+  int get length => opens.length;
+
+  String get oldest => times.last.toKrakenDateTime().toTimestamp();
+
+  String get newest => times.first.toKrakenDateTime().toTimestamp();
+
+  _ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
+      this.maxHigh, this.minLow);
+
+  factory _ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
+    final times = snip.mapList((e) => e.timestamp);
+    final opens = snip.mapList((e) => e.open);
+    final highs = snip.mapList((e) => e.high);
+    final lows = snip.mapList((e) => e.low);
+    final closes = snip.mapList((e) => e.close);
+    final maxHigh = highs.reduce((a, b) => max(a, b));
+    final minLow = lows.reduce((a, b) => min(a, b));
+    return _ChartSnapshot(times, opens, highs, lows, closes, maxHigh, minLow);
+  }
 }
 
 class _DragChartAction extends BaseOngoingMouseAction {
