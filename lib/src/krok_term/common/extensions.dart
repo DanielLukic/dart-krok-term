@@ -1,9 +1,14 @@
 import 'dart:io';
 
 import 'package:ansi/ansi.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
 
 import 'functions.dart';
+
+extension DistinctUntilChanged<E> on Stream<E> {
+  Stream<E> distinctUntilChanged() => distinct(DeepCollectionEquality().equals);
+}
 
 extension StringListExtension on List<String> {
   String joinPath() => join(Platform.pathSeparator);
