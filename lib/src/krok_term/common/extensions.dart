@@ -4,12 +4,16 @@ import 'package:ansi/ansi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'functions.dart';
 
 extension DistinctUntilChanged<E> on Stream<E> {
   Stream<E> distinctUntilChanged() => distinct(DeepCollectionEquality().equals);
 }
+
+Stream<List<dynamic>> combine(List<Stream<dynamic>> l) =>
+    CombineLatestStream.list(l);
 
 extension StringListExtension on List<String> {
   String joinPath() => join(Platform.pathSeparator);
