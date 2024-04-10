@@ -53,12 +53,7 @@ _initKrokTerm() async {
   initKrokRepos(storage);
   initKrokCore();
 
-  selectPair() {
-    openAssetPair();
-    selectAssetPair();
-  }
-
-  desktop.onKey("/", description: "Select asset pair", action: selectPair);
+  desktop.onKey("/", description: "Select asset pair", action: selectAssetPair);
   desktop.onKey(bKey, description: "Go to balances", action: openBalances);
   desktop.onKey(cKey, description: "Go to chart", action: openChart);
   desktop.onKey(lKey, description: "Go to log", action: openLog);
