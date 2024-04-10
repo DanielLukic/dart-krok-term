@@ -23,16 +23,17 @@ Screenshot of the app running:
 
 ![Screenshot](images/example.gif)
 
-As you can see, at the time of this writing, much is missing. Especially the chart of the currently selected asset
-pair. I also have no idea how Kraken calculates their 24-hour percentages. So mine or totally off.
+Animation of the app running:
+
+![Screenshot](images/example-anim.gif)
 
 ### Some Code
 
 Most of the code is hideous. For fun side projects I like to just spill out code... 🤷 Especially the TUI code is
 pretty nasty in places.
 
-On the other, I tried getting the core as clean as possible with my limited understanding of the Dart ecosystem. For
-example the repos holding the data like assets and balances. Here's such an example:
+On the other hand, I tried getting the core as clean as possible with my limited understanding of the Dart ecosystem.
+For example the repos holding the data like assets and balances. Here's such an example:
 
 ```dart
 final class AssetPairsRepo extends KrokAutoRepo<AssetPairs> {
@@ -96,8 +97,6 @@ reasonable small and readable. Imho.
 
 If I have some more time to work on this:
 
-- Fix pair handling (XXBT vs XBT vs BTC and / from "wsname" messing up display)
-- Add the market chart (pretty sure I'll do this - and soon)
 - Add a market crawler to give indications what to do
 - Add simple bots
 - Maybe a bot language (haven't done that in a long time)
