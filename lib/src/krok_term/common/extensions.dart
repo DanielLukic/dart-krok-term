@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ansi/ansi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
+import 'package:intl/intl.dart';
 
 import 'functions.dart';
 
@@ -97,6 +98,15 @@ extension SnakeCaseExtension on String {
     }
     return result.toString();
   }
+}
+
+extension AutoDateTimeFormatExtension on DateTime {
+  String toTimestamp() => DateFormat('MM-dd HH:mm').format(this);
+}
+
+extension IntToKrakenDateTime on int {
+  DateTime toKrakenDateTime() =>
+      DateTime.fromMillisecondsSinceEpoch(this * 1000, isUtc: true);
 }
 
 abstract class BaseModel {
