@@ -83,12 +83,14 @@ final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 final _zoom = BehaviorSubject.seeded(1);
 final _maxZoom = 10;
 final _scroll = BehaviorSubject.seeded(0);
+final _minScroll = -_window.width ~/ 2;
 final _maxScroll = BehaviorSubject.seeded(0);
-final _validScroll = _scroll.combineLatest(_maxScroll, (s, m) => s.clamp(0, m));
 
-void _scroll_(int d) {
-  _scroll.value = (_scroll.value + d).clamp(0, _maxScroll.value);
-}
+final _validScroll =
+    _scroll.combineLatest(_maxScroll, (s, m) => s.clamp(_minScroll, m));
+
+void _scroll_(int d) =>
+    _scroll.value = (_scroll.value + d).clamp(_minScroll, _maxScroll.value);
 
 void _reset() {
   _scroll.value = 0;
@@ -96,9 +98,11 @@ void _reset() {
 }
 
 void _zoom_(int delta) {
+  // final scroll = _scroll.value / _zoom.value;
   if (delta == -1) _zoom.value = (_zoom.value - 1).clamp(1, _maxZoom);
   if (delta == 1) _zoom.value = (_zoom.value + 1).clamp(1, _maxZoom);
   if (delta == 0) _zoom.value = 1;
+  // _scroll.value = (scroll * _zoom.value).round();
 }
 
 void _interval_(int delta) {
@@ -122,9 +126,10 @@ String _renderChart(
   final canvasWidth = (_window.width - 10) * 2;
   final canvasHeight = (_window.height - 3) * 4;
 
-  final scrolled = data.reversedList().skip(scroll);
-  final zoomed = _zoomed(scrolled, zoom);
-  final snip = zoomed.take(canvasWidth);
+  final zoomed = _zoomed(data.reversedList(), zoom);
+  final empty = List.filled(max(0, -scroll), _empty);
+  final scrolled = empty + zoomed.skip(max(0, scroll)).toList();
+  final snip = (scrolled).take(canvasWidth);
   final snapshot = _ChartSnapshot.fromSnip(snip);
 
   final Buffer buffer = Buffer(_window.width, _window.height);
@@ -150,12 +155,12 @@ Iterable<OHLC> _zoomed(Iterable<OHLC> data, int zoom) =>
     data.windowed(zoom).map((e) => e.reduce(_merged));
 
 // ‾\_('')_/‾
-OHLC _merged(OHLC a, OHLC b) => OHLC(
-    (a.timestamp + b.timestamp) ~/ 2,
-    (a.open + b.open) / 2,
-    max(a.high, b.high),
-    min(a.low, b.low),
-    (a.close + b.close) / 2);
+OHLC _merged(OHLC a, OHLC b) {
+  if (a == _empty) return b;
+  if (b == _empty) return a;
+  return OHLC((a.timestamp + b.timestamp) ~/ 2, (a.open + b.open) / 2,
+      max(a.high, b.high), min(a.low, b.low), (a.close + b.close) / 2);
+}
 
 String _renderTimeline(_ChartSnapshot snapshot) {
   final timeline = Buffer(_window.width - 10, 2);
@@ -233,6 +238,8 @@ extension on OhlcInterval {
       };
 }
 
+final _empty = OHLC(0, 0, 0, 0, 0);
+
 class _ChartSnapshot {
   final List<int> times;
   final List<double> opens;
@@ -257,8 +264,8 @@ class _ChartSnapshot {
     final highs = snip.mapList((e) => e.high);
     final lows = snip.mapList((e) => e.low);
     final closes = snip.mapList((e) => e.close);
-    final maxHigh = highs.reduce((a, b) => max(a, b));
-    final minLow = lows.reduce((a, b) => min(a, b));
+    final maxHigh = highs.where((e) => e != 0).reduce((a, b) => max(a, b));
+    final minLow = lows.where((e) => e != 0).reduce((a, b) => min(a, b));
     return _ChartSnapshot(times, opens, highs, lows, closes, maxHigh, minLow);
   }
 }
@@ -274,5 +281,13 @@ class _DragChartAction extends BaseOngoingMouseAction {
 
     final dx = event.x - this.event.x;
     _scroll.value = (_startScroll + dx * 2).clamp(0, _maxScroll.value);
+  }
+}
+
+extension<E> on List<E> {
+  List<E> operator +(List<E> it) {
+    final result = [...this];
+    result.addAll(it);
+    return result;
   }
 }
