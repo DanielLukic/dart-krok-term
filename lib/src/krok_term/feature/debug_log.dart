@@ -15,7 +15,7 @@ void openLog() {
 _openLog() {
   final w = addDebugLog(
     desktop,
-    name: "Log [gl] [v,i,w,e] [x]",
+    name: "Log [$lKey] [v,i,w,e] [x]",
     key: "",
     position: AbsolutePosition(56, 31),
     filter: filterLogEntry,

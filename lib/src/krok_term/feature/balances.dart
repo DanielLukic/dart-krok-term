@@ -11,7 +11,7 @@ import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';
 
 final _window = window("balances", 55, 10) //
-  ..name = "Balances [gb]"
+  ..name = "Balances [$bKey]"
   ..position = AbsolutePosition(0, 31);
 
 void openBalances() => autoWindow(_window, _create);

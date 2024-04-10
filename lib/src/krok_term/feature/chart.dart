@@ -10,7 +10,7 @@ import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 
 final _window = window('chart', 61, 25) //
-  ..name = "Chart [gc] [1-9]"
+  ..name = "Chart [$cKey] [1-9]"
   ..position = AbsolutePosition(43, 4);
 
 void openChart() => autoWindow(_window, () => _create());

@@ -12,7 +12,7 @@ import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';
 
 final _window = window("ticker", 41, 29) //
-  ..name = "Ticker [gt]"
+  ..name = "Ticker [$tKey]"
   ..position = AbsolutePosition(0, 0);
 
 void openTicker() => autoWindow(_window, () => _create());

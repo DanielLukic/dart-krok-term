@@ -59,10 +59,10 @@ _initKrokTerm() async {
   }
 
   desktop.onKey("/", description: "Select asset pair", action: selectPair);
-  desktop.onKey("gb", description: "Go to balances", action: openBalances);
-  desktop.onKey("gc", description: "Go to chart", action: openChart);
-  desktop.onKey("gl", description: "Go to log", action: openLog);
-  desktop.onKey("gt", description: "Go to ticker", action: openTicker);
+  desktop.onKey(bKey, description: "Go to balances", action: openBalances);
+  desktop.onKey(cKey, description: "Go to chart", action: openChart);
+  desktop.onKey(lKey, description: "Go to log", action: openLog);
+  desktop.onKey(tKey, description: "Go to ticker", action: openTicker);
 
   openAssetPair();
   openBalances();
