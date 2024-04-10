@@ -16,7 +16,8 @@ void openAssetPair() => autoWindow(_window, () => _create());
 
 void _create() {
   _window.onKey("u",
-      description: "Update data", action: () => tickersRepo.refresh());
+      description: "Update data",
+      action: () => tickersRepo.refresh(userRequest: true));
 
   var maybeTrigger = false;
   _window.chainOnMouseEvent((e) {

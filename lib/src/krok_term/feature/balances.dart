@@ -28,7 +28,8 @@ void _create() {
   );
 
   _window.onKey("u",
-      description: "Update balances now", action: balancesRepo.refresh);
+      description: "Update balances now",
+      action: () => balancesRepo.refresh(userRequest: true));
 
   _window.autoDispose(
     "update",

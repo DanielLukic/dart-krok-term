@@ -24,7 +24,8 @@ void _create() {
   _scrolled = scrolled(_window, () => _buffer, ellipsize: true);
 
   _window.onKey("u",
-      description: "Update ticker data", action: () => tickersRepo.refresh());
+      description: "Update ticker data",
+      action: () => tickersRepo.refresh(userRequest: true));
 
   // TODO Another rxdart is broken situation - revisit!
   _window.autoDispose(
