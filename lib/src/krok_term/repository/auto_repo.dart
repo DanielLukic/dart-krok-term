@@ -8,6 +8,7 @@ import '../core/krok_core.dart';
 abstract base class KrokAutoRepo<T> with AutoDispose {
   late final String _key;
   late final Duration _duration;
+  late final Duration _freshDuration;
 
   late final KrakenRequest Function() _request;
   late final dynamic Function(dynamic) _preform;
@@ -34,9 +35,16 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
 
     /// Define the auto-refresh [Duration] here.
     Duration duration = const Duration(minutes: 10),
+
+    /// Optional [Duration], less(!) than [duration] to use for checking data
+    /// freshness. [refresh] calls will be ignored if data is no older than
+    /// [freshDuration] (unless `userRequest` is true). Defaults to half the
+    /// [duration].
+    Duration? freshDuration,
   }) {
     _key = key;
     _duration = duration;
+    _freshDuration = freshDuration ?? (duration ~/ 2);
     _request = request;
     _preform = preform ?? (e) => e;
     _restore = restore ?? (e) => e;
@@ -50,8 +58,10 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
     refresh();
   }
 
+  /// Refresh data from API. [refresh] calls will be ignored if data is no
+  /// older than [freshDuration] (unless [userRequest] is true).
   void refresh({bool userRequest = false}) {
-    if (!userRequest && _storage.stillFresh(_duration)) {
+    if (!userRequest && _storage.stillFresh(_freshDuration)) {
       logInfo('$_key still fresh');
       return;
     }
@@ -66,4 +76,9 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   }
 
   Stream<T> subscribe() => _storage.stream;
+}
+
+extension on Duration {
+  Duration operator ~/(int div) =>
+      Duration(milliseconds: inMilliseconds ~/ div);
 }
