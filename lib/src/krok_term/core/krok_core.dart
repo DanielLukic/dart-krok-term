@@ -53,11 +53,10 @@ Future _throttle(QueuedRequest it) async {
   final seconds = now.difference(_throttleTimestamp).inSeconds;
   _throttleTimestamp = DateTime.now();
   if (it._request.path == "OHLC" && seconds < 2) {
-    logWarn('delay $it');
+    logVerbose('delay $it');
     await Future.delayed((2 - seconds).seconds);
-  }
-  if (seconds == 0) {
-    logWarn('delay $it');
+  } else if (seconds == 0) {
+    logVerbose('delay $it');
     await Future.delayed(1.seconds);
   }
 }
