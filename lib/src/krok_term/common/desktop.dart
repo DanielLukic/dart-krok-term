@@ -2,7 +2,7 @@ import 'package:dart_consul/dart_consul.dart';
 
 final bKey = 'gb';
 final cKey = 'gc';
-final lKey = 'gl';
+final lKey = 'gm';
 final tKey = 'gt';
 
 late Desktop desktop;
