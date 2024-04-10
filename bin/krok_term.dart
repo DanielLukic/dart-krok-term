@@ -64,4 +64,7 @@ _initKrokTerm() async {
   openChart();
   openLog();
   openTicker();
+
+  // TODO desktop.focusById("chart");
+  openChart();
 }
