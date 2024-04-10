@@ -3,35 +3,22 @@ import 'auto_repo.dart';
 
 typedef Assets = Map<Asset, AssetData>;
 
-class AssetData {
+class AssetData extends BaseModel {
   final String name;
   final String altname;
   final int decimals;
   final int display;
 
-  final JsonObject _json;
+  @override
+  List get fields => [name, altname, decimals, display];
 
   AssetData(JsonObject json)
-      : _json = json,
-        name = json['name'],
+      : name = json['name'],
         altname = json['altname'],
         decimals = json['decimals'],
         display = json['display_decimals'];
 
-  @override
-  int get hashCode => Object.hashAll([name, altname, decimals, display]);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! AssetData) return false;
-    return name == other.name &&
-        altname == other.altname &&
-        decimals == other.decimals &&
-        display == other.display;
-  }
-
-  @override
-  String toString() => _json.toString();
+  AssetData.from(this.name, this.altname, this.decimals, this.display);
 }
 
 final class AssetsRepo extends KrokAutoRepo<Assets> {

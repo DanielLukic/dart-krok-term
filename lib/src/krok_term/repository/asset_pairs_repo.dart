@@ -4,7 +4,7 @@ import 'auto_repo.dart';
 
 typedef AssetPairs = Map<Pair, AssetPairData>;
 
-class AssetPairData {
+class AssetPairData extends BaseModel {
   final Pair pair;
   final String altname;
   final String wsname;
@@ -16,16 +16,14 @@ class AssetPairData {
   final double ordermin;
   final double costmin;
 
-  final JsonObject _json;
-
-  List get _fields => [
+  @override
+  List get fields => [
         pair, altname, wsname, base, quote, cost_decimals, pair_decimals, //
         lot_decimals, ordermin, costmin
       ];
 
   AssetPairData(JsonObject json)
-      : _json = json,
-        pair = json['pair'],
+      : pair = json['pair'],
         altname = json['altname'],
         wsname = json['wsname'],
         base = json['base'],
@@ -39,18 +37,6 @@ class AssetPairData {
   AssetPair get ap => AssetPair.fromWsName(wsname);
 
   String price(double price) => price.toStringAsFixed(pair_decimals);
-
-  @override
-  int get hashCode => Object.hashAll(_fields);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! AssetPairData) return false;
-    return _fields == other._fields;
-  }
-
-  @override
-  String toString() => _json.toString();
 }
 
 final class AssetPairsRepo extends KrokAutoRepo<AssetPairs> {

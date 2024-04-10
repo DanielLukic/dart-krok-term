@@ -98,3 +98,19 @@ extension SnakeCaseExtension on String {
     return result.toString();
   }
 }
+
+abstract class BaseModel {
+  List<dynamic> get fields;
+
+  @override
+  int get hashCode => Object.hashAll(fields);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! BaseModel) return false;
+    return DeepCollectionEquality().equals(fields, other.fields);
+  }
+
+  @override
+  String toString() => fields.toString();
+}

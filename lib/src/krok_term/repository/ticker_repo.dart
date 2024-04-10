@@ -5,9 +5,7 @@ import 'auto_repo.dart';
 
 typedef Tickers = Map<Pair, TickerData>;
 
-class TickerData {
-  final JsonObject _json;
-
+class TickerData extends BaseModel {
   final Pair pair;
   final Price ask;
   final Price bid;
@@ -24,15 +22,15 @@ class TickerData {
   final Price highLast24;
   final Price opening;
 
-  List get _fields => [
+  @override
+  List get fields => [
         pair, ask, bid, last, volumeToday, volumeLast24, priceToday, //
         priceLast24, tradesToday, tradesLast24, lowToday, lowLast24, //
         highToday, highLast24, opening
       ];
 
   TickerData(this.pair, JsonObject json)
-      : _json = json,
-        ask = double.parse(json['a'][0]),
+      : ask = double.parse(json['a'][0]),
         bid = double.parse(json['b'][0]),
         last = double.parse(json['c'][0]),
         volumeToday = double.parse(json['v'][0]),
@@ -62,18 +60,6 @@ class TickerData {
       _ => pp,
     };
   }
-
-  @override
-  int get hashCode => Object.hashAll(_fields);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! TickerData) return false;
-    return _fields == other._fields;
-  }
-
-  @override
-  String toString() => _json.toString();
 }
 
 final class TickersRepo extends KrokAutoRepo<Tickers> {

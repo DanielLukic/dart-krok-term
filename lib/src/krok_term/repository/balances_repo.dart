@@ -3,23 +3,14 @@ import 'auto_repo.dart';
 
 typedef Balances = Map<Asset, BalanceData>;
 
-class BalanceData {
+class BalanceData extends BaseModel {
   final Asset asset;
   final double volume;
 
+  @override
+  List get fields => [asset, volume];
+
   BalanceData(this.asset, this.volume);
-
-  @override
-  int get hashCode => Object.hash(asset, volume);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! BalanceData) return false;
-    return asset == other.asset && volume == other.volume;
-  }
-
-  @override
-  String toString() => "{asset: $asset, volume: $volume}";
 }
 
 final class BalancesRepo extends KrokAutoRepo<Balances> {
