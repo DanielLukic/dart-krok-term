@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: ee67cb0715911d28db6bf4af1026078bd6f0128b07a5f66fb2ed94ec6783c09a
@@ -117,18 +117,18 @@ packages:
     dependency: transitive
     description:
       name: dart_console
-      sha256: "35e1dbb96e3b50071b62ea6fd53fdb3371bc466dfa857712e0cb24119ae59278"
+      sha256: "2f94b62ac492892bc5091b8f5d416937974405ececab7ad96e5f8aae9d9f1527"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1"
+    version: "4.0.2"
   dart_consul:
     dependency: "direct main"
     description:
       name: dart_consul
-      sha256: "04d56a312b7d2ae06d9096147aa10ef2f7cebb030c94af4f2d292c05040dfaa3"
+      sha256: c94102c9694ee78cc08adee0154d3870ae27d6fd28ea586e82399f40fb953cb5
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.9"
+    version: "0.0.10"
   dart_minilog:
     dependency: "direct main"
     description:
