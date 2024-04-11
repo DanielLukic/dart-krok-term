@@ -14,7 +14,11 @@ class Storage {
 
   File _file(String key) => File(joinPath([_directory.path, key]));
 
-  DateTime lastModified(String key) => _file(key).lastModifiedSync();
+  DateTime? lastModified(String key) {
+    final file = _file(key);
+    if (!file.existsSync()) return null;
+    return file.lastModifiedSync();
+  }
 
   Future<JsonObject?> load(String key) async {
     final exists = await _directory.exists();
@@ -61,7 +65,9 @@ class TimestampedStorage<T> {
 
   bool stillFresh(Duration maxAge) {
     final limit = DateTime.timestamp().subtract(maxAge);
-    return _storage.lastModified(_key).isAfter(limit);
+    final lastModified = _storage.lastModified(_key);
+    if (lastModified == null) return false;
+    return lastModified.isAfter(limit);
   }
 
   Stream<T> get stream => _cache.stream.map((e) => e.value);
