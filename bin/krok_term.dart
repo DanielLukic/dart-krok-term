@@ -9,6 +9,7 @@ import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
+import 'package:krok_term/src/krok_term/feature/portfolio.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/ticker.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
@@ -57,12 +58,14 @@ _initKrokTerm() async {
   desktop.onKey(bKey, description: "Go to balances", action: openBalances);
   desktop.onKey(cKey, description: "Go to chart", action: openChart);
   desktop.onKey(lKey, description: "Go to log", action: openLog);
+  desktop.onKey(pKey, description: "Go to profile", action: openPortfolio);
   desktop.onKey(tKey, description: "Go to ticker", action: openTicker);
 
   openAssetPair();
   openBalances();
   openChart();
   openLog();
+  openPortfolio();
   openTicker();
 
   // TODO desktop.focusById("chart");
