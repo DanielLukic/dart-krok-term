@@ -49,14 +49,14 @@ String renderCanvas(
   return canvas.frame();
 }
 
-CanvasColor? _trendColor(double delta) => switch (delta) {
+CanvasColor _trendColor(double delta) => switch (delta) {
       _ when delta > 0 => green,
       _ when delta < 0 => red,
-      _ => null,
+      _ => (e) => e,
     };
 
 extension on ChartSnapshot {
-  CanvasColor? trendColorAt(int index) => _trendColor(trendAt(index));
+  CanvasColor trendColorAt(int index) => _trendColor(trendAt(index));
 
   double trendAt(int at) => closes[at] - opens[at];
 
@@ -70,13 +70,31 @@ extension on ChartSnapshot {
   int scaledCloseAt(int index, int height) => scaled(closes[index], height);
 }
 
-String renderPrices(AssetPairData pair, ChartSnapshot snapshot, int height) {
+String renderPrices(
+  AssetPairData pair,
+  ChartSnapshot snapshot,
+  int height,
+  OHLC last,
+) {
+  final latestColor = _trendColor(last.close - last.open);
+  final latest = latestColor(pair.price(last.close));
+  final latestY = snapshot.scaled(last.close, height - 3).clamp(0, height - 4);
+
+  final currentColor = snapshot.trendColorAt(0);
+  final current = currentColor(pair.price(snapshot.closes[0]));
+  final currentY = snapshot.scaledCloseAt(0, height - 3).clamp(0, height - 4);
+
+  final high = pair.price(snapshot.maxHigh);
+  final low = pair.price(snapshot.minLow);
+
   final prices = Buffer(10, height);
   prices.fill(32);
-  prices.drawBuffer(1, 1, pair.price(snapshot.maxHigh));
-  prices.drawBuffer(1, prices.height - 3, pair.price(snapshot.minLow));
+  prices.drawBuffer(1, 0, high);
+  prices.drawBuffer(1, height - 3 - currentY, current);
+  prices.drawBuffer(1, height - 3 - latestY, latest);
+  prices.drawBuffer(1, height - 2, low);
   prices.drawColumn(0, '┊');
-  prices.set(0, prices.height - 2, '┘');
-  prices.set(0, prices.height - 1, ' ');
+  prices.set(0, height - 2, '┘');
+  prices.set(0, height - 1, ' ');
   return prices.frame();
 }

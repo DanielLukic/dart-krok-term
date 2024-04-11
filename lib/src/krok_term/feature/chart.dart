@@ -63,19 +63,21 @@ String _renderChart(
   final width = _window.width;
   final height = _window.height;
 
-  final cw = (width - 10) * 2;
-  final ch = (height - 3) * 4;
+  final split = width - 10;
+  final chartWidth = split * 2;
+  final chartHeight = (height - 3) * 4;
 
-  final snapshot = _sample(data, zoom, scroll, cw);
+  final last = data.last;
+  final snap = _sample(data, zoom, scroll, chartWidth);
 
   final Buffer buffer = Buffer(width, height);
   buffer.fill(32);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
-  buffer.drawBuffer(0, 1, renderCanvas(cw, ch, snapshot, data.last));
+  buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
   buffer.drawBuffer(0, 1, _loading(pdi, interval));
-  buffer.drawBuffer(width - 10, 0, renderPrices(pair, snapshot, height));
-  buffer.drawBuffer(0, height - 2, renderTimeline(snapshot, width));
+  buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
+  buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
 
   return buffer.frame();
 }
