@@ -10,6 +10,7 @@ import '../core/krok_core.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ohlc_repo.dart';
+import 'chart/chart_projection.dart';
 import 'chart/chart_snapshot.dart';
 
 final _window = window('chart', 61, 25) //
@@ -25,15 +26,15 @@ void _create() {
 
   _window.onKey('<S-h>', //
       description: 'Jump left',
-      action: () => _scroll.byDelta(10));
+      action: () => _projection.scrollBy(10));
   _window.onKey('<S-l>',
-      description: 'Jump right', action: () => _scroll.byDelta(-10));
+      description: 'Jump right', action: () => _projection.scrollBy(-10));
   _window.onKey('h', //
       description: 'Scroll left',
-      action: () => _scroll.byDelta(1));
+      action: () => _projection.scrollBy(1));
   _window.onKey('l', //
       description: 'Scroll right',
-      action: () => _scroll.byDelta(-1));
+      action: () => _projection.scrollBy(-1));
 
   _window.onKey('<Left>', //
       aliases: ['i'],
@@ -58,8 +59,8 @@ void _create() {
   _window.onWheelDown(() => _zoom_(-1));
   _window.onWheelUp(() => _zoom_(1));
 
-  _window.chainOnMouseEvent(
-      (e) => e.isDown ? _DragChartAction(_window, e, _scroll.current) : null);
+  _window.chainOnMouseEvent((e) =>
+      e.isDown ? _DragChartAction(_window, e, _projection.current) : null);
 
   Stream<_PairDataInterval> retrieve(AssetPairData s, OhlcInterval i) =>
       ohlc(s, i).map((list) => (s, list, i));
@@ -67,10 +68,10 @@ void _create() {
   final chartData = combine([selectedAssetPair, _interval])
       .distinctUntilChanged()
       .switchMap((e) => retrieve(e[0], e[1]))
-      .doOnData((e) => _scroll.setDataSize(e.$2.length));
+      .doOnData((e) => _projection.setDataSize(e.$2.length));
 
   final withZoomAndScroll =
-      combine([chartData, _interval, _zoom, _scroll.stream])
+      combine([chartData, _interval, _zoom, _projection.scroll])
           .distinctUntilChanged()
           .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
 
@@ -78,7 +79,7 @@ void _create() {
       withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
 }
 
-final _scroll = _MadScroll();
+final _projection = ChartProjection(_window.width ~/ 2, _zoom);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 final _zoom = BehaviorSubject.seeded(1);
@@ -87,16 +88,16 @@ final _maxZoom = 10;
 final _empty = OHLC(0, 0, 0, 0, 0);
 
 void _reset() {
-  _scroll.reset();
+  _projection.reset();
   _zoom.value = 1;
 }
 
 void _zoom_(int delta) {
-  final scroll = _scroll.current * _zoom.value;
+  final scroll = _projection.current * _zoom.value;
   if (delta == -1) _zoom.value = (_zoom.value - 1).clamp(1, _maxZoom);
   if (delta == 1) _zoom.value = (_zoom.value + 1).clamp(1, _maxZoom);
   if (delta == 0) _zoom.value = 1;
-  _scroll.setScroll((scroll / _zoom.value).round());
+  _projection.setScroll((scroll / _zoom.value).round());
 }
 
 void _interval_(int delta) {
@@ -135,7 +136,7 @@ String _renderChart(
 
   final sl = buffer.height - 3;
   final zl = buffer.height - 4;
-  buffer.drawBuffer(0, sl, "scroll $scroll of ${_scroll.max}".gray());
+  buffer.drawBuffer(0, sl, "scroll $scroll of ${_projection.max}".gray());
   buffer.drawBuffer(0, zl, "zoom $zoom of $_maxZoom".gray());
   if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
@@ -232,35 +233,6 @@ extension on OhlcInterval {
       };
 }
 
-class _MadScroll {
-  final _dataSize = BehaviorSubject.seeded(0);
-  final _setScroll = BehaviorSubject.seeded(0);
-  final _currentMaxScroll = BehaviorSubject.seeded(0);
-  final _currentScroll = BehaviorSubject.seeded(0);
-
-  final _minScroll = -_window.width;
-
-  late final _maxScroll = _dataSize
-      .combineLatest(_zoom, (m, z) => (m / z).round() - _window.width)
-      .doOnData((e) => _currentMaxScroll.value = e);
-
-  late final stream = _setScroll
-      .combineLatest(_maxScroll, (s, m) => s.clamp(_minScroll, m))
-      .doOnData((e) => _currentScroll.value = e);
-
-  int get max => _currentMaxScroll.value;
-
-  int get current => _currentScroll.value;
-
-  void setDataSize(int count) => _dataSize.value = count;
-
-  void setScroll(int absolute) => _setScroll.value = absolute;
-
-  void byDelta(int d) => _setScroll.value = _currentScroll.value + d;
-
-  void reset() => _setScroll.value = 0;
-}
-
 class _DragChartAction extends BaseOngoingMouseAction {
   final int _startScroll;
 
@@ -271,7 +243,7 @@ class _DragChartAction extends BaseOngoingMouseAction {
     if (event.isUp) done = true;
 
     final dx = event.x - this.event.x;
-    _scroll.setScroll(_startScroll + dx * 2);
+    _projection.setScroll(_startScroll + dx * 2);
     // the 2 is for the canvas pixel duplication ☝
   }
 }
