@@ -1,4 +1,5 @@
 import 'package:dart_consul/dart_consul.dart';
+import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/window.dart';
@@ -130,7 +131,8 @@ void _create() {
 
 _select(AssetPairData it) {
   desktop.minimizeWindow(_window);
-  return selectPair(it.ap);
+  openChart();
+  selectPair(it.ap);
 }
 
 (List<(AssetPairData, String)>, int?) _toEntries(

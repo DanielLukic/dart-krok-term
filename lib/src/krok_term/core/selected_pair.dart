@@ -16,7 +16,7 @@ Stream<AssetPair> get selectedPair => _selectedPair.stream;
 
 selectPair(AssetPair pair) {
   logInfo('select pair (wsname): $pair');
-  return _selectedPair.store(pair);
+  _selectedPair.store(pair);
 }
 
 initSelectedPair(Storage storage) {
