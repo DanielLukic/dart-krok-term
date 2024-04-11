@@ -9,13 +9,13 @@ import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
-import '../repository/ohlc_repo.dart';
 import 'chart/chart_projection.dart';
 import 'chart/chart_rendering.dart';
 import 'chart/chart_snapshot.dart';
 
 part 'chart/chart_keys.dart';
 part 'chart/chart_mouse.dart';
+part 'chart/chart_sampling.dart';
 
 final _window = window('chart', 61, 25) //
   ..name = "Chart [$cKey] [1-9]"
@@ -47,7 +47,6 @@ void _create() {
 final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
-final _empty = OHLC(0, 0, 0, 0, 0);
 
 typedef _PairDataInterval = (AssetPairData, List<OHLC>, OhlcInterval);
 
@@ -67,11 +66,7 @@ String _renderChart(
   final canvasWidth = (width - 10) * 2;
   final canvasHeight = (height - 3) * 4;
 
-  final zoomed = _zoomed(data.reversedList(), zoom);
-  final empty = List.filled(max(0, -scroll), _empty);
-  final scrolled = empty + zoomed.skip(max(0, scroll)).toList();
-  final snip = (scrolled).take(canvasWidth);
-  final snapshot = ChartSnapshot.fromSnip(snip);
+  final snapshot = _sample(data, zoom, scroll, canvasWidth);
 
   final Buffer buffer = Buffer(width, height);
   buffer.fill(32);
@@ -87,18 +82,4 @@ String _renderChart(
   if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
   return buffer.frame();
-}
-
-/// Simply get data windows defined by zoom (count) and average them into new
-/// OHLCs. Averaging via [_merge] for timestamp, open and close. Min and max
-/// for high and low.
-Iterable<OHLC> _zoomed(Iterable<OHLC> data, int zoom) =>
-    data.windowed(zoom).map((e) => e.reduce(_merged));
-
-// ‾\_('')_/‾
-OHLC _merged(OHLC a, OHLC b) {
-  if (a == _empty) return b;
-  if (b == _empty) return a;
-  return OHLC((a.timestamp + b.timestamp) ~/ 2, (a.open + b.open) / 2,
-      max(a.high, b.high), min(a.low, b.low), (a.close + b.close) / 2);
 }

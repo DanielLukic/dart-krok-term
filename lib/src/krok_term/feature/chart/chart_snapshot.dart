@@ -4,6 +4,8 @@ import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 import '../../repository/ohlc_repo.dart';
 
+export '../../repository/ohlc_repo.dart';
+
 class ChartSnapshot {
   final List<int> times;
   final List<double> opens;

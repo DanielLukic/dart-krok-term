@@ -2,6 +2,8 @@ import '../core/krok_core.dart';
 import 'asset_pairs_repo.dart';
 
 class OHLC extends BaseModel {
+  static final empty = OHLC(timestamp: 0, open: 0, high: 0, low: 0, close: 0);
+
   final int timestamp;
   final double open;
   final double high;
@@ -11,7 +13,13 @@ class OHLC extends BaseModel {
   @override
   List get fields => [timestamp, open, high, low, close];
 
-  OHLC(this.timestamp, this.open, this.high, this.low, this.close);
+  OHLC({
+    required this.timestamp,
+    required this.open,
+    required this.high,
+    required this.low,
+    required this.close,
+  });
 
   factory OHLC.parse(List<dynamic> data) {
     final timestamp = data[0] as int;
@@ -19,7 +27,13 @@ class OHLC extends BaseModel {
     final high = double.parse(data[2]);
     final low = double.parse(data[3]);
     final close = double.parse(data[4]);
-    return OHLC(timestamp, open, high, low, close);
+    return OHLC(
+      timestamp: timestamp,
+      open: open,
+      high: high,
+      low: low,
+      close: close,
+    );
   }
 }
 
