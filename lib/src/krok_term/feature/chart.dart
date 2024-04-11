@@ -11,6 +11,7 @@ import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ohlc_repo.dart';
 import 'chart/chart_projection.dart';
+import 'chart/chart_rendering.dart';
 import 'chart/chart_snapshot.dart';
 
 final _window = window('chart', 61, 25) //
@@ -106,8 +107,11 @@ String _renderChart(
   final data = pdi.$2;
   if (data.isEmpty) return "";
 
-  final canvasWidth = (_window.width - 10) * 2;
-  final canvasHeight = (_window.height - 3) * 4;
+  final width = _window.width;
+  final height = _window.height;
+
+  final canvasWidth = (width - 10) * 2;
+  final canvasHeight = (height - 3) * 4;
 
   final zoomed = _zoomed(data.reversedList(), zoom);
   final empty = List.filled(max(0, -scroll), _empty);
@@ -115,12 +119,12 @@ String _renderChart(
   final snip = (scrolled).take(canvasWidth);
   final snapshot = ChartSnapshot.fromSnip(snip);
 
-  final Buffer buffer = Buffer(_window.width, _window.height);
+  final Buffer buffer = Buffer(width, height);
   buffer.fill(32);
-  buffer.drawBuffer(0, 0, _renderIntervalSelection(interval));
-  buffer.drawBuffer(0, 1, _renderCanvas(canvasWidth, canvasHeight, snapshot));
-  buffer.drawBuffer(_window.width - 10, 0, _renderPrices(pair, snapshot));
-  buffer.drawBuffer(0, _window.height - 2, _renderTimeline(snapshot));
+  buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
+  buffer.drawBuffer(0, 1, renderCanvas(canvasWidth, canvasHeight, snapshot));
+  buffer.drawBuffer(width - 10, 0, renderPrices(pair, snapshot, height));
+  buffer.drawBuffer(0, height - 2, renderTimeline(snapshot, width));
 
   final sl = buffer.height - 3;
   final zl = buffer.height - 4;
@@ -143,50 +147,6 @@ OHLC _merged(OHLC a, OHLC b) {
   if (b == _empty) return a;
   return OHLC((a.timestamp + b.timestamp) ~/ 2, (a.open + b.open) / 2,
       max(a.high, b.high), min(a.low, b.low), (a.close + b.close) / 2);
-}
-
-String _renderTimeline(ChartSnapshot snapshot) {
-  final timeline = Buffer(_window.width - 10, 2);
-  timeline.drawBuffer(0, 0, "".padRight(timeline.width, "┈"));
-  timeline.drawBuffer(0, 1, "".padRight(timeline.width, " "));
-  timeline.drawBuffer(0, 1, snapshot.oldest);
-  timeline.drawBuffer(timeline.width - 11, 1, snapshot.newest);
-  return timeline.frame();
-}
-
-String _renderIntervalSelection(OhlcInterval interval) => OhlcInterval.values
-    .map((e) => e == interval ? e.label.inverse() : e.label)
-    .join(" ");
-
-String _renderCanvas(
-  int canvasWidth,
-  int canvasHeight,
-  ChartSnapshot snapshot,
-) {
-  final canvas = DrawingCanvas(canvasWidth, canvasHeight);
-  final normY = (1.0 / (snapshot.maxHigh - snapshot.minLow)) * canvas.height;
-  final invertX = canvas.width - 1;
-  final invertY = canvas.height - 1;
-  final count = min(snapshot.length, canvas.width);
-  for (var x = 0; x < count; x++) {
-    final yTop = (snapshot.highs[x] - snapshot.minLow) * normY;
-    final yBottom = (snapshot.lows[x] - snapshot.minLow) * normY;
-    for (var y = yBottom; y <= yTop; y++) {
-      canvas.set(invertX - x, invertY - y.round());
-    }
-  }
-  return canvas.frame();
-}
-
-String _renderPrices(AssetPairData pair, ChartSnapshot snapshot) {
-  final prices = Buffer(10, _window.height);
-  prices.fill(32);
-  prices.drawBuffer(1, 1, pair.price(snapshot.maxHigh));
-  prices.drawBuffer(1, prices.height - 3, pair.price(snapshot.minLow));
-  prices.drawColumn(0, '┊');
-  prices.set(0, prices.height - 2, '┘');
-  prices.set(0, prices.height - 1, ' ');
-  return prices.frame();
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {
