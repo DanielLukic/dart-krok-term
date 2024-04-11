@@ -71,10 +71,10 @@ String _renderChart(
   final Buffer buffer = Buffer(width, height);
   buffer.fill(32);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
+  buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   buffer.drawBuffer(0, 1, renderCanvas(cw, ch, snapshot, data.last));
   buffer.drawBuffer(0, 1, _loading(pdi, interval));
   buffer.drawBuffer(width - 10, 0, renderPrices(pair, snapshot, height));
-  buffer.drawBuffer(0, height - 3, _zoomInfo(zoom));
   buffer.drawBuffer(0, height - 2, renderTimeline(snapshot, width));
 
   return buffer.frame();
