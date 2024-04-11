@@ -19,9 +19,9 @@ OHLC _merged(OHLC a, OHLC b) {
   if (b == OHLC.empty) return a;
   return OHLC(
     timestamp: (a.timestamp + b.timestamp) ~/ 2,
-    open: (a.open + b.open) / 2,
+    open: a.timestamp < b.timestamp ? a.open : b.open,
     high: max(a.high, b.high),
     low: min(a.low, b.low),
-    close: (a.close + b.close) / 2,
+    close: a.timestamp > b.timestamp ? a.open : b.open,
   );
 }
