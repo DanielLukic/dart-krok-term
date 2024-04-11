@@ -33,8 +33,8 @@ extension on Window {
         description: 'Bigger interval',
         action: () => changeInterval(1));
 
-    onKey('-', description: 'Zoom out', action: () => _projection.zoomBy(-1));
-    onKey('+', description: 'Zoom in', action: () => _projection.zoomBy(1));
+    onKey('+', description: 'Zoom out', action: () => _projection.zoomBy(-1));
+    onKey('-', description: 'Zoom in', action: () => _projection.zoomBy(1));
     onKey('=', description: 'Reset zoom', action: () => _projection.zoomBy(0));
     onKey('r', description: 'Reset scroll and zoom', action: _projection.reset);
 
