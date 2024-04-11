@@ -17,6 +17,7 @@ _openLog() {
     desktop,
     name: "Log [$lKey] [v,d,i,w,e] [x]",
     position: AbsolutePosition(56, 31),
+    size: Size(desktop.size.width - 56, 10),
     filter: filterLogEntry,
   );
 
