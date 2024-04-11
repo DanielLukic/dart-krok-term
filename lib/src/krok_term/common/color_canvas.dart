@@ -42,6 +42,7 @@ class ColorCanvas {
     final nx = (x / 2).floor();
     final ny = (y / 4).floor();
     final index = (nx + width / 2 * ny).toInt();
+    if (index < 0 || index >= content.length) return;
     final mask = _map[y % 4][x % 2];
     content[index] |= mask;
     coloring[index] = color;
