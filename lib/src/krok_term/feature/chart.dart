@@ -27,18 +27,20 @@ void _create() {
   _window.setupKeys();
   _window.setupMouse();
 
-  Stream<_PairDataInterval> retrieve(AssetPairData s, OhlcInterval i) =>
-      ohlc(s, i).map((list) => (s, list, i));
+  Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
+      ohlc(s, i).map((list) => (s, list, i, r));
 
-  final chartData = combine([selectedAssetPair, _interval])
+  final chartData = combine([selectedAssetPair, _interval, _refresh])
       .distinctUntilChanged()
-      .switchMap((e) => retrieve(e[0], e[1]))
+      .switchMap((e) => retrieve(e[0], e[1], e[2]))
       .doOnData((e) => _projection.setDataSize(e.$2.length));
 
+  final zoom = _projection.zoom;
+  final scroll = _projection.scroll;
   final withZoomAndScroll =
-      combine([chartData, _interval, _projection.zoom, _projection.scroll])
+      combine([chartData, _interval, zoom, scroll, _refresh])
           .distinctUntilChanged()
-          .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
+          .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
@@ -48,16 +50,17 @@ final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 
-typedef _PairDataInterval = (AssetPairData, List<OHLC>, OhlcInterval);
+typedef _ChartData = (AssetPairData, List<OHLC>, OhlcInterval, DateTime);
 
 String _renderChart(
-  _PairDataInterval pdi,
+  _ChartData input,
   OhlcInterval interval,
   int zoom,
   int scroll,
+  DateTime refresh,
 ) {
-  final pair = pdi.$1;
-  final data = pdi.$2;
+  final pair = input.$1;
+  final data = input.$2;
   if (data.isEmpty) return "";
 
   final width = _window.width;
@@ -75,14 +78,17 @@ String _renderChart(
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
-  buffer.drawBuffer(0, 1, _loading(pdi, interval));
+  buffer.drawBuffer(0, 1, _loading(input, interval, refresh));
   buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
   buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
 
   return buffer.frame();
 }
 
-String _loading(_PairDataInterval pdi, OhlcInterval i) =>
-    pdi.$3 != i ? "loading.." : "";
+String _loading(_ChartData pdi, OhlcInterval i, DateTime refresh) {
+  final intervalChange = pdi.$3 != i;
+  final refreshOngoing = pdi.$4 != refresh;
+  return intervalChange || refreshOngoing ? "loading.." : "";
+}
 
 String _zoomInfo(int zoom) => "zoom $zoom/${_projection.maxZoom}".gray();
