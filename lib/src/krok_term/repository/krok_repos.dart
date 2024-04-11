@@ -6,11 +6,13 @@ import '../core/selected_pair.dart';
 import 'asset_pairs_repo.dart';
 import 'assets_repo.dart';
 import 'balances_repo.dart';
+import 'portfolio_repo.dart';
 import 'ticker_repo.dart';
 
 late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
+late PortfolioRepo portfolioRepo;
 late TickersRepo tickersRepo;
 
 Stream<Assets> get assets => assetsRepo.subscribe().distinct();
@@ -18,6 +20,8 @@ Stream<Assets> get assets => assetsRepo.subscribe().distinct();
 Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe().distinct();
 
 Stream<Balances> get balances => balancesRepo.subscribe().distinct();
+
+Stream<Portfolio> get portfolio => portfolioRepo.subscribe().distinct();
 
 Stream<Tickers> get tickers => tickersRepo.subscribe().distinct();
 
@@ -37,5 +41,6 @@ initKrokRepos(Storage storage) {
   assetsRepo = AssetsRepo(storage);
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
+  portfolioRepo = PortfolioRepo(storage);
   tickersRepo = TickersRepo(storage);
 }
