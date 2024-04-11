@@ -61,7 +61,7 @@ extension on ChartSnapshot {
   double trendAt(int at) => closes[at] - opens[at];
 
   int scaled(double price, int height) =>
-      ((price - minLow) * norm * height).round();
+      ((price - minLow) * norm * height + 1).round();
 
   int scaledHighAt(int index, int height) => scaled(highs[index], height);
 
@@ -78,11 +78,11 @@ String renderPrices(
 ) {
   final latestColor = _trendColor(last.close - last.open);
   final latest = latestColor(pair.price(last.close));
-  final latestY = snapshot.scaled(last.close, height - 3).clamp(0, height - 4);
+  final latestY = snapshot.scaled(last.close, height - 3).clamp(1, height - 3);
 
   final currentColor = snapshot.trendColorAt(0);
   final current = currentColor(pair.price(snapshot.closes[0]));
-  final currentY = snapshot.scaledCloseAt(0, height - 3).clamp(0, height - 4);
+  final currentY = snapshot.scaledCloseAt(0, height - 3).clamp(1, height - 3);
 
   final high = pair.price(snapshot.maxHigh);
   final low = pair.price(snapshot.minLow);
@@ -90,8 +90,8 @@ String renderPrices(
   final prices = Buffer(10, height);
   prices.fill(32);
   prices.drawBuffer(1, 0, high);
-  prices.drawBuffer(1, height - 3 - currentY, current);
-  prices.drawBuffer(1, height - 3 - latestY, latest);
+  prices.drawBuffer(1, height - 2 - currentY, current);
+  prices.drawBuffer(1, height - 2 - latestY, latest);
   prices.drawBuffer(1, height - 2, low);
   prices.drawColumn(0, '┊');
   prices.set(0, height - 2, '┘');
