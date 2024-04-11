@@ -63,15 +63,15 @@ String _renderChart(
   final width = _window.width;
   final height = _window.height;
 
-  final canvasWidth = (width - 10) * 2;
-  final canvasHeight = (height - 3) * 4;
+  final cw = (width - 10) * 2;
+  final ch = (height - 3) * 4;
 
-  final snapshot = _sample(data, zoom, scroll, canvasWidth);
+  final snapshot = _sample(data, zoom, scroll, cw);
 
   final Buffer buffer = Buffer(width, height);
   buffer.fill(32);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
-  buffer.drawBuffer(0, 1, renderCanvas(canvasWidth, canvasHeight, snapshot));
+  buffer.drawBuffer(0, 1, renderCanvas(cw, ch, snapshot, data.last));
   buffer.drawBuffer(width - 10, 0, renderPrices(pair, snapshot, height));
   buffer.drawBuffer(0, height - 2, renderTimeline(snapshot, width));
 

@@ -12,8 +12,8 @@ String renderTimeline(ChartSnapshot snapshot, int width) {
   final timeline = Buffer(width - 10, 2);
   timeline.drawBuffer(0, 0, "".padRight(timeline.width, "┈"));
   timeline.drawBuffer(0, 1, "".padRight(timeline.width, " "));
-  timeline.drawBuffer(0, 1, snapshot.oldest);
-  timeline.drawBuffer(timeline.width - 11, 1, snapshot.newest);
+  timeline.drawBuffer(0, 1, snapshot.oldestDate);
+  timeline.drawBuffer(timeline.width - 11, 1, snapshot.newestDate);
   return timeline.frame();
 }
 
@@ -25,26 +25,49 @@ String renderCanvas(
   int canvasWidth,
   int canvasHeight,
   ChartSnapshot snapshot,
+  OHLC latest,
 ) {
   final canvas = ColorCanvas(canvasWidth, canvasHeight);
-  final normY = (1.0 / (snapshot.maxHigh - snapshot.minLow)) * canvas.height;
-  final invertX = canvas.width - 1;
-  final invertY = canvas.height - 1;
+  final invertX = canvasWidth - 1;
+  final invertY = canvasHeight - 1;
+
+  final line = snapshot.scaled(latest.close, canvasHeight);
+  final trendColor = _trendColor(latest.open - latest.close);
+  for (var x = 0; x < canvasWidth; x++) {
+    canvas.set(invertX - x, invertY - line, trendColor);
+  }
+
   final count = min(snapshot.length, canvas.width);
   for (var x = 0; x < count; x++) {
-    final trend = snapshot.trend(x);
-    final color = switch (trend) {
-      1 => green,
-      -1 => red,
-      _ => null,
-    };
-    final yTop = (snapshot.highs[x] - snapshot.minLow) * normY;
-    final yBottom = (snapshot.lows[x] - snapshot.minLow) * normY;
+    final color = snapshot.trendColorAt(x);
+    final yTop = snapshot.scaledHighAt(x, canvasHeight);
+    final yBottom = snapshot.scaledLowAt(x, canvasHeight);
     for (var y = yBottom; y <= yTop; y++) {
       canvas.set(invertX - x, invertY - y.round(), color);
     }
   }
   return canvas.frame();
+}
+
+CanvasColor? _trendColor(double delta) => switch (delta) {
+      _ when delta > 0 => green,
+      _ when delta < 0 => red,
+      _ => null,
+    };
+
+extension on ChartSnapshot {
+  CanvasColor? trendColorAt(int index) => _trendColor(trendAt(index));
+
+  double trendAt(int at) => closes[at] - opens[at];
+
+  int scaled(double price, int height) =>
+      ((price - minLow) * norm * height).round();
+
+  int scaledHighAt(int index, int height) => scaled(highs[index], height);
+
+  int scaledLowAt(int index, int height) => scaled(lows[index], height);
+
+  int scaledCloseAt(int index, int height) => scaled(closes[index], height);
 }
 
 String renderPrices(AssetPairData pair, ChartSnapshot snapshot, int height) {

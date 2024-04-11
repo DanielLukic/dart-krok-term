@@ -15,16 +15,16 @@ class ChartSnapshot {
   final double maxHigh;
   final double minLow;
 
+  late final norm = (1.0 / (maxHigh - minLow));
+
   int get length => opens.length;
 
-  String get oldest => times.last.toKrakenDateTime().toTimestamp();
+  String get oldestDate => times.last.toKrakenDateTime().toTimestamp();
 
-  String get newest => times.first.toKrakenDateTime().toTimestamp();
+  String get newestDate => times.first.toKrakenDateTime().toTimestamp();
 
   ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
       this.maxHigh, this.minLow);
-
-  int trend(int at) => (closes[at] - opens[at]).sign.toInt();
 
   factory ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
     if (snip.isEmpty) throw ArgumentError("no data");
