@@ -72,14 +72,15 @@ String _renderChart(
   buffer.fill(32);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(0, 1, renderCanvas(cw, ch, snapshot, data.last));
+  buffer.drawBuffer(0, 1, _loading(pdi, interval));
   buffer.drawBuffer(width - 10, 0, renderPrices(pair, snapshot, height));
+  buffer.drawBuffer(0, height - 3, _zoomInfo(zoom));
   buffer.drawBuffer(0, height - 2, renderTimeline(snapshot, width));
-
-  final sl = buffer.height - 3;
-  final zl = buffer.height - 4;
-  buffer.drawBuffer(0, sl, "scroll $scroll of ${_projection.maxScroll}".gray());
-  buffer.drawBuffer(0, zl, "zoom $zoom of ${_projection.maxZoom}".gray());
-  if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
   return buffer.frame();
 }
+
+String _loading(_PairDataInterval pdi, OhlcInterval i) =>
+    pdi.$3 != i ? "loading.." : "";
+
+String _zoomInfo(int zoom) => "zoom $zoom/${_projection.maxZoom}".gray();
