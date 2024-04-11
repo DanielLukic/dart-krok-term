@@ -10,6 +10,7 @@ import '../core/krok_core.dart';
 import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import '../repository/ohlc_repo.dart';
+import 'chart/chart_snapshot.dart';
 
 final _window = window('chart', 61, 25) //
   ..name = "Chart [$cKey] [1-9]"
@@ -123,7 +124,7 @@ String _renderChart(
   final empty = List.filled(max(0, -scroll), _empty);
   final scrolled = empty + zoomed.skip(max(0, scroll)).toList();
   final snip = (scrolled).take(canvasWidth);
-  final snapshot = _ChartSnapshot.fromSnip(snip);
+  final snapshot = ChartSnapshot.fromSnip(snip);
 
   final Buffer buffer = Buffer(_window.width, _window.height);
   buffer.fill(32);
@@ -155,7 +156,7 @@ OHLC _merged(OHLC a, OHLC b) {
       max(a.high, b.high), min(a.low, b.low), (a.close + b.close) / 2);
 }
 
-String _renderTimeline(_ChartSnapshot snapshot) {
+String _renderTimeline(ChartSnapshot snapshot) {
   final timeline = Buffer(_window.width - 10, 2);
   timeline.drawBuffer(0, 0, "".padRight(timeline.width, "┈"));
   timeline.drawBuffer(0, 1, "".padRight(timeline.width, " "));
@@ -171,7 +172,7 @@ String _renderIntervalSelection(OhlcInterval interval) => OhlcInterval.values
 String _renderCanvas(
   int canvasWidth,
   int canvasHeight,
-  _ChartSnapshot snapshot,
+  ChartSnapshot snapshot,
 ) {
   final canvas = DrawingCanvas(canvasWidth, canvasHeight);
   final normY = (1.0 / (snapshot.maxHigh - snapshot.minLow)) * canvas.height;
@@ -188,7 +189,7 @@ String _renderCanvas(
   return canvas.frame();
 }
 
-String _renderPrices(AssetPairData pair, _ChartSnapshot snapshot) {
+String _renderPrices(AssetPairData pair, ChartSnapshot snapshot) {
   final prices = Buffer(10, _window.height);
   prices.fill(32);
   prices.drawBuffer(1, 1, pair.price(snapshot.maxHigh));
@@ -258,47 +259,6 @@ class _MadScroll {
   void byDelta(int d) => _setScroll.value = _currentScroll.value + d;
 
   void reset() => _setScroll.value = 0;
-}
-
-class _ChartSnapshot {
-  final List<int> times;
-  final List<double> opens;
-  final List<double> highs;
-  final List<double> lows;
-  final List<double> closes;
-  final double maxHigh;
-  final double minLow;
-
-  int get length => opens.length;
-
-  String get oldest => times.last.toKrakenDateTime().toTimestamp();
-
-  String get newest => times.first.toKrakenDateTime().toTimestamp();
-
-  _ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
-      this.maxHigh, this.minLow);
-
-  factory _ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
-    if (snip.isEmpty) throw ArgumentError("no data");
-
-    final times = snip.mapList((e) => e.timestamp);
-    final opens = snip.mapList((e) => e.open);
-    final highs = snip.mapList((e) => e.high);
-    final lows = snip.mapList((e) => e.low);
-    final closes = snip.mapList((e) => e.close);
-    final validHighs = highs.where((e) => e != 0);
-    final validLows = lows.where((e) => e != 0);
-    final double maxHigh;
-    final double minLow;
-    if (validHighs.isEmpty) {
-      maxHigh = highs[0];
-      minLow = lows[0];
-    } else {
-      maxHigh = validHighs.reduce((a, b) => max(a, b));
-      minLow = validLows.reduce((a, b) => min(a, b));
-    }
-    return _ChartSnapshot(times, opens, highs, lows, closes, maxHigh, minLow);
-  }
 }
 
 class _DragChartAction extends BaseOngoingMouseAction {
