@@ -4,9 +4,24 @@ import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
 import 'package:dart_consul/dart_consul.dart';
 import 'package:intl/intl.dart';
+import 'package:krok/krok.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'functions.dart';
+
+extension OhlcIntervalExtension on OhlcInterval {
+  String get label => switch (this) {
+        OhlcInterval.oneMinute => ' 1m',
+        OhlcInterval.fiveMinutes => ' 5m',
+        OhlcInterval.fifteenMinutes => '15m',
+        OhlcInterval.thirtyMinutes => '30m',
+        OhlcInterval.oneHour => ' 1h',
+        OhlcInterval.fourHours => ' 4h',
+        OhlcInterval.oneDay => ' 1d',
+        OhlcInterval.oneWeek => ' 7d',
+        OhlcInterval.fifteenDays => '15d',
+      };
+}
 
 extension BufferExtensions on Buffer {
   drawColumn(int x, String char) {

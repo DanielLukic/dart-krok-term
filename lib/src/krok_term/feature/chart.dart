@@ -219,20 +219,6 @@ OngoingMouseAction? _changeInterval(MouseEvent event) {
   return NopMouseAction(_window);
 }
 
-extension on OhlcInterval {
-  String get label => switch (this) {
-        OhlcInterval.oneMinute => ' 1m',
-        OhlcInterval.fiveMinutes => ' 5m',
-        OhlcInterval.fifteenMinutes => '15m',
-        OhlcInterval.thirtyMinutes => '30m',
-        OhlcInterval.oneHour => ' 1h',
-        OhlcInterval.fourHours => ' 4h',
-        OhlcInterval.oneDay => ' 1d',
-        OhlcInterval.oneWeek => ' 7d',
-        OhlcInterval.fifteenDays => '15d',
-      };
-}
-
 class _DragChartAction extends BaseOngoingMouseAction {
   final int _startScroll;
 
