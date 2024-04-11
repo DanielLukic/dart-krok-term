@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
-import 'package:rxdart/rxdart.dart' hide SwitchMapExtension;
+import 'package:rxdart/rxdart.dart' hide SwitchMapExtension, ScanExtension;
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
@@ -24,15 +24,15 @@ void _create() {
 
   _window.onKey('<S-h>', //
       description: 'Jump left',
-      action: () => _scroll_(10));
+      action: () => _scroll.byDelta(10));
   _window.onKey('<S-l>',
-      description: 'Jump right', action: () => _scroll_(-10));
+      description: 'Jump right', action: () => _scroll.byDelta(-10));
   _window.onKey('h', //
       description: 'Scroll left',
-      action: () => _scroll_(1));
+      action: () => _scroll.byDelta(1));
   _window.onKey('l', //
       description: 'Scroll right',
-      action: () => _scroll_(-1));
+      action: () => _scroll.byDelta(-1));
 
   _window.onKey('<Left>', //
       aliases: ['i'],
@@ -57,10 +57,8 @@ void _create() {
   _window.onWheelDown(() => _zoom_(-1));
   _window.onWheelUp(() => _zoom_(1));
 
-  _window.chainOnMouseEvent((e) {
-    if (e.isDown) return _DragChartAction(_window, e, _scroll.value);
-    return null;
-  });
+  _window.chainOnMouseEvent(
+      (e) => e.isDown ? _DragChartAction(_window, e, _scroll.current) : null);
 
   Stream<_PairDataInterval> retrieve(AssetPairData s, OhlcInterval i) =>
       ohlc(s, i).map((list) => (s, list, i));
@@ -68,41 +66,36 @@ void _create() {
   final chartData = combine([selectedAssetPair, _interval])
       .distinctUntilChanged()
       .switchMap((e) => retrieve(e[0], e[1]))
-      .doOnData((e) => _maxScroll.value = e.$2.length);
+      .doOnData((e) => _scroll.setDataSize(e.$2.length));
 
-  final withZoomAndScroll = combine([chartData, _interval, _zoom, _validScroll])
-      .distinctUntilChanged()
-      .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
+  final withZoomAndScroll =
+      combine([chartData, _interval, _zoom, _scroll.stream])
+          .distinctUntilChanged()
+          .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
 }
 
+final _scroll = _MadScroll();
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 final _zoom = BehaviorSubject.seeded(1);
 final _maxZoom = 10;
-final _scroll = BehaviorSubject.seeded(0);
-final _minScroll = -_window.width ~/ 2;
-final _maxScroll = BehaviorSubject.seeded(0);
 
-final _validScroll =
-    _scroll.combineLatest(_maxScroll, (s, m) => s.clamp(_minScroll, m));
-
-void _scroll_(int d) =>
-    _scroll.value = (_scroll.value + d).clamp(_minScroll, _maxScroll.value);
+final _empty = OHLC(0, 0, 0, 0, 0);
 
 void _reset() {
-  _scroll.value = 0;
+  _scroll.reset();
   _zoom.value = 1;
 }
 
 void _zoom_(int delta) {
-  // final scroll = _scroll.value / _zoom.value;
+  final scroll = _scroll.current * _zoom.value;
   if (delta == -1) _zoom.value = (_zoom.value - 1).clamp(1, _maxZoom);
   if (delta == 1) _zoom.value = (_zoom.value + 1).clamp(1, _maxZoom);
   if (delta == 0) _zoom.value = 1;
-  // _scroll.value = (scroll * _zoom.value).round();
+  _scroll.setScroll((scroll / _zoom.value).round());
 }
 
 void _interval_(int delta) {
@@ -141,7 +134,7 @@ String _renderChart(
 
   final sl = buffer.height - 3;
   final zl = buffer.height - 4;
-  buffer.drawBuffer(0, sl, "scroll $scroll of ${_maxScroll.value}".gray());
+  buffer.drawBuffer(0, sl, "scroll $scroll of ${_scroll.max}".gray());
   buffer.drawBuffer(0, zl, "zoom $zoom of $_maxZoom".gray());
   if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
@@ -238,7 +231,34 @@ extension on OhlcInterval {
       };
 }
 
-final _empty = OHLC(0, 0, 0, 0, 0);
+class _MadScroll {
+  final _dataSize = BehaviorSubject.seeded(0);
+  final _setScroll = BehaviorSubject.seeded(0);
+  final _currentMaxScroll = BehaviorSubject.seeded(0);
+  final _currentScroll = BehaviorSubject.seeded(0);
+
+  final _minScroll = -_window.width;
+
+  late final _maxScroll = _dataSize
+      .combineLatest(_zoom, (m, z) => (m / z).round() - _window.width)
+      .doOnData((e) => _currentMaxScroll.value = e);
+
+  late final stream = _setScroll
+      .combineLatest(_maxScroll, (s, m) => s.clamp(_minScroll, m))
+      .doOnData((e) => _currentScroll.value = e);
+
+  int get max => _currentMaxScroll.value;
+
+  int get current => _currentScroll.value;
+
+  void setDataSize(int count) => _dataSize.value = count;
+
+  void setScroll(int absolute) => _setScroll.value = absolute;
+
+  void byDelta(int d) => _setScroll.value = _currentScroll.value + d;
+
+  void reset() => _setScroll.value = 0;
+}
 
 class _ChartSnapshot {
   final List<int> times;
@@ -259,13 +279,24 @@ class _ChartSnapshot {
       this.maxHigh, this.minLow);
 
   factory _ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
+    if (snip.isEmpty) throw ArgumentError("no data");
+
     final times = snip.mapList((e) => e.timestamp);
     final opens = snip.mapList((e) => e.open);
     final highs = snip.mapList((e) => e.high);
     final lows = snip.mapList((e) => e.low);
     final closes = snip.mapList((e) => e.close);
-    final maxHigh = highs.where((e) => e != 0).reduce((a, b) => max(a, b));
-    final minLow = lows.where((e) => e != 0).reduce((a, b) => min(a, b));
+    final validHighs = highs.where((e) => e != 0);
+    final validLows = lows.where((e) => e != 0);
+    final double maxHigh;
+    final double minLow;
+    if (validHighs.isEmpty) {
+      maxHigh = highs[0];
+      minLow = lows[0];
+    } else {
+      maxHigh = validHighs.reduce((a, b) => max(a, b));
+      minLow = validLows.reduce((a, b) => min(a, b));
+    }
     return _ChartSnapshot(times, opens, highs, lows, closes, maxHigh, minLow);
   }
 }
@@ -280,14 +311,7 @@ class _DragChartAction extends BaseOngoingMouseAction {
     if (event.isUp) done = true;
 
     final dx = event.x - this.event.x;
-    _scroll.value = (_startScroll + dx * 2).clamp(0, _maxScroll.value);
-  }
-}
-
-extension<E> on List<E> {
-  List<E> operator +(List<E> it) {
-    final result = [...this];
-    result.addAll(it);
-    return result;
+    _scroll.setScroll(_startScroll + dx * 2);
+    // the 2 is for the canvas pixel duplication ☝
   }
 }
