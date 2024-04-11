@@ -45,10 +45,13 @@ void _create() {
       description: 'Bigger interval',
       action: () => _interval_(1));
 
-  _window.onKey('-', description: 'Zoom out', action: () => _zoom_(-1));
-  _window.onKey('+', description: 'Zoom in', action: () => _zoom_(1));
-  _window.onKey('=', description: 'Reset zoom', action: () => _zoom_(0));
-  _window.onKey('r', description: 'Reset scroll and zoom', action: _reset);
+  zoom(int dx) => _projection.zoomBy(dx);
+  reset() => _projection.reset();
+
+  _window.onKey('-', description: 'Zoom out', action: () => zoom(-1));
+  _window.onKey('+', description: 'Zoom in', action: () => zoom(1));
+  _window.onKey('=', description: 'Reset zoom', action: () => zoom(0));
+  _window.onKey('r', description: 'Reset scroll and zoom', action: reset);
 
   for (final i in OhlcInterval.values) {
     _window.onKey((i.index + 1).toString(),
@@ -56,11 +59,12 @@ void _create() {
   }
 
   _window.chainOnMouseEvent(_changeInterval);
-  _window.onWheelDown(() => _zoom_(-1));
-  _window.onWheelUp(() => _zoom_(1));
+  _window.onWheelDown(() => zoom(-1));
+  _window.onWheelUp(() => zoom(1));
 
-  _window.chainOnMouseEvent((e) =>
-      e.isDown ? _DragChartAction(_window, e, _projection.current) : null);
+  _window.chainOnMouseEvent((e) => e.isDown
+      ? _DragChartAction(_window, e, _projection.currentScroll)
+      : null);
 
   Stream<_PairDataInterval> retrieve(AssetPairData s, OhlcInterval i) =>
       ohlc(s, i).map((list) => (s, list, i));
@@ -71,7 +75,7 @@ void _create() {
       .doOnData((e) => _projection.setDataSize(e.$2.length));
 
   final withZoomAndScroll =
-      combine([chartData, _interval, _zoom, _projection.scroll])
+      combine([chartData, _interval, _projection.zoom, _projection.scroll])
           .distinctUntilChanged()
           .map((e) => _renderChart(e[0], e[1], e[2], e[3]));
 
@@ -79,26 +83,10 @@ void _create() {
       withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
 }
 
-final _projection = ChartProjection(_window.width ~/ 2, _zoom);
+final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
-final _zoom = BehaviorSubject.seeded(1);
-final _maxZoom = 10;
-
 final _empty = OHLC(0, 0, 0, 0, 0);
-
-void _reset() {
-  _projection.reset();
-  _zoom.value = 1;
-}
-
-void _zoom_(int delta) {
-  final scroll = _projection.current * _zoom.value;
-  if (delta == -1) _zoom.value = (_zoom.value - 1).clamp(1, _maxZoom);
-  if (delta == 1) _zoom.value = (_zoom.value + 1).clamp(1, _maxZoom);
-  if (delta == 0) _zoom.value = 1;
-  _projection.setScroll((scroll / _zoom.value).round());
-}
 
 void _interval_(int delta) {
   final now = _interval.value.index;
@@ -136,8 +124,8 @@ String _renderChart(
 
   final sl = buffer.height - 3;
   final zl = buffer.height - 4;
-  buffer.drawBuffer(0, sl, "scroll $scroll of ${_projection.max}".gray());
-  buffer.drawBuffer(0, zl, "zoom $zoom of $_maxZoom".gray());
+  buffer.drawBuffer(0, sl, "scroll $scroll of ${_projection.maxScroll}".gray());
+  buffer.drawBuffer(0, zl, "zoom $zoom of ${_projection.maxZoom}".gray());
   if (pdi.$3 != interval) buffer.drawBuffer(0, 1, "loading...");
 
   return buffer.frame();
