@@ -13,10 +13,10 @@ extension on Window {
         description: 'Jump right', action: () => _projection.scrollBy(-10));
     onKey('h', //
         description: 'Scroll left',
-        action: () => _projection.scrollBy(1));
+        action: () => _projection.scrollBy(2));
     onKey('l', //
         description: 'Scroll right',
-        action: () => _projection.scrollBy(-1));
+        action: () => _projection.scrollBy(-2));
 
     changeInterval(int delta) {
       final now = _interval.value.index;

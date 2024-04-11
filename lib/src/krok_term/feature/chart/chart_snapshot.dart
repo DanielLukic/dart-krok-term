@@ -24,6 +24,8 @@ class ChartSnapshot {
   ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
       this.maxHigh, this.minLow);
 
+  int trend(int at) => (closes[at] - opens[at]).sign.toInt();
+
   factory ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
     if (snip.isEmpty) throw ArgumentError("no data");
 
