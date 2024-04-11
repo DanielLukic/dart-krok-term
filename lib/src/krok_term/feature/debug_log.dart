@@ -16,7 +16,6 @@ _openLog() {
   final w = addDebugLog(
     desktop,
     name: "Log [$lKey] [v,d,i,w,e] [x]",
-    key: "",
     position: AbsolutePosition(56, 31),
     filter: filterLogEntry,
   );
