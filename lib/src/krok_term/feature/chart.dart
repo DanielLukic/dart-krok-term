@@ -23,6 +23,8 @@ final _window = window('chart', 61, 25) //
 
 void openChart() => autoWindow(_window, () => _create());
 
+void _triggerRefresh() => _refresh.value = DateTime.timestamp();
+
 void _create() {
   _window.setupKeys();
   _window.setupMouse();
@@ -30,7 +32,9 @@ void _create() {
   Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
       ohlc(s, i).map((list) => (s, list, i, r));
 
-  final chartData = combine([selectedAssetPair, _interval, _refresh])
+  final refreshOnSelect = selectedAssetPair.doOnData((_) => _triggerRefresh());
+
+  final chartData = combine([refreshOnSelect, _interval, _refresh])
       .distinctUntilChanged()
       .switchMap((e) => retrieve(e[0], e[1], e[2]))
       .doOnData((e) => _projection.setDataSize(e.$2.length));

@@ -2,9 +2,7 @@ part of '../chart.dart';
 
 extension on Window {
   void setupKeys() {
-    onKey("u",
-        description: "Update data",
-        action: () => _refresh.value = DateTime.timestamp());
+    onKey("u", description: "Update data", action: () => _triggerRefresh());
 
     onKey('<S-h>', //
         aliases: ['<S-Left>'],
@@ -12,7 +10,8 @@ extension on Window {
         action: () => _projection.scrollBy(10));
     onKey('<S-l>',
         aliases: ['<S-Right>'],
-        description: 'Jump right', action: () => _projection.scrollBy(-10));
+        description: 'Jump right',
+        action: () => _projection.scrollBy(-10));
     onKey('h', //
         aliases: ['<Left>'],
         description: 'Scroll left',
