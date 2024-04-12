@@ -24,7 +24,7 @@ final class PortfolioRepo extends KrokAutoRepo<Portfolio> {
   PortfolioRepo(Storage storage)
       : super(
           storage,
-          "Portfolio",
+          "portfolio",
           request: () => KrakenRequest.tradeBalance(),
           restore: (e) => _restore(e),
           duration: 1.minutes,
