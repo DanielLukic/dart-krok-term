@@ -6,10 +6,13 @@ extension on Window {
     onWheelDown(() => _projection.zoomBy(-1));
     onWheelUp(() => _projection.zoomBy(1));
 
-    chainOnMouseEvent((e) => e.isDown
+    chainOnMouseEvent((e) => _isChartClick(e)
         ? _DragChartAction(_window, e, _projection.currentScroll)
         : null);
   }
+
+  bool _isChartClick(MouseEvent e) =>
+      e.isDown && e.x < width - 10 && e.y > 1 && e.y < height - 2;
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {
