@@ -1,3 +1,6 @@
+import 'package:dart_minilog/dart_minilog.dart';
+import 'package:rxdart/transformers.dart';
+
 import '../core/krok_core.dart';
 import 'asset_pairs_repo.dart';
 
@@ -39,5 +42,6 @@ class OHLC extends BaseModel {
 
 Stream<List<OHLC>> ohlc(AssetPairData ap, OhlcInterval interval) =>
     retrieve(KrakenRequest.ohlc(pair: ap.pair, interval: interval))
+        .doOnData((e) => logVerbose("o_h_l_c retrieved"))
         .map((json) => json[ap.pair] as List<dynamic>)
         .map((list) => list.mapList((e) => OHLC.parse(e)));
