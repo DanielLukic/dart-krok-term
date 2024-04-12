@@ -36,7 +36,9 @@ OngoingMouseAction? _changeInterval(MouseEvent event) {
 class _DragChartAction extends BaseOngoingMouseAction {
   final int _startScroll;
 
-  _DragChartAction(super.window, super.event, this._startScroll);
+  _DragChartAction(super.window, super.event, this._startScroll) {
+    sendMessage(("raise-window", _window));
+  }
 
   @override
   void onMouseEvent(MouseEvent event) {
