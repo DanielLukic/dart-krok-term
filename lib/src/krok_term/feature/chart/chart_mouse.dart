@@ -3,8 +3,8 @@ part of '../chart.dart';
 extension on Window {
   void setupMouse() {
     chainOnMouseEvent(_changeInterval);
-    onWheelDown(() => _projection.zoomBy(-1));
-    onWheelUp(() => _projection.zoomBy(1));
+    onWheelDown(() => _projection.zoomBy(1));
+    onWheelUp(() => _projection.zoomBy(-1));
 
     chainOnMouseEvent((e) => _isChartClick(e)
         ? _DragChartAction(_window, e, _projection.currentScroll)
