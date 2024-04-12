@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
+import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/functions.dart';
@@ -19,6 +20,8 @@ void openTicker() => autoWindow(_window, () => _create());
 
 late final ScrolledContent _scrolled;
 var _buffer = "";
+Iterable<_TickerData> _gainers = [];
+Iterable<_TickerData> _losers = [];
 
 void _create() {
   _scrolled = scrolled(_window, () => _buffer, ellipsize: true);
@@ -27,7 +30,17 @@ void _create() {
       description: "Update ticker data",
       action: () => tickersRepo.refresh(userRequest: true));
 
-  // TODO Another rxdart is broken situation - revisit!
+  _window.chainOnMouseEvent((e) {
+    if (!e.isUp) return null;
+    final y = e.y - 2 + _scrolled.scrollOffset;
+    final left = e.x < _window.width ~/ 2;
+    final pick = left ? _gainers : _losers;
+    if (y < 0 || y >= pick.length) return null;
+    final picked = pick.toList()[y];
+    selectPair(picked.ap);
+    return NopMouseAction(_window);
+  });
+
   _window.autoDispose(
     "update",
     tickersRepo
@@ -45,7 +58,7 @@ List<_TickerData> _filter(Tickers result, AssetPairs ap, Currency currency) {
     final ap_ = ap[it.pair];
     if (ap_ == null) continue;
     if (ap_.quote != currency.z) continue;
-    data.add(_TickerData(it, ap_.wsname));
+    data.add(_TickerData(it, ap_.ap));
   }
   data.sort((a, b) => (b.percent.abs() - a.percent.abs()).sign.toInt());
   return data;
@@ -57,12 +70,12 @@ _updateResult(List<_TickerData> data) {
 }
 
 _updateBuffer(List<_TickerData> data) {
-  var gainers = data.where((e) => e.percent > 0);
-  var losers = data.where((e) => e.percent < 0);
-  _updateHeaderMarketIndicator(data, gainers, losers);
+  _gainers = data.where((e) => e.percent > 0);
+  _losers = data.where((e) => e.percent < 0);
+  _updateHeaderMarketIndicator(data, _gainers, _losers);
 
-  final g = _tickerColumn(gainers);
-  final l = _tickerColumn(losers);
+  final g = _tickerColumn(_gainers);
+  final l = _tickerColumn(_losers);
   final target = max(g.length, l.length);
   _ensureSameLength(g, target);
   _ensureSameLength(l, target);
@@ -102,11 +115,12 @@ List<String> _tickerColumn(Iterable<_TickerData> data) => data.map((e) {
     }).toList();
 
 class _TickerData {
+  final AssetPair ap;
   late double percent;
   late String _string;
 
-  _TickerData(TickerData data, String wsname) {
-    final name = wsname.highlightSuffix().fixDisplayPair();
+  _TickerData(TickerData data, this.ap) {
+    final name = ap.wsname.highlightSuffix().fixDisplayPair();
     final percent = data.ansiPercent;
     _string = "$name $percent";
 
