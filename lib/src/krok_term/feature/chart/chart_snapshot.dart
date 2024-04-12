@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 import '../../repository/ohlc_repo.dart';
@@ -27,7 +28,10 @@ class ChartSnapshot {
       this.maxHigh, this.minLow);
 
   factory ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
-    if (snip.isEmpty) throw ArgumentError("no data");
+    if (snip.isEmpty) {
+      logWarn("no data");
+      return ChartSnapshot.fromSnip([OHLC.empty]);
+    }
 
     final times = snip.mapList((e) => e.timestamp);
     final opens = snip.mapList((e) => e.open);
