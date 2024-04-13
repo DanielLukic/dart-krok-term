@@ -175,3 +175,25 @@ abstract class BaseModel {
   @override
   String toString() => fields.toString();
 }
+
+extension UniqueIterable<E> on Iterable<E> {
+  Iterable<E> unique() sync* {
+    final seen = <E>{};
+    for (final i in this) {
+      if (seen.contains(i)) continue;
+      seen.add(i);
+      yield i;
+    }
+  }
+}
+
+extension PlusIterable<E> on Iterable<E> {
+  Iterable<E> plus(Iterable<E> more) sync* {
+    for (final i in this) {
+      yield i;
+    }
+    for (final i in more) {
+      yield i;
+    }
+  }
+}

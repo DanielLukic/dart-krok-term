@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dart_consul/dart_consul.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:rxdart/rxdart.dart';
@@ -149,41 +150,25 @@ _select(AssetPairData it) {
     (e) => e.quote == c.z,
   );
 
-  final startMatched = currencyMatched.where(
-    (e) => filter.length > 1
-        ? e.wsname.split("/").first.fixDisplayPair().contains(filter)
-        : false ||
-            e.wsname.fixDisplayPair().startsWith(filter) ||
-            e.pair.startsWith(filter) ||
-            e.altname.startsWith(filter) ||
-            e.wsname.startsWith(filter),
-  );
-  final containsMatched = currencyMatched.where(
-    (e) => e.toString().contains(filter),
-  );
-  final allMatched = ap.values.where((e) => e.toString().contains(filter));
+  final startMatched =
+      currencyMatched.where((e) => e.wsnStartsWith(filter)).sortedByWsn();
 
-  final matches = switch (filter) {
-    _ when startMatched.isNotEmpty => startMatched,
-    _ when containsMatched.isNotEmpty => containsMatched,
-    _ => allMatched,
-  };
+  final containsMatched =
+      currencyMatched.where((e) => e.wsnContains(filter)).sortedByWsn();
 
-  final result = matches.map((e) {
+  final allMatched = (startMatched.isEmpty && containsMatched.isEmpty
+          ? ap.values.where((e) => e.contains(filter))
+          : <AssetPairData>[])
+      .sortedByWsn();
+
+  final matches = startMatched.plus(containsMatched).plus(allMatched);
+  final result = matches.unique().map((e) {
     final ansiPair = e.wsname.highlightSuffix().fixDisplayPair();
     final price = t[e.pair]?.last.toString();
     final currency = c.plain.gray();
     final ansiPercent = t[e.pair]?.ansiPercent ?? "";
     return (e, "$ansiPair $price$currency $ansiPercent");
   }).toList();
-
-  result.sort((a, b) {
-    final aa = a.$1.wsname.fixDisplayPair();
-    final bb = b.$1.wsname.fixDisplayPair();
-    final order = aa.compareTo(bb);
-    if (order == 0) return aa.length - bb.length;
-    return order;
-  });
 
   final it = _resolveSelection(
       selection: selection, data: result.mapList((e) => e.$1));
@@ -206,4 +191,22 @@ _updateResult((List<(AssetPairData, String)>, int?) it) {
   _buffer = rows.join("\n");
 
   _window.requestRedraw();
+}
+
+extension on AssetPairData {
+  bool wsnStartsWith(String filter) =>
+      wsname.fixDisplayPair().startsWith(filter) ||
+      pair.startsWith(filter) ||
+      altname.startsWith(filter) ||
+      wsname.startsWith(filter);
+
+  bool wsnContains(String filter) =>
+      filter.length > 1 ? toString().contains(filter) : false;
+
+  bool contains(String filter) => toString().contains(filter);
+}
+
+extension on Iterable<AssetPairData> {
+  Iterable<AssetPairData> sortedByWsn() =>
+      sorted((a, b) => a.wsname.length - b.wsname.length);
 }
