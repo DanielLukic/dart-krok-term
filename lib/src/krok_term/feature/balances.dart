@@ -1,4 +1,5 @@
 import 'package:dart_consul/dart_consul.dart';
+import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/streams.dart';
 
 import '../common/window.dart';
@@ -27,6 +28,14 @@ void _create() {
     header: "Coin Price 24H Balance EST.VALUE".columns(_columns),
   );
 
+  _window.chainOnMouseEvent((e) {
+    if (!e.isUp || e.y <= 1) return null;
+    final index = e.y - 2;
+    if (index < 0 || index >= _entries.length) return null;
+    selectPair(_entries[index].ap);
+    return null;
+  });
+
   _window.onKey("u",
       description: "Update balances now",
       action: () => balancesRepo.refresh(userRequest: true));
@@ -40,6 +49,8 @@ void _create() {
   );
 }
 
+List<AssetPairData> _entries = [];
+
 List<String> _toEntries(
   Assets assets,
   AssetPairs assetPairs,
@@ -47,33 +58,42 @@ List<String> _toEntries(
   Currency currency,
   Tickers tickers,
 ) {
+  _entries.clear();
+
   final result = <String>[];
   for (var b in balances.values) {
     final ap = assetPairs.values
         .where((e) => e.base == b.asset && e.quote == currency.z)
         .singleOrNull;
-    final pair = ap?.altname;
+    if (ap == null) continue;
+
+    final pair = ap.altname;
     final td = tickers[pair];
     if (td == null) continue;
 
     final a = b.asset;
-
-    final pd = ap?.pair_decimals ?? 0;
-    int d = assets.values.where((e) => e.name == a).singleOrNull?.display ?? 0;
-
     final bid = td.last;
     final p = td.ansiPercent;
+    final d = _assetDecimalsByName(assets, a);
     final bal = b.volume.toStringAsFixed(d);
     final volume = bid * b.volume;
     if (volume < 0.01) continue;
     final v = volume.toStringAsFixed(2);
-    final bi = bid.toStringAsFixed(pd);
+    final bi = bid.toStringAsFixed(ap.pair_decimals);
 
     result.add("$a $bi $p $bal $v".columns(_columns));
+
+    _entries.add(ap);
   }
   result.sort();
   return result;
 }
+
+int _assetDecimalsByName(Assets assets, Asset a) =>
+    _assetByName(assets, a)?.display ?? 0;
+
+AssetData? _assetByName(Assets assets, Asset a) =>
+    assets.values.where((e) => e.name == a).singleOrNull;
 
 _updateResult(List<String> entries) {
   _buffer = entries.join("\n");
