@@ -82,7 +82,7 @@ String _renderChart(
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
-  buffer.drawBuffer(0, 1, _loading(input, interval, refresh));
+  buffer.drawBuffer(0, height - 3, _loading(input, interval, refresh));
   buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
   buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
 
@@ -92,7 +92,7 @@ String _renderChart(
 String _loading(_ChartData pdi, OhlcInterval i, DateTime refresh) {
   final intervalChange = pdi.$3 != i;
   final refreshOngoing = pdi.$4 != refresh;
-  return intervalChange || refreshOngoing ? "loading.." : "";
+  return intervalChange || refreshOngoing ? "loading..".blue() : "";
 }
 
 String _zoomInfo(int zoom) => "zoom $zoom/${_projection.maxZoom}".gray();
