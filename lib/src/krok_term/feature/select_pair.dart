@@ -110,10 +110,11 @@ void _create() {
 
   var maybeTrigger = false;
 
-  _window.chainOnMouseEvent((p0) {
-    if (p0.isDown) maybeTrigger = true;
-    if (p0.isUp && maybeTrigger) {
-      final index = (_scrolled.scrollOffset + p0.y - 2).clamp(0, _data.length);
+  _window.chainOnMouseEvent((e) {
+    if (e.isDown) maybeTrigger = true;
+    if (e.isUp && maybeTrigger) {
+      final max = _data.length - 1;
+      final index = (_scrolled.scrollOffset + e.y - 2).clamp(0, max);
       _select(_data[index]);
       maybeTrigger = false;
     }
