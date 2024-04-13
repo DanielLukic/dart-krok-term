@@ -39,7 +39,14 @@ _addAutoHelp() => addAutoHelp(
 _initLog() {
   final logfile = fileSink("krok.log");
   sink = (e) {
-    eventDebugLog.add(e);
+    final filter = e.toString();
+    if (filter.contains("package:krok/")) {
+      krokLog.add(e);
+    } else if (filter.contains("[!]")) {
+      activityLog.add(e);
+    } else {
+      krokTermLog.add(e);
+    }
     logfile(e);
   };
   logLevel = LogLevel.verbose;
