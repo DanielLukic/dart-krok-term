@@ -48,6 +48,14 @@ class OrderData extends BaseModel {
     return double.parse(i.toString());
   }
 
+  double? d_(String key) {
+    final i = data[key];
+    if (i == null) return null;
+    if (i is double) return i;
+    if (i is int) return i.toDouble();
+    return double.parse(i.toString());
+  }
+
   int i(String key) => data[key] as int;
 
   String s(String key) => data[key] as String;
@@ -55,6 +63,23 @@ class OrderData extends BaseModel {
   String? s_(String key) => data[key] != null ? data[key] as String : null;
 
   DateTime dt(String key) => d(key).toKrakenDateTime();
+
+  DateTime? dt_(String key) => d_(key)?.toKrakenDateTime();
+}
+
+final class OpenOrdersRepo extends KrokAutoRepo<Orders> {
+  OpenOrdersRepo(Storage storage)
+      : super(
+          storage,
+          "open_orders",
+          request: () => KrakenRequest.openOrders(),
+          preform: (e) => e['open'],
+          restore: (e) => _restore(e),
+          duration: 1.minutes,
+        );
+
+  static Orders _restore(JsonObject result) =>
+      result.map((k, v) => MapEntry(k, OrderData(k, v)));
 }
 
 final class ClosedOrdersRepo extends KrokAutoRepo<Orders> {

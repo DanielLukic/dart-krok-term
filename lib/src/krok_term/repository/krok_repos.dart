@@ -14,6 +14,7 @@ late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
 late ClosedOrdersRepo closedOrdersRepo;
+late OpenOrdersRepo openOrdersRepo;
 late PortfolioRepo portfolioRepo;
 late TickersRepo tickersRepo;
 
@@ -24,6 +25,8 @@ Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe().distinct();
 Stream<Balances> get balances => balancesRepo.subscribe().distinct();
 
 Stream<Orders> get closedOrders => closedOrdersRepo.subscribe().distinct();
+
+Stream<Orders> get openOrders => openOrdersRepo.subscribe().distinct();
 
 Stream<Portfolio> get portfolio => portfolioRepo.subscribe().distinct();
 
@@ -46,6 +49,7 @@ initKrokRepos(Storage storage) {
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
   closedOrdersRepo = ClosedOrdersRepo(storage);
+  openOrdersRepo = OpenOrdersRepo(storage);
   portfolioRepo = PortfolioRepo(storage);
   tickersRepo = TickersRepo(storage);
 }

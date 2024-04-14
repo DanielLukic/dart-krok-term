@@ -4,6 +4,7 @@ final bKey = 'gb';
 final cKey = 'gc';
 final lKey = 'gm';
 final ocKey = 'gC';
+final ooKey = 'gO';
 final pKey = 'gp';
 final sKey = 'gs';
 final tKey = 'gt';

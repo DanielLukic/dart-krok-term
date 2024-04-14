@@ -10,6 +10,7 @@ import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/closed_orders.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
+import 'package:krok_term/src/krok_term/feature/open_orders.dart';
 import 'package:krok_term/src/krok_term/feature/portfolio.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/status.dart';
@@ -69,6 +70,8 @@ _initKrokTerm() async {
   desktop.onKey(lKey, description: "Go to log", action: openLog);
   desktop.onKey("g<S-c>",
       description: "Go to closed orders", action: openClosedOrders);
+  desktop.onKey("g<S-o>",
+      description: "Go to open orders", action: openOpenOrders);
   desktop.onKey(pKey, description: "Go to profile", action: openPortfolio);
   desktop.onKey(sKey, description: "Go to status", action: openStatus);
   desktop.onKey(tKey, description: "Go to ticker", action: openTicker);
@@ -78,6 +81,7 @@ _initKrokTerm() async {
   openChart();
   openLog();
   openClosedOrders();
+  openOpenOrders();
   openPortfolio();
   openStatus();
   openTicker();
