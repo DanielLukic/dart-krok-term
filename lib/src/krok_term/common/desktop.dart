@@ -4,6 +4,7 @@ final bKey = 'gb';
 final cKey = 'gc';
 final lKey = 'gm';
 final pKey = 'gp';
+final sKey = 'gs';
 final tKey = 'gt';
 
 late Desktop desktop;
