@@ -7,19 +7,19 @@ extension on Window {
     onKey('<S-h>', //
         aliases: ['<S-Left>'],
         description: 'Jump left',
-        action: () => _projection.scrollBy(10));
+        action: () => _projection.scrollBy(-10));
     onKey('<S-l>',
         aliases: ['<S-Right>'],
         description: 'Jump right',
-        action: () => _projection.scrollBy(-10));
+        action: () => _projection.scrollBy(10));
     onKey('h', //
         aliases: ['<Left>'],
         description: 'Scroll left',
-        action: () => _projection.scrollBy(2));
+        action: () => _projection.scrollBy(-2));
     onKey('l', //
         aliases: ['<Right>'],
         description: 'Scroll right',
-        action: () => _projection.scrollBy(-2));
+        action: () => _projection.scrollBy(2));
 
     changeInterval(int delta) {
       final now = _interval.value.index;
