@@ -47,8 +47,13 @@ void _create() {
           .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4]));
 
   _window.autoDispose("update",
-      withZoomAndScroll.listenSafely((chart) => _window.update(() => chart)));
+      withZoomAndScroll.listenSafely(_showChart, onError: _showError));
 }
+
+_showChart(chart) => _window.update(() => chart);
+
+_showError(e) => _window
+    .update(() => e.toString().split(':').map((e) => e.red()).join('\n'));
 
 final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
