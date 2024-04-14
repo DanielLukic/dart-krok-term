@@ -62,7 +62,7 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   /// older than [freshDuration] (unless [userRequest] is true).
   void refresh({bool userRequest = false}) {
     if (!userRequest && _storage.stillFresh(_freshDuration)) {
-      logInfo('$_key still fresh');
+      logVerbose('$_key still fresh');
       return;
     }
     logVerbose('$_key refresh');
