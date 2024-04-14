@@ -153,11 +153,7 @@ extension SnakeCaseExtension on String {
 
 extension AutoDateTimeFormatExtension on DateTime {
   String toTimestamp() => DateFormat('MM-dd HH:mm').format(this);
-}
-
-extension IntToKrakenDateTime on int {
-  DateTime toKrakenDateTime() =>
-      DateTime.fromMillisecondsSinceEpoch(this * 1000, isUtc: true);
+  String toLongStamp() => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
 }
 
 abstract class BaseModel {
