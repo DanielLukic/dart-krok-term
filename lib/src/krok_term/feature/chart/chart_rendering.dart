@@ -86,11 +86,12 @@ String renderPrices(
 
   final high = pair.price(snapshot.maxHigh);
   final low = pair.price(snapshot.minLow);
+  final showCurrent = snapshot.closes[0] > 0;
 
   final prices = Buffer(10, height);
   prices.fill(32);
   prices.drawBuffer(1, 0, high);
-  prices.drawBuffer(1, height - 2 - currentY, current);
+  if (showCurrent) prices.drawBuffer(1, height - 2 - currentY, current);
   prices.drawBuffer(1, height - 2 - latestY, latest);
   prices.drawBuffer(1, height - 2, low);
   prices.drawColumn(0, '┊');
