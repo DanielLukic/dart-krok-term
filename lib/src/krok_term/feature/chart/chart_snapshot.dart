@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:krok/extensions.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 import '../../repository/ohlc_repo.dart';
