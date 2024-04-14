@@ -3,6 +3,7 @@ import 'package:dart_consul/dart_consul.dart';
 final bKey = 'gb';
 final cKey = 'gc';
 final lKey = 'gm';
+final ocKey = 'gC';
 final pKey = 'gp';
 final sKey = 'gs';
 final tKey = 'gt';
