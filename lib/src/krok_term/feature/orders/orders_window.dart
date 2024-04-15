@@ -37,6 +37,8 @@ class OrdersWindow {
   final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
   final _selected = BehaviorSubject.seeded("");
 
+  bool get isEmpty => _entries.isEmpty;
+
   OrderData? get selected =>
       _entries.firstWhereOrNull((e) => e.id == _selected.value);
 

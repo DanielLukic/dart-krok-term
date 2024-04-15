@@ -51,5 +51,17 @@ void _cancelSelected() {
 }
 
 void _cancelAll() {
-  logWarn("ALL");
+  if (_openOrders.isEmpty) return;
+
+  final all = "ALL".bold().red();
+  final msg = 'Please confirm cancellation of $all orders';
+  desktop.query(msg, (e) {
+    if (e == QueryResult.positive) {
+      logInfo("canceling all orders");
+      retrieve(KrakenRequest.cancelAll()).listenSafely((e) {
+        closedOrdersRepo.refresh(userRequest: true);
+        openOrdersRepo.refresh(userRequest: true);
+      });
+    }
+  });
 }
