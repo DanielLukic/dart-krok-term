@@ -25,7 +25,7 @@ late final TimestampedStorage<Currency> _currency;
 Stream<Currency> get currency => _currency.stream;
 
 initCurrency(Storage storage) {
-  logInfo('init krok currency');
+  logVerbose('init krok currency');
   _currency = TimestampedStorage<Currency>(
     storage: storage,
     key: "selected_currency",

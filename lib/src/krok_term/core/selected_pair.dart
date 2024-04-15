@@ -15,12 +15,12 @@ late final TimestampedStorage<AssetPair> _selectedPair;
 Stream<AssetPair> get selectedPair => _selectedPair.stream;
 
 selectPair(AssetPair pair) {
-  logInfo('select pair (wsname): $pair');
+  logVerbose('select pair (wsname): $pair');
   _selectedPair.store(pair);
 }
 
 initSelectedPair(Storage storage) {
-  logInfo('init selected pair');
+  logVerbose('init selected pair');
   _selectedPair = TimestampedStorage<AssetPair>(
     storage: storage,
     key: "selected_pair",

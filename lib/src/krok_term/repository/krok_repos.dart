@@ -44,7 +44,7 @@ AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
 }
 
 initKrokRepos(Storage storage) {
-  logInfo('init krok repos');
+  logVerbose('init krok repos');
   assetsRepo = AssetsRepo(storage);
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);

@@ -15,7 +15,7 @@ export '../common/storage.dart';
 export '../common/types.dart';
 
 void initKrokCore() async {
-  logInfo('init krok core');
+  logVerbose('init krok core');
   await for (final it in _queue.stream) {
     await _process(it);
   }
@@ -37,7 +37,7 @@ final _online = BehaviorSubject.seeded("");
 
 Future _process(QueuedRequest it) async {
   if (it.canceled) {
-    logWarn('skip $it');
+    logVerbose('skip $it');
   } else if (_online.value.isNotEmpty && it._request.path != 'SystemStatus') {
     it.completeError(_online.value);
   } else {

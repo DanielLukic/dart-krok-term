@@ -56,7 +56,7 @@ _initLog() {
 }
 
 _initKrokTerm() async {
-  logInfo('init krok storage');
+  logVerbose('init krok storage');
   final storage = Storage(path: 'krok');
 
   initCurrency(storage);
