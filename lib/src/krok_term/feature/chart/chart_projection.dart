@@ -23,7 +23,7 @@ class ChartProjection {
 
   Stream<int> get zoom => _zoom;
 
-  int get maxZoom => 10;
+  int get maxZoom => 7;
 
   int get maxScroll => _currentMaxScroll.value;
 
