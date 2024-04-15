@@ -21,6 +21,26 @@ extension on Window {
         description: 'Scroll right',
         action: () => _projection.scrollBy(2));
 
+    onKey('<Escape>', //
+        description: 'Clear price selection',
+        action: _selection.reset);
+    onKey('j', //
+        aliases: ['<Down>'],
+        description: 'Price selection down',
+        action: () => _selection.change(-1));
+    onKey('<S-j>', //
+        aliases: ['<S-Down>'],
+        description: 'Price selection down',
+        action: () => _selection.change(-10));
+    onKey('k', //
+        aliases: ['<Up>'],
+        description: 'Price selection up',
+        action: () => _selection.change(1));
+    onKey('<S-k>', //
+        aliases: ['<S-Up>'],
+        description: 'Price selection up',
+        action: () => _selection.change(10));
+
     changeInterval(int delta) {
       final now = _interval.value.index;
       final change = (now + delta).clamp(0, OhlcInterval.values.length - 1);

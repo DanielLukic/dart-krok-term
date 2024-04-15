@@ -26,6 +26,7 @@ String renderCanvas(
   int canvasHeight,
   ChartSnapshot snapshot,
   OHLC latest,
+  double selected,
 ) {
   final canvas = ColorCanvas(canvasWidth, canvasHeight);
   final invertX = canvasWidth - 1;
@@ -35,6 +36,13 @@ String renderCanvas(
   final trendColor = _trendColor(latest.open - latest.close);
   for (var x = 0; x < canvasWidth; x++) {
     canvas.set(invertX - x, invertY - line, trendColor);
+  }
+  if (selected > 0) {
+    final line = snapshot.scaled(selected, canvasHeight);
+    final selectionColor = blue;
+    for (var x = 0; x < canvasWidth; x++) {
+      canvas.set(invertX - x, invertY - line, selectionColor);
+    }
   }
 
   final count = min(snapshot.length, canvas.width);
@@ -61,7 +69,7 @@ extension on ChartSnapshot {
   double trendAt(int at) => closes[at] - opens[at];
 
   int scaled(double price, int height) =>
-      ((price - minLow) * norm * height + 1).round();
+      ((price - minLow) * norm * 0.95 * height + 1).round().clamp(1, height);
 
   int scaledHighAt(int index, int height) => scaled(highs[index], height);
 
@@ -75,25 +83,36 @@ String renderPrices(
   ChartSnapshot snapshot,
   int height,
   OHLC last,
+  double sp,
 ) {
+  final scaleHeight = height - 3;
+
+  // pure madness :-D
+
   final latestColor = _trendColor(last.close - last.open);
   final latest = latestColor(pair.price(last.close));
-  final latestY = snapshot.scaled(last.close, height - 3).clamp(1, height - 3);
+  final latestY = snapshot.scaled(last.close, scaleHeight);
 
   final currentColor = snapshot.trendColorAt(0);
   final current = currentColor(pair.price(snapshot.closes[0]));
-  final currentY = snapshot.scaledCloseAt(0, height - 3).clamp(1, height - 3);
+  final currentY = snapshot.scaledCloseAt(0, scaleHeight);
+
+  final selectedColor = blue;
+  final selected = selectedColor(pair.price(sp));
+  final selectedY = snapshot.scaled(sp, scaleHeight);
 
   final high = pair.price(snapshot.maxHigh);
   final low = pair.price(snapshot.minLow);
   final showCurrent = snapshot.closes[0] > 0;
+  final showSelected = sp > 0;
 
   final prices = Buffer(10, height);
   prices.fill(32);
   prices.drawBuffer(1, 0, high);
+  prices.drawBuffer(1, height - 2, low);
   if (showCurrent) prices.drawBuffer(1, height - 2 - currentY, current);
   prices.drawBuffer(1, height - 2 - latestY, latest);
-  prices.drawBuffer(1, height - 2, low);
+  if (showSelected) prices.drawBuffer(1, height - 2 - selectedY, selected);
   prices.drawColumn(0, '┊');
   prices.set(0, height - 2, '┘');
   prices.set(0, height - 1, ' ');

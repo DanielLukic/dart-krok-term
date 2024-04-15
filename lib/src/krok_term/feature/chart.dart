@@ -17,6 +17,7 @@ import 'chart/chart_snapshot.dart';
 part 'chart/chart_keys.dart';
 part 'chart/chart_mouse.dart';
 part 'chart/chart_sampling.dart';
+part 'chart/chart_selection.dart';
 
 final _window = window('chart', 61, 25) //
   ..name = "Chart [$cKey] [1-9]"
@@ -45,10 +46,17 @@ void _create() {
 
   final zoom = _projection.zoom;
   final scroll = _projection.scroll;
-  final withZoomAndScroll =
-      combine([chartData, _interval, zoom, scroll, refresh, autoRefreshPair])
-          .distinctUntilChanged()
-          .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5]));
+  final withZoomAndScroll = combine([
+    chartData,
+    _interval,
+    zoom,
+    scroll,
+    refresh,
+    autoRefreshPair,
+    _selection.selectedPrice,
+  ])
+      .distinctUntilChanged()
+      .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely(_showChart, onError: _showError));
@@ -72,6 +80,7 @@ String _renderChart(
   int scroll,
   DateTime refresh,
   AssetPairData ap,
+  double sp,
 ) {
   final pair = input.$1;
   final data = input.$2;
@@ -87,15 +96,18 @@ String _renderChart(
   final last = data.last;
   final snap = _sample(data, zoom, scroll, chartWidth);
 
+  _selection.useChartInfo(snap.minLow, snap.maxHigh, last.close, chartHeight);
+
   final loading = _loading(input, interval, refresh);
 
   final Buffer buffer = Buffer(width, height);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   if (loading.isEmpty || input.$1 == ap) {
-    buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
+    buffer.drawBuffer(
+        0, 1, renderCanvas(chartWidth, chartHeight, snap, last, sp));
   }
-  buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
+  buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last, sp));
   buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
   buffer.drawBuffer(0, height - 3, loading);
 
