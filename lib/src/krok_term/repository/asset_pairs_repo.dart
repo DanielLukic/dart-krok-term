@@ -50,7 +50,7 @@ final class AssetPairsRepo extends KrokAutoRepo<AssetPairs> {
         );
 
   static JsonObject _preform(JsonObject data) => data
-      .map((k, v) => MapEntry(k, (v as Map<String, dynamic>) + {'pair': k}));
+      .map((k, v) => MapEntry(k, (v as Map<String, dynamic>)..plus('pair', k)));
 
   static AssetPairs _restore(JsonObject result) =>
       result.map((k, v) => MapEntry(k, AssetPairData(v)));

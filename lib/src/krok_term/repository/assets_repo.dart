@@ -32,7 +32,7 @@ final class AssetsRepo extends KrokAutoRepo<Assets> {
         );
 
   static JsonObject _preform(JsonObject data) => data
-      .map((k, v) => MapEntry(k, (v as Map<String, dynamic>) + {'name': k}));
+      .map((k, v) => MapEntry(k, (v as Map<String, dynamic>)..plus('name', k)));
 
   static Assets _restore(JsonObject result) =>
       result.map((k, v) => MapEntry(k, AssetData(v)));

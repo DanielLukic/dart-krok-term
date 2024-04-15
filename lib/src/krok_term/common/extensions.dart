@@ -79,15 +79,11 @@ extension ListExtensions<E> on List<E> {
 }
 
 extension MapExtension<K, V> on Map<K, V> {
-  operator +(Map<K, V> other) {
-    addAll(other);
-    return this;
-  }
+  /// Add all entries from [other] to `this`.
+  void merged(Map<K, V> other) => addAll(other);
 
-  Map<K, V> plus(K k, V v) {
-    this[k] = v;
-    return this;
-  }
+  /// Add new map entry [k] [v] to `this`.
+  void plus(K k, V v) => this[k] = v;
 
   Map<K, V> where(bool Function(MapEntry<K, V>) pred) {
     final result = <K, V>{};
