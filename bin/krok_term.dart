@@ -40,7 +40,7 @@ _addAutoHelp() => addAutoHelp(
     );
 
 _initLog() {
-  final logfile = fileSink("krok.log");
+  final logfile = fileSink('krok.log', truncate: true);
   sink = (e) {
     final filter = e.toString();
     if (filter.contains("package:krok/")) {
