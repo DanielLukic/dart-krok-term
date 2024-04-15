@@ -105,22 +105,3 @@ class QueuedRequest {
     return "$prefix${_request.path.toSnakeCase()}";
   }
 }
-
-extension SafeStreamExtension<T> on Stream<T> {
-  StreamSubscription<T> listenSafely(
-    Function(T) listener, {
-    void Function(dynamic)? onError,
-  }) {
-    final oe = onError ?? logError;
-
-    safely(t) {
-      try {
-        listener(t);
-      } catch (it, trace) {
-        logError(it, trace);
-      }
-    }
-
-    return listen(safely, onError: oe);
-  }
-}

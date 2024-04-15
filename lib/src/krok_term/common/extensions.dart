@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
 import 'package:dart_consul/dart_consul.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:intl/intl.dart';
 import 'package:krok/krok.dart';
 import 'package:rxdart/rxdart.dart';
@@ -153,6 +155,7 @@ extension SnakeCaseExtension on String {
 
 extension AutoDateTimeFormatExtension on DateTime {
   String toTimestamp() => DateFormat('MM-dd HH:mm').format(this);
+
   String toLongStamp() => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
 }
 
@@ -191,5 +194,24 @@ extension PlusIterable<E> on Iterable<E> {
     for (final i in more) {
       yield i;
     }
+  }
+}
+
+extension SafeStreamExtension<T> on Stream<T> {
+  StreamSubscription<T> listenSafely(
+    Function(T) listener, {
+    void Function(dynamic)? onError,
+  }) {
+    final oe = onError ?? logError;
+
+    safely(t) {
+      try {
+        listener(t);
+      } catch (it, trace) {
+        logError(it, trace);
+      }
+    }
+
+    return listen(safely, onError: oe);
   }
 }
