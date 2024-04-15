@@ -41,7 +41,17 @@ class OHLC extends BaseModel {
 }
 
 Stream<List<OHLC>> ohlc(AssetPairData ap, OhlcInterval interval) =>
-    retrieve(KrakenRequest.ohlc(pair: ap.pair, interval: interval))
+    retrieve(KrakenRequest.ohlc(
+      pair: ap.pair,
+      interval: interval,
+      since: _toKrakenTime(interval),
+    ))
         .doOnData((e) => logVerbose("o_h_l_c retrieved"))
         .map((json) => json[ap.pair] as List<dynamic>)
         .map((list) => list.mapList((e) => OHLC.parse(e)));
+
+KrakenTime _toKrakenTime(OhlcInterval interval) =>
+    _strToKt("${interval.minutes * 720}m");
+
+KrakenTime _strToKt(String spec) =>
+    KrakenTime.fromString(spec, since: true, allowShortForm: false);
