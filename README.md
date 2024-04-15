@@ -31,10 +31,6 @@ Animation of the app running:
 
 These are really "maybe"s only, depending on how much time I find.
 
-- Separate logs for domain vs debug
-  - Make DebugLog reusable? Multiple instances?
-  - How to redirect logs from krok to file only?
-- Open orders, closed orders, current and all pairs
 - Add alert
 - Show alerts, current and all pairs
 - Remove alert or all alerts (current pair vs all pairs)
