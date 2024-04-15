@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
-import 'package:rxdart/rxdart.dart' hide SwitchMapExtension, ScanExtension;
+import 'package:rxdart/rxdart.dart'
+    hide SwitchMapExtension, ScanExtension, StartWithExtension;
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
@@ -32,9 +33,12 @@ void _create() {
   Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
       ohlc(s, i).map((list) => (s, list, i, r));
 
-  final refreshOnSelect = selectedAssetPair.doOnData((_) => _triggerRefresh());
+  final autoRefreshPair = selectedAssetPair.doOnData((_) => _triggerRefresh());
 
-  final chartData = combine([refreshOnSelect, _interval, _refresh])
+  final refresh = _refresh.switchMap((e) =>
+      Stream.periodic(1.minutes).map((_) => DateTime.timestamp()).startWith(e));
+
+  final chartData = combine([autoRefreshPair, _interval, refresh])
       .distinctUntilChanged()
       .switchMap((e) => retrieve(e[0], e[1], e[2]))
       .doOnData((e) => _projection.setDataSize(e.$2.length));
@@ -42,9 +46,9 @@ void _create() {
   final zoom = _projection.zoom;
   final scroll = _projection.scroll;
   final withZoomAndScroll =
-      combine([chartData, _interval, zoom, scroll, _refresh])
+      combine([chartData, _interval, zoom, scroll, refresh, autoRefreshPair])
           .distinctUntilChanged()
-          .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4]));
+          .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely(_showChart, onError: _showError));
@@ -67,6 +71,7 @@ String _renderChart(
   int zoom,
   int scroll,
   DateTime refresh,
+  AssetPairData ap,
 ) {
   final pair = input.$1;
   final data = input.$2;
@@ -87,7 +92,7 @@ String _renderChart(
   final Buffer buffer = Buffer(width, height);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
-  if (loading.isEmpty) {
+  if (loading.isEmpty || input.$1 == ap) {
     buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
   }
   buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
