@@ -82,14 +82,17 @@ String _renderChart(
   final last = data.last;
   final snap = _sample(data, zoom, scroll, chartWidth);
 
+  final loading = _loading(input, interval, refresh);
+
   final Buffer buffer = Buffer(width, height);
-  buffer.fill(32);
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
-  buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
-  buffer.drawBuffer(0, height - 3, _loading(input, interval, refresh));
+  if (loading.isEmpty) {
+    buffer.drawBuffer(0, 1, renderCanvas(chartWidth, chartHeight, snap, last));
+  }
   buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last));
   buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
+  buffer.drawBuffer(0, height - 3, loading);
 
   return buffer.frame();
 }
