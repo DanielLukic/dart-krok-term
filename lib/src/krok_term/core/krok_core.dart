@@ -57,16 +57,19 @@ Future _process(QueuedRequest it) async {
   return it;
 }
 
+const _defaultDelay = 1;
+const _ohlcDelay = 5;
+
 Future _throttle(QueuedRequest it) async {
   final now = DateTime.now();
   final seconds = now.difference(_throttleTimestamp).inSeconds;
   _throttleTimestamp = DateTime.now();
-  if (it._request.path == "OHLC" && seconds < 2) {
+  if (it._request.path == "OHLC" && seconds < _ohlcDelay) {
+    logVerbose('delay OHLC $it');
+    await Future.delayed((_ohlcDelay - seconds).seconds);
+  } else if (seconds < _defaultDelay) {
     logVerbose('delay $it');
-    await Future.delayed((2 - seconds).seconds);
-  } else if (seconds == 0) {
-    logVerbose('delay $it');
-    await Future.delayed(1.seconds);
+    await Future.delayed((_defaultDelay - seconds).seconds);
   }
 }
 
