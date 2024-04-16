@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dart_consul/dart_consul.dart';
+import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:rxdart/rxdart.dart'
     hide SwitchMapExtension, ScanExtension, StartWithExtension;
 import 'package:stream_transform/stream_transform.dart';
@@ -44,6 +45,9 @@ void _create() {
       .switchMap((e) => retrieve(e[0], e[1], e[2]))
       .doOnData((e) => _projection.setDataSize(e.$2.length));
 
+  final pairAlerts = alerts.combineLatest(
+      selectedAssetPair, (a, ap) => a[ap.wsname] ?? <AlertData>[]);
+
   final zoom = _projection.zoom;
   final scroll = _projection.scroll;
   final withZoomAndScroll = combine([
@@ -54,9 +58,10 @@ void _create() {
     refresh,
     autoRefreshPair,
     _selection.selectedPrice,
+    pairAlerts,
   ])
       .distinctUntilChanged()
-      .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6]));
+      .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely(_showChart, onError: _showError));
@@ -81,6 +86,7 @@ String _renderChart(
   DateTime refresh,
   AssetPairData ap,
   double sp,
+  List<AlertData> alerts,
 ) {
   final pair = input.$1;
   final data = input.$2;
@@ -104,10 +110,11 @@ String _renderChart(
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   if (loading.isEmpty || input.$1 == ap) {
-    buffer.drawBuffer(
-        0, 1, renderCanvas(chartWidth, chartHeight, snap, last, sp));
+    final data = renderCanvas(chartWidth, chartHeight, snap, last, sp, alerts);
+    buffer.drawBuffer(0, 1, data);
   }
-  buffer.drawBuffer(split, 0, renderPrices(pair, snap, height, last, sp));
+  final prices = renderPrices(pair, snap, height, last, sp, alerts);
+  buffer.drawBuffer(split, 0, prices);
   buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
   buffer.drawBuffer(0, height - 3, loading);
 

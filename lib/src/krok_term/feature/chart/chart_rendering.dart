@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dart_consul/dart_consul.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
+import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 
 import '../../common/color_canvas.dart';
 import '../../repository/asset_pairs_repo.dart';
@@ -27,23 +28,20 @@ String renderCanvas(
   ChartSnapshot snapshot,
   OHLC latest,
   double selected,
+  List<AlertData> alerts,
 ) {
   final canvas = ColorCanvas(canvasWidth, canvasHeight);
   final invertX = canvasWidth - 1;
   final invertY = canvasHeight - 1;
 
-  final line = snapshot.scaled(latest.close, canvasHeight);
-  final trendColor = _trendColor(latest.open - latest.close);
-  for (var x = 0; x < canvasWidth; x++) {
-    canvas.set(invertX - x, invertY - line, trendColor);
+  drawPriceLine(double price, CanvasColor color) =>
+      canvas.drawLine(snapshot.scaled(price, canvasHeight), color);
+
+  for (final alert in alerts) {
+    drawPriceLine(alert.price, gray);
   }
-  if (selected > 0) {
-    final line = snapshot.scaled(selected, canvasHeight);
-    final selectionColor = blue;
-    for (var x = 0; x < canvasWidth; x++) {
-      canvas.set(invertX - x, invertY - line, selectionColor);
-    }
-  }
+  drawPriceLine(latest.close, _trendColor(latest.open - latest.close));
+  if (selected > 0) drawPriceLine(selected, blue);
 
   final count = min(snapshot.length, canvas.width);
   for (var x = 0; x < count; x++) {
@@ -55,6 +53,14 @@ String renderCanvas(
     }
   }
   return canvas.frame();
+}
+
+extension on ColorCanvas {
+  drawLine(int y, CanvasColor color) {
+    for (var x = 0; x < width; x++) {
+      set(x, height - 1 - y, color);
+    }
+  }
 }
 
 CanvasColor _trendColor(double delta) => switch (delta) {
@@ -84,6 +90,7 @@ String renderPrices(
   int height,
   OHLC last,
   double sp,
+  List<AlertData> alerts,
 ) {
   final scaleHeight = height - 3;
 
@@ -110,6 +117,13 @@ String renderPrices(
   prices.fill(32);
   prices.drawBuffer(1, 0, high);
   prices.drawBuffer(1, height - 2, low);
+
+  for (final alert in alerts) {
+    final ap = gray(pair.price(alert.price));
+    final ay = snapshot.scaled(alert.price, scaleHeight);
+    prices.drawBuffer(1, height - 2 - ay, ap);
+  }
+
   if (showCurrent) prices.drawBuffer(1, height - 2 - currentY, current);
   prices.drawBuffer(1, height - 2 - latestY, latest);
   if (showSelected) prices.drawBuffer(1, height - 2 - selectedY, selected);
