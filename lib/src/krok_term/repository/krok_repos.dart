@@ -4,12 +4,14 @@ import 'package:stream_transform/stream_transform.dart';
 
 import '../common/storage.dart';
 import '../core/selected_pair.dart';
+import 'alerts_repo.dart';
 import 'asset_pairs_repo.dart';
 import 'assets_repo.dart';
 import 'balances_repo.dart';
 import 'portfolio_repo.dart';
 import 'ticker_repo.dart';
 
+late AlertsRepo alertsRepo;
 late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
@@ -17,6 +19,8 @@ late ClosedOrdersRepo closedOrdersRepo;
 late OpenOrdersRepo openOrdersRepo;
 late PortfolioRepo portfolioRepo;
 late TickersRepo tickersRepo;
+
+Stream<Alerts> get alerts => alertsRepo.subscribe();
 
 Stream<Assets> get assets => assetsRepo.subscribe().distinct();
 
@@ -45,6 +49,7 @@ AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
 
 initKrokRepos(Storage storage) {
   logVerbose('init krok repos');
+  alertsRepo = AlertsRepo(storage);
   assetsRepo = AssetsRepo(storage);
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
