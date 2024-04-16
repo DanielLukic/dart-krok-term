@@ -22,22 +22,22 @@ late TickersRepo tickersRepo;
 
 Stream<Alerts> get alerts => alertsRepo.subscribe();
 
-Stream<Assets> get assets => assetsRepo.subscribe().distinct();
+Stream<Assets> get assets => assetsRepo.subscribe();
 
-Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe().distinct();
+Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe();
 
-Stream<Balances> get balances => balancesRepo.subscribe().distinct();
+Stream<Balances> get balances => balancesRepo.subscribe();
 
-Stream<Orders> get closedOrders => closedOrdersRepo.subscribe().distinct();
+Stream<Orders> get closedOrders => closedOrdersRepo.subscribe();
 
-Stream<Orders> get openOrders => openOrdersRepo.subscribe().distinct();
+Stream<Orders> get openOrders => openOrdersRepo.subscribe();
 
-Stream<Portfolio> get portfolio => portfolioRepo.subscribe().distinct();
+Stream<Portfolio> get portfolio => portfolioRepo.subscribe();
 
-Stream<Tickers> get tickers => tickersRepo.subscribe().distinct();
+Stream<Tickers> get tickers => tickersRepo.subscribe();
 
 Stream<AssetPairData> get selectedAssetPair =>
-    selectedPair.combineLatest(assetPairs, _pickAssetPair).distinct();
+    selectedPair.combineLatest(assetPairs, _pickAssetPair);
 
 AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
   final match = ap.values.where((e) => e.wsname == it.wsname).singleOrNull;
