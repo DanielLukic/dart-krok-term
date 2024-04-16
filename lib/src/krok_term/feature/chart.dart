@@ -33,7 +33,7 @@ void _create() {
   _window.setupMouse();
 
   Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
-      ohlc(s, i).map((list) => (s, list, i, r));
+      ohlcRepo.retrieve(s, i).map((list) => (s, list, i, r));
 
   final autoRefreshPair = selectedAssetPair.doOnData((_) => _triggerRefresh());
 

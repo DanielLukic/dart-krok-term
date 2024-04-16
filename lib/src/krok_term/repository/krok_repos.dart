@@ -8,6 +8,7 @@ import 'alerts_repo.dart';
 import 'asset_pairs_repo.dart';
 import 'assets_repo.dart';
 import 'balances_repo.dart';
+import 'ohlc_repo.dart';
 import 'portfolio_repo.dart';
 import 'ticker_repo.dart';
 
@@ -16,6 +17,7 @@ late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
 late ClosedOrdersRepo closedOrdersRepo;
+late OhlcRepo ohlcRepo;
 late OpenOrdersRepo openOrdersRepo;
 late PortfolioRepo portfolioRepo;
 late TickersRepo tickersRepo;
@@ -54,6 +56,7 @@ initKrokRepos(Storage storage) {
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
   closedOrdersRepo = ClosedOrdersRepo(storage);
+  ohlcRepo = OhlcRepo(storage);
   openOrdersRepo = OpenOrdersRepo(storage);
   portfolioRepo = PortfolioRepo(storage);
   tickersRepo = TickersRepo(storage);

@@ -153,6 +153,8 @@ extension AutoDateTimeFormatExtension on DateTime {
   String toTimestamp() => DateFormat('MM-dd HH:mm').format(this);
 
   String toLongStamp() => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
+
+  Duration get age => DateTime.timestamp().difference(this);
 }
 
 abstract class BaseModel {
