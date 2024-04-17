@@ -1,5 +1,7 @@
 import 'package:dart_consul/dart_consul.dart';
 
+export 'package:dart_consul/dart_consul.dart';
+
 final bKey = 'gb';
 final cKey = 'gc';
 final lKey = 'gm';

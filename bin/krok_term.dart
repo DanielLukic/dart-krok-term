@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dart_consul/dart_consul.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
+import 'package:krok_term/src/krok_term/feature/alerting.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
@@ -15,7 +15,9 @@ import 'package:krok_term/src/krok_term/feature/portfolio.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/status.dart';
 import 'package:krok_term/src/krok_term/feature/ticker.dart';
+import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
+import 'package:rxdart/transformers.dart';
 
 void main(List<String> args) async {
   final conIO = MadConIO();
@@ -87,4 +89,11 @@ _initKrokTerm() async {
   openTicker();
 
   desktop.focusById('chart');
+
+  final alerting = Alerting(tickersRepo);
+
+  desktop.stream().whereType<AlertAdd>().listen((event) {
+    logInfo('alert add ${event.presetPrice}');
+    alerting.onAdd(event);
+  });
 }

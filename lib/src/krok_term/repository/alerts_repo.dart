@@ -8,9 +8,11 @@ import 'asset_pairs_repo.dart';
 
 class AlertAdd {
   final AssetPairData pair;
+  double selectedPrice;
+  double lastPrice;
   String? presetPrice;
 
-  AlertAdd(this.pair, double selectedPrice, double lastPrice) {
+  AlertAdd(this.pair, this.selectedPrice, this.lastPrice) {
     final sp = selectedPrice.takeIf(selectedPrice > 0);
     presetPrice = sp?.let((it) => pair.price(it));
 
