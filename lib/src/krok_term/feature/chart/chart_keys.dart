@@ -41,6 +41,8 @@ extension on Window {
         description: 'Price selection up',
         action: () => _selection.change(10));
 
+    onKey('a', description: 'Add alert', action: _addAlert);
+
     changeInterval(int delta) {
       final now = _interval.value.index;
       final change = (now + delta).clamp(0, OhlcInterval.values.length - 1);
@@ -63,4 +65,10 @@ extension on Window {
           action: () => _interval.value = i);
     }
   }
+}
+
+void _addAlert() {
+  final pair = _pair;
+  if (pair == null) return;
+  desktop.sendMessage(AlertAdd(pair, _selection.currentPrice, _selection.last));
 }

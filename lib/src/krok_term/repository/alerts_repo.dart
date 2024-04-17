@@ -4,6 +4,20 @@ import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
 import '../core/krok_core.dart';
+import 'asset_pairs_repo.dart';
+
+class AlertAdd {
+  final AssetPairData pair;
+  String? presetPrice;
+
+  AlertAdd(this.pair, double selectedPrice, double lastPrice) {
+    final sp = selectedPrice.takeIf(selectedPrice > 0);
+    presetPrice = sp?.let((it) => pair.price(it));
+
+    final lp = lastPrice.takeIf(lastPrice > 0);
+    presetPrice = presetPrice ?? lp?.let((it) => pair.price(it));
+  }
+}
 
 typedef Alerts = Map<Asset, List<AlertData>>;
 

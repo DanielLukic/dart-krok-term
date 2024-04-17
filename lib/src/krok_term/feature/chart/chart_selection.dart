@@ -37,6 +37,14 @@ class ChartSelection {
     _setPriceTo(currentPrice.clamp(min, max));
   }
 
+  void invalidate() {
+    min = 0;
+    max = 0;
+    last = 0;
+    rows = 0;
+    reset();
+  }
+
   void reset() => _selectedPrice.value = 0;
 
   void change(int delta) {

@@ -35,7 +35,11 @@ void _create() {
   Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
       ohlcRepo.retrieve(s, i).map((list) => (s, list, i, r));
 
-  final autoRefreshPair = selectedAssetPair.doOnData((_) => _triggerRefresh());
+  final autoRefreshPair = selectedAssetPair
+      .doOnData((_) => _selection.invalidate())
+      .doOnData((_) => _triggerRefresh())
+      // reset pair when switching. will be assigned after data arrived.
+      .doOnData((e) => _pair = null);
 
   final refresh = _refresh.switchMap((e) =>
       Stream.periodic(1.minutes).map((_) => DateTime.timestamp()).startWith(e));
@@ -61,6 +65,9 @@ void _create() {
     pairAlerts,
   ])
       .distinctUntilChanged()
+      // assign pair, now that data is available/visible. pair is used for
+      // placing alerts only for now.
+      .doOnData((e) => _pair = e[5])
       .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]));
 
   _window.autoDispose("update",
@@ -71,6 +78,9 @@ _showChart(chart) => _window.update(() => chart);
 
 _showError(e) => _window
     .update(() => e.toString().split(':').map((e) => e.red()).join('\n'));
+
+/// Latest selected pair. Horrible. Used for placing alerts.
+AssetPairData? _pair;
 
 final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
