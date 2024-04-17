@@ -77,7 +77,7 @@ List<String> _toEntries(
     final d = _assetDecimalsByName(assets, a);
     final bal = b.volume.toStringAsFixed(d);
     final volume = bid * b.volume;
-    if (volume < 0.01) continue;
+    if (volume < 1) continue;
     final v = volume.toStringAsFixed(2);
     final bi = bid.toStringAsFixed(ap.pair_decimals);
 
