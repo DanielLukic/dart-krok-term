@@ -67,13 +67,10 @@ List<String> _toEntries(
   final result = <String>[];
   for (final byPair in alerts.values) {
     for (final a in byPair) {
-      final ap = assetPairs.values.firstWhereOrNull(
-        (e) => e.wsname == a.wsname,
-      );
+      final ap = assetPairs[a.pair];
       if (ap == null) continue;
       _entries.add((a, ap));
-
-      result.add("${a.wsname}|${a.price}".columns(_columns, '|'));
+      result.add("${ap.wsname}|${a.price}".columns(_columns, '|'));
     }
   }
   return result;

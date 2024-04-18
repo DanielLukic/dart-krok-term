@@ -49,7 +49,7 @@ void _create() {
       .doOnData((e) => _projection.setDataSize(e.$2.length));
 
   final pairAlerts = alerts.combineLatest(
-      selectedAssetPair, (a, ap) => a[ap.wsname] ?? <AlertData>[]);
+      selectedAssetPair, (a, ap) => a[ap.pair] ?? <AlertData>[]);
 
   final zoom = _projection.zoom;
   final scroll = _projection.scroll;

@@ -118,7 +118,7 @@ class Alerting {
           if (mode == null) {
             desktop.toast('ignoring alert for same price');
           } else {
-            alertsRepo.addAlert(add.pair.wsname, res, mode);
+            alertsRepo.addAlert(add.pair.pair, res, mode);
           }
           dialog.dismiss();
         } else {

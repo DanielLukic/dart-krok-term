@@ -65,19 +65,19 @@ final class AlertsRepo {
 
   void remove(AlertData alert) => _events.add(('remove', alert));
 
-  void addAlert(Asset wsname, double price, String mode) =>
-      add(AlertData(wsname, price, mode));
+  void addAlert(Asset pair, double price, String mode) =>
+      add(AlertData(pair, price, mode));
 
   Alerts _add(Alerts alerts, AlertData alert) {
-    final entries = alerts[alert.wsname].clone();
+    final entries = alerts[alert.pair].clone();
     if (!entries.contains(alert)) entries.add(alert);
-    return Alerts.from(alerts)..put(alert.wsname, entries);
+    return Alerts.from(alerts)..put(alert.pair, entries);
   }
 
   Alerts _remove(Alerts alerts, AlertData alert) {
-    final entries = alerts[alert.wsname].clone();
+    final entries = alerts[alert.pair].clone();
     if (entries.contains(alert)) entries.remove(alert);
-    return Alerts.from(alerts)..put(alert.wsname, entries);
+    return Alerts.from(alerts)..put(alert.pair, entries);
   }
 
   Future<(String, dynamic)> _asyncRestore(e) async => switch (e.$1) {
