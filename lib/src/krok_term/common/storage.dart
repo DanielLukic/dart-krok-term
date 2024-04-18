@@ -49,6 +49,14 @@ class Storage {
 
     await file.writeAsString(jsonEncode(json));
   }
+
+  Future append(String key, String data) async {
+    final exists = await _directory.exists();
+    if (!exists) await _directory.create();
+
+    final file = _file(key);
+    await file.writeAsString(data, mode: FileMode.append);
+  }
 }
 
 // TODO Switch to lastModified
