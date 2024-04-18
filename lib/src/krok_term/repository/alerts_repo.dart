@@ -26,12 +26,13 @@ typedef Alerts = Map<Asset, List<AlertData>>;
 class AlertData extends BaseModel {
   final Asset wsname;
   final double price;
+  final String mode;
 
-  AlertData(this.wsname, this.price)
+  AlertData(this.wsname, this.price, this.mode)
       : assert(wsname.contains('/'), 'wsname expected instead of $wsname');
 
   @override
-  List get fields => [wsname, price];
+  List get fields => [wsname, price, mode];
 
   @override
   String toString() => fields.join(',');
@@ -64,10 +65,8 @@ final class AlertsRepo {
 
   void remove(AlertData alert) => _events.add(('remove', alert));
 
-  void addAlert(Asset wsname, double price) => add(AlertData(wsname, price));
-
-  void removeAlert(Asset wsname, double price) =>
-      remove(AlertData(wsname, price));
+  void addAlert(Asset wsname, double price, String mode) =>
+      add(AlertData(wsname, price, mode));
 
   Alerts _add(Alerts alerts, AlertData alert) {
     final entries = alerts[alert.wsname].clone();
@@ -107,7 +106,7 @@ final class AlertsRepo {
 
   Alerts _fromJson(JsonObject json) {
     fromJson(List<dynamic> list) =>
-        list.mapList((ad) => AlertData(ad[0], ad[1]));
+        list.mapList((ad) => AlertData(ad[0], ad[1], ad[2]));
     return json.mapValues((list) => fromJson(list));
   }
 }

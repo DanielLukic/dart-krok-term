@@ -103,7 +103,16 @@ class Alerting {
         if (price != null) {
           final abs = (pre ?? (e) => e)(price);
           final res = (op ?? (e) => e)(abs);
-          alertsRepo.addAlert(add.pair.wsname, res);
+          final mode = switch (res) {
+            _ when res < add.lastPrice => 'below',
+            _ when res > add.lastPrice => 'above',
+            _ => null,
+          };
+          if (mode == null) {
+            desktop.toast('ignoring alert for same price');
+          } else {
+            alertsRepo.addAlert(add.pair.wsname, res, mode);
+          }
           dialog.dismiss();
         } else {
           desktop.toast('invalid price: $i');
