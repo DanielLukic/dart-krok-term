@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 

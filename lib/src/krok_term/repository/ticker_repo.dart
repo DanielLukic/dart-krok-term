@@ -1,5 +1,3 @@
-import 'package:dart_consul/dart_consul.dart';
-
 import '../core/krok_core.dart';
 import 'auto_repo.dart';
 
