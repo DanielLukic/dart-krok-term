@@ -71,7 +71,8 @@ List<String> _toEntries(
       final ap = assetPairs[a.pair];
       if (ap == null) continue;
       _entries.add((a, ap));
-      result.add("${ap.wsname}|${a.price}".columns(_columns, '|'));
+      final p = ap.price(a.price);
+      result.add("${ap.wsname}|$p".columns(_columns, '|'));
     }
   }
   return result;
