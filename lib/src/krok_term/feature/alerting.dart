@@ -69,6 +69,13 @@ class Alerting {
     layout.onKey('<S-j>',
         description: 'Down 10% of last price', action: () => changePrice(-10));
 
+    layout.onKey('+',
+        description: 'Start entering relative price',
+        action: () => input.input = '+');
+    layout.onKey('-',
+        description: 'Start entering relative price',
+        action: () => input.input = '-');
+
     layout.onKey('x',
         aliases: ['<C-u>'],
         description: 'Clear input',
