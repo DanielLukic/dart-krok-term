@@ -1,4 +1,3 @@
-import 'package:dart_consul/dart_consul.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
@@ -8,9 +7,9 @@ import '../repository/krok_repos.dart';
 import '../repository/ticker_repo.dart';
 import 'select_pair.dart';
 
-final _window = window("asset-pair", 61, 2) //
+final _window = window("asset-pair", 62, 2) //
   ..name = "Asset Pair [/]"
-  ..position = AbsolutePosition(43, 0);
+  ..position = AbsolutePosition(42, 0);
 
 void openAssetPair() => autoWindow(_window, () => _create());
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:dart_consul/dart_consul.dart';
 import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:rxdart/rxdart.dart'
     hide SwitchMapExtension, ScanExtension, StartWithExtension;
@@ -20,9 +19,9 @@ part 'chart/chart_mouse.dart';
 part 'chart/chart_sampling.dart';
 part 'chart/chart_selection.dart';
 
-final _window = window('chart', 61, 25) //
+final _window = window('chart', 62, 25) //
   ..name = "Chart [$cKey] [1-9]"
-  ..position = AbsolutePosition(43, 4);
+  ..position = AbsolutePosition(42, 4);
 
 void openChart() => autoWindow(_window, () => _create());
 
