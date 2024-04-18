@@ -6,7 +6,7 @@ import 'package:rxdart/transformers.dart';
 import '../core/krok_core.dart';
 import 'asset_pairs_repo.dart';
 
-class AlertAdd {
+class AlertAdd extends BaseModel {
   final AssetPairData pair;
   double selectedPrice;
   double lastPrice;
@@ -19,23 +19,23 @@ class AlertAdd {
     final lp = lastPrice.takeIf(lastPrice > 0);
     presetPrice = presetPrice ?? lp?.let((it) => pair.price(it));
   }
+
+  @override
+  List get fields => [pair, selectedPrice, lastPrice, presetPrice];
 }
 
 typedef Alerts = Map<Asset, List<AlertData>>;
 
 class AlertData extends BaseModel {
-  final Asset wsname;
+  final Asset pair;
   final double price;
   final String mode;
 
-  AlertData(this.wsname, this.price, this.mode)
-      : assert(wsname.contains('/'), 'wsname expected instead of $wsname');
+  AlertData(this.pair, this.price, this.mode)
+      : assert(!pair.contains('/'), 'pair expected instead of wsname: $pair');
 
   @override
-  List get fields => [wsname, price, mode];
-
-  @override
-  String toString() => fields.join(',');
+  List get fields => [pair, price, mode];
 }
 
 final class AlertsRepo {
