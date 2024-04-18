@@ -1,6 +1,6 @@
+import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
-import '../common/desktop.dart';
 import '../repository/alerts_repo.dart';
 import '../repository/ticker_repo.dart';
 
@@ -25,7 +25,11 @@ class Alerting {
               DuiPadding(DuiTitle('Create alert'), bottom: 1),
               DuiText.fromLines([
                 'Specify price as absolute value or +/-.',
-                'Optionally use % with either absolute or +/-.'
+                'Optionally use % with either absolute or +/-.',
+                '',
+                'Use x or <C-u> to clear input.',
+                'Use j/k and <S-j>/<S-k> to change price by 1 or 10 percent.',
+                'Use <Escape> to cancel. Press <Return> to create alert.',
               ]),
               DuiSpace(),
               DuiText('Last price: $lastPrice'),
@@ -37,11 +41,6 @@ class Alerting {
                   DuiButton("Create <Return>"),
                 ],
               ),
-              DuiSpace(),
-              DuiText.fromLines([
-                'Use <Escape> to cancel. Press <Return> to create alert.',
-                'Use j/k and <S-j>/<S-k> to change price by 1 or 10 percent.',
-              ])
             ],
           ),
           h: 2,
@@ -70,6 +69,11 @@ class Alerting {
     layout.onKey('<S-j>',
         description: 'Down 10% of last price', action: () => changePrice(-10));
 
+    layout.onKey('x',
+        aliases: ['<C-u>'],
+        description: 'Clear input',
+        action: () => input.input = '');
+
     layout.onKey('<Escape>',
         aliases: ['q'],
         description: 'Cancel alert creation',
@@ -80,12 +84,29 @@ class Alerting {
       aliases: ['a'],
       description: 'Confirm alert creation',
       action: () {
-        final price = double.tryParse(input.input);
+        var i = input.input;
+
+        final op = switch (i) {
+          _ when i.startsWith('+') => (e) => add.lastPrice + e,
+          _ when i.startsWith('-') => (e) => add.lastPrice - e,
+          _ => null,
+        };
+        if (op != null) i = i.drop(1);
+
+        final pre = switch (i) {
+          _ when i.endsWith('%') => (e) => add.lastPrice * e / 100,
+          _ => null,
+        };
+        if (pre != null) i = i.dropLast(1);
+
+        final price = double.tryParse(i);
         if (price != null) {
-          alertsRepo.addAlert(add.pair.wsname, price);
+          final abs = (pre ?? (e) => e)(price);
+          final res = (op ?? (e) => e)(abs);
+          alertsRepo.addAlert(add.pair.wsname, res);
           dialog.dismiss();
         } else {
-          desktop.toast('invalid price: ${input.input}');
+          desktop.toast('invalid price: $i');
         }
       },
     );

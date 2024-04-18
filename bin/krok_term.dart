@@ -5,6 +5,7 @@ import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:krok_term/src/krok_term/feature/alerting.dart';
+import 'package:krok_term/src/krok_term/feature/alerts.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
@@ -67,6 +68,7 @@ _initKrokTerm() async {
   initKrokCore();
 
   desktop.onKey("/", description: "Select asset pair", action: selectAssetPair);
+  desktop.onKey(aKey, description: "Go to alerts", action: openAlerts);
   desktop.onKey(bKey, description: "Go to balances", action: openBalances);
   desktop.onKey(cKey, description: "Go to chart", action: openChart);
   desktop.onKey(lKey, description: "Go to log", action: openLog);
@@ -78,6 +80,7 @@ _initKrokTerm() async {
   desktop.onKey(sKey, description: "Go to status", action: openStatus);
   desktop.onKey(tKey, description: "Go to ticker", action: openTicker);
 
+  openAlerts();
   openAssetPair();
   openBalances();
   openChart();
