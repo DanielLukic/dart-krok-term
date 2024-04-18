@@ -66,11 +66,15 @@ void _create() {
       .distinctUntilChanged()
       // assign pair, now that data is available/visible. pair is used for
       // placing alerts only for now.
-      .doOnData((e) => _pair = e[5])
+      .doOnData((e) => _setPairWhenDataAvailable(e[0], e[5]))
       .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely(_showChart, onError: _showError));
+}
+
+_setPairWhenDataAvailable(_ChartData data, AssetPairData pair) {
+  _pair = data.$1 == pair ? pair : null;
 }
 
 _showChart(chart) => _window.update(() => chart);
@@ -121,10 +125,10 @@ String _renderChart(
   if (loading.isEmpty || input.$1 == ap) {
     final data = renderCanvas(chartWidth, chartHeight, snap, last, sp, alerts);
     buffer.drawBuffer(0, 1, data);
+    final prices = renderPrices(pair, snap, height, last, sp, alerts);
+    buffer.drawBuffer(split, 0, prices);
+    buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
   }
-  final prices = renderPrices(pair, snap, height, last, sp, alerts);
-  buffer.drawBuffer(split, 0, prices);
-  buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
   buffer.drawBuffer(0, height - 3, loading);
 
   return buffer.frame();
