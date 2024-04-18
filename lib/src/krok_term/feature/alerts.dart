@@ -65,7 +65,9 @@ List<String> _toEntries(
 
   final result = <String>[];
   for (final byPair in alerts.values) {
-    for (final a in byPair) {
+    final sorted = List<AlertData>.from(byPair);
+    sorted.sort((a, b) => (a.price - b.price).sign.toInt());
+    for (final a in sorted) {
       final ap = assetPairs[a.pair];
       if (ap == null) continue;
       _entries.add((a, ap));
