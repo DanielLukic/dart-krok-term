@@ -20,6 +20,14 @@ class Storage {
     return file.lastModifiedSync();
   }
 
+  Future<RandomAccessFile> randomAccess(key) async {
+    final exists = await _directory.exists();
+    if (!exists) await _directory.create();
+
+    final file = _file(key);
+    return file.open(mode: FileMode.append);
+  }
+
   Future<JsonObject?> load(String key) async {
     final exists = await _directory.exists();
     if (!exists) return null;
