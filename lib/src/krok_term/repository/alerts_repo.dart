@@ -6,6 +6,16 @@ import 'package:rxdart/transformers.dart';
 import '../core/krok_core.dart';
 import 'asset_pairs_repo.dart';
 
+class AlertTriggered extends BaseModel {
+  final AlertData alert;
+  final Price trigger;
+
+  AlertTriggered(this.alert, this.trigger);
+
+  @override
+  List get fields => [alert, trigger];
+}
+
 class AlertAdd extends BaseModel {
   final AssetPairData pair;
   double selectedPrice;
