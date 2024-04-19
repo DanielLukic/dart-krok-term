@@ -157,22 +157,6 @@ extension AutoDateTimeFormatExtension on DateTime {
   Duration get age => DateTime.timestamp().difference(this);
 }
 
-abstract class BaseModel {
-  List<dynamic> get fields;
-
-  @override
-  int get hashCode => Object.hashAll(fields);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! BaseModel) return false;
-    return DeepCollectionEquality().equals(fields, other.fields);
-  }
-
-  @override
-  String toString() => fields.toString();
-}
-
 extension UniqueIterable<E> on Iterable<E> {
   Iterable<E> unique() sync* {
     final seen = <E>{};
