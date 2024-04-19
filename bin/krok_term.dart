@@ -88,10 +88,8 @@ _initKrokTerm() async {
 
   desktop.focusById('chart');
 
-  final alerting = Alerting(tickersRepo);
-
   desktop.stream().whereType<AlertAdd>().listen((event) {
     logInfo('alert add ${event.presetPrice}');
-    alerting.onAdd(event);
+    onAlertAdd(event);
   });
 }
