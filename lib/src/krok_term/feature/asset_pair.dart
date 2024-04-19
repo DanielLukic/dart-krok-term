@@ -2,9 +2,7 @@ import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
-import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
-import '../repository/ticker_repo.dart';
 import 'select_pair.dart';
 
 final _window = window("asset-pair", 62, 2) //
@@ -40,7 +38,8 @@ void _create() {
 (AssetPairData, TickerData) _pickTicker(AssetPairData ap, Tickers t) {
   final data = t[ap.pair];
   if (data == null) {
-    throw ArgumentError("selected asset pair not found in $t", ap.pair);
+    throw ArgumentError(
+        "selected asset pair not found in ticker data", ap.pair);
   }
   return (ap, data);
 }

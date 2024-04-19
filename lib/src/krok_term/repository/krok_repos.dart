@@ -49,7 +49,8 @@ Stream<AssetPairData> get selectedAssetPair =>
 AssetPairData _pickAssetPair(AssetPair it, AssetPairs ap) {
   final match = ap.values.where((e) => e.wsname == it.wsname).singleOrNull;
   if (match == null) {
-    throw ArgumentError("selected asset pair not found in $ap", it.wsname);
+    throw ArgumentError(
+        "selected asset pair not found in asset pairs", it.wsname);
   }
   return match;
 }
