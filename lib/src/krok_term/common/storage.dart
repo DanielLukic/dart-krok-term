@@ -20,6 +20,16 @@ class Storage {
     return file.lastModifiedSync();
   }
 
+  Future<List<String>> lines(key) async {
+    final exists = await _directory.exists();
+    if (!exists) await _directory.create();
+
+    final file = _file(key);
+    if (!await file.exists()) return [];
+
+    return file.readAsLines();
+  }
+
   Future<RandomAccessFile> randomAccess(key) async {
     final exists = await _directory.exists();
     if (!exists) await _directory.create();
