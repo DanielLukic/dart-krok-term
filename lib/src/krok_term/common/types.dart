@@ -5,12 +5,15 @@ import 'package:krok/extensions.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
-part 'type/alerts.dart';
-part 'type/assets.dart';
+part 'type/alert.dart';
+part 'type/alert_added.dart';
+part 'type/alert_triggered.dart';
+part 'type/asset.dart';
+part 'type/asset_pair.dart';
 part 'type/balance.dart';
 part 'type/notification.dart';
 part 'type/ohlc.dart';
-part 'type/orders.dart';
+part 'type/order.dart';
 part 'type/portfolio.dart';
 part 'type/ticker.dart';
 
@@ -18,7 +21,7 @@ typedef Alerts = Map<Asset, List<AlertData>>;
 typedef Assets = Map<Asset, AssetData>;
 typedef AssetPairs = Map<Pair, AssetPairData>;
 typedef Balances = Map<Asset, BalanceData>;
-typedef Notifications = List<Notification>;
+typedef Notifications = List<NotificationData>;
 typedef OrderId = String;
 typedef Orders = Map<OrderId, OrderData>;
 typedef Tickers = Map<Pair, TickerData>;

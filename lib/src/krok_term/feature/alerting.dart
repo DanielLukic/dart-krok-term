@@ -3,7 +3,7 @@ import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
 import '../repository/alerts_repo.dart';
 
-void onAlertAdd(AlertAdd add) {
+void onAlertAdd(AlertAdded add) {
   final refPrice = add.pair.price(add.refPrice);
 
   final preset = add.presetPrice ?? '';

@@ -10,19 +10,19 @@ class OhlcRepo {
 
   OhlcRepo(this._storage);
 
-  Stream<List<OHLC>> retrieve(
+  Stream<List<OhlcData>> retrieve(
     AssetPairData ap,
     OhlcInterval interval, {
     bool forceFresh = false,
   }) {
     final key = 'ohlc_${ap.wsname.replaceFirst('/', '_')}_${interval.minutes}';
     final lm = _storage.lastModified(key);
-    final Stream<List<OHLC>> pre;
+    final Stream<List<OhlcData>> pre;
     if (!forceFresh && lm != null && lm.age.inMinutes < interval.minutes) {
       final restored = Stream.fromFuture(_storage.load(key));
       final data = restored.whereNotNull().map((e) => e['ohlc'] as List);
       pre = data
-          .map((e) => e.mapList((e) => OHLC.fromJson(e)))
+          .map((e) => e.mapList((e) => OhlcData.fromJson(e)))
           .doOnData((e) => logVerbose('restored ${e.length} values for $key'));
     } else {
       pre = Stream.empty();
@@ -38,7 +38,7 @@ class OhlcRepo {
     }).doOnCancel(() => logVerbose('fresh canceled'));
 
     final clean = Stream.fromFuture(_cleanUpFiles())
-        .flatMap((_) => Stream<List<OHLC>>.empty());
+        .flatMap((_) => Stream<List<OhlcData>>.empty());
 
     return ConcatStream([pre, fresh, clean])
         .doOnData((e) => logVerbose('provide ${e.length} values for $key'));
@@ -57,7 +57,7 @@ class OhlcRepo {
   }
 }
 
-Stream<List<OHLC>> ohlc(AssetPairData ap, OhlcInterval interval) =>
+Stream<List<OhlcData>> ohlc(AssetPairData ap, OhlcInterval interval) =>
     retrieve(KrakenRequest.ohlc(
       pair: ap.pair,
       interval: interval,
@@ -65,7 +65,7 @@ Stream<List<OHLC>> ohlc(AssetPairData ap, OhlcInterval interval) =>
     ))
         .doOnData((e) => logVerbose("o_h_l_c retrieved"))
         .map((json) => json[ap.pair] as List<dynamic>)
-        .map((list) => list.mapList((e) => OHLC.fromJson(e)));
+        .map((list) => list.mapList((e) => OhlcData.fromJson(e)));
 
 KrakenTime _toKrakenTime(OhlcInterval interval) =>
     _strToKt("${interval.minutes * 720}m");

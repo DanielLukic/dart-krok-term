@@ -13,7 +13,7 @@ part of '../types.dart';
 /// | TRAILING STOP 3%         |
 /// +--------------------------+
 /// ```
-class Notification extends BaseModel {
+class NotificationData extends BaseModel {
   final int timestamp;
 
   /// WSNAME for alerts, 'Order executed' or 'Order canceled' for orders:
@@ -27,12 +27,13 @@ class Notification extends BaseModel {
   /// ("select-order", "ORDER-ID-XXX") for orders.
   final (String, String) onClickMsg;
 
-  Notification(this.timestamp, this.header, this.description, this.onClickMsg);
+  NotificationData(
+      this.timestamp, this.header, this.description, this.onClickMsg);
 
-  Notification.now(this.header, this.description, this.onClickMsg)
+  NotificationData.now(this.header, this.description, this.onClickMsg)
       : timestamp = DateTime.timestamp().millisecondsSinceEpoch;
 
-  Notification.from(List<dynamic> json)
+  NotificationData.from(List<dynamic> json)
       : this(json[0], json[1], json[2], (json[3], json[4]));
 
   @override

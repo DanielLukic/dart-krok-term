@@ -10,7 +10,7 @@ import '../common/window.dart';
 /// potentially, if not canceled by user. This class has to be fed notifications
 /// as events. It will then generate desktop notifications and log everything.
 
-void onNotification(Notification it) => notificationsRepo.add(it);
+void onNotification(NotificationData it) => notificationsRepo.add(it);
 
 final _window = window("notifications", 129, 10) //
   ..name = "Notifications [$nKey]"
@@ -29,10 +29,10 @@ void _create() {
       ConcatStream([initial, updates]).listen((e) => _updateResult(e)));
 }
 
-List<Notification> _list = [];
+List<NotificationData> _list = [];
 String _buffer = "";
 
-_updateResult(Notification it) {
+_updateResult(NotificationData it) {
   _list.insert(0, it);
   _buffer = _list.map((e) => e.toLogString()).join('\n');
   _window.requestRedraw();

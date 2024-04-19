@@ -92,7 +92,7 @@ _initKrokTerm() async {
   desktop.focusById('chart');
 
   desktop.stream().listen((it) {
-    if (it is AlertAdd) onAlertAdd(it);
+    if (it is AlertAdded) onAlertAdd(it);
     if (it is AlertTriggered) onNotification(it.asNotification());
   });
 

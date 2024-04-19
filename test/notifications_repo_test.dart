@@ -32,8 +32,8 @@ void main() {
     //given
     final sut = NotificationsRepo(storage);
     //when
-    sut.add(Notification(1, '1', 'desc', ('msg', 'null')));
-    sut.add(Notification(2, '2', 'desc', ('msg', 'null')));
+    sut.add(NotificationData(1, '1', 'desc', ('msg', 'null')));
+    sut.add(NotificationData(2, '2', 'desc', ('msg', 'null')));
     //then
     await sut.close();
     final actual = await _testFile().readAsLines();
@@ -57,16 +57,16 @@ void main() {
     expect(
         actual,
         containsAllInOrder([
-          Notification(1, "1", "desc", ("msg", "null")),
-          Notification(2, "2", "desc", ("msg", "null")),
+          NotificationData(1, "1", "desc", ("msg", "null")),
+          NotificationData(2, "2", "desc", ("msg", "null")),
         ]));
   });
 
   test('restores added notifications', () async {
     //given
     final pre = NotificationsRepo(storage);
-    pre.add(Notification(1, '1', 'desc', ('msg', 'null')));
-    pre.add(Notification(2, '2', 'desc', ('msg', 'null')));
+    pre.add(NotificationData(1, '1', 'desc', ('msg', 'null')));
+    pre.add(NotificationData(2, '2', 'desc', ('msg', 'null')));
     await pre.close();
     //when
     final sut = NotificationsRepo(storage);
@@ -76,8 +76,8 @@ void main() {
     expect(
         actual,
         containsAllInOrder([
-          Notification(1, "1", "desc", ("msg", "null")),
-          Notification(2, "2", "desc", ("msg", "null")),
+          NotificationData(1, "1", "desc", ("msg", "null")),
+          NotificationData(2, "2", "desc", ("msg", "null")),
         ]));
   });
 }

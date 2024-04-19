@@ -36,7 +36,7 @@ void _create() {
 
 final _expanded = BehaviorSubject.seeded(false);
 
-_updateResult(Portfolio data, bool expanded) {
+_updateResult(PortfolioData data, bool expanded) {
   final size = expanded ? Size(40, 9) : Size(40, 1);
   desktop.sendMessage(("resize-window", _window, size));
 

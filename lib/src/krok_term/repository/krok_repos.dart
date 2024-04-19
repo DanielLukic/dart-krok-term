@@ -39,7 +39,7 @@ Stream<Orders> get closedOrders => closedOrdersRepo.subscribe();
 
 Stream<Orders> get openOrders => openOrdersRepo.subscribe();
 
-Stream<Portfolio> get portfolio => portfolioRepo.subscribe();
+Stream<PortfolioData> get portfolio => portfolioRepo.subscribe();
 
 Stream<Tickers> get tickers => tickersRepo.subscribe();
 

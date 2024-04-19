@@ -1,6 +1,6 @@
 part of '../types.dart';
 
-class Portfolio extends BaseModel {
+class PortfolioData extends BaseModel {
   final JsonObject _json;
 
   double get eb => double.parse(_json['eb']);
@@ -24,5 +24,5 @@ class Portfolio extends BaseModel {
   @override
   List get fields => [_json];
 
-  Portfolio(this._json);
+  PortfolioData(this._json);
 }

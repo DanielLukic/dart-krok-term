@@ -1,7 +1,7 @@
 import '../core/krok_core.dart';
 import 'auto_repo.dart';
 
-final class PortfolioRepo extends KrokAutoRepo<Portfolio> {
+final class PortfolioRepo extends KrokAutoRepo<PortfolioData> {
   PortfolioRepo(Storage storage)
       : super(
           storage,
@@ -11,5 +11,5 @@ final class PortfolioRepo extends KrokAutoRepo<Portfolio> {
           duration: 1.minutes,
         );
 
-  static Portfolio _restore(JsonObject result) => Portfolio(result);
+  static PortfolioData _restore(JsonObject result) => PortfolioData(result);
 }

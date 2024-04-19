@@ -13,18 +13,18 @@ class NotificationsRepo {
 
   final _events = BehaviorSubject<(String, dynamic)>.seeded(('restore', null));
   final _data = BehaviorSubject<Notifications>();
-  final _notifications = BehaviorSubject<Notification>();
+  final _notifications = BehaviorSubject<NotificationData>();
 
   final Storage _storage;
 
   /// Stream of occurring notifications.
-  Stream<Notification> get notifications => _notifications;
+  Stream<NotificationData> get notifications => _notifications;
 
   /// Always latest list of all notifications.
   Stream<Notifications> subscribe() => _data;
 
   /// Persist a new notification, triggering a new event via [notifications].
-  void add(Notification notification) {
+  void add(NotificationData notification) {
     _notifications.add(notification);
     _events.add(('append', notification));
   }
@@ -42,7 +42,7 @@ class NotificationsRepo {
     return event;
   }
 
-  Future<void> _onAppend(Notification argument) async {
+  Future<void> _onAppend(NotificationData argument) async {
     final json = jsonEncode(argument.fields);
     await _storage.append('notifications', '$json\n');
     _data.value = _data.value + [argument];
@@ -57,7 +57,7 @@ class NotificationsRepo {
   Future<void> _onRestore() async {
     final lines = await _storage.lines('notifications');
     final maps = lines.map((e) => jsonDecode(e));
-    final notifications = maps.map((e) => Notification.from(e));
+    final notifications = maps.map((e) => NotificationData.from(e));
     _data.value = notifications.toList();
   }
 }

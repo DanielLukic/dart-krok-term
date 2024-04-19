@@ -28,10 +28,10 @@ class ChartSnapshot {
   ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
       this.maxHigh, this.minLow);
 
-  factory ChartSnapshot.fromSnip(Iterable<OHLC> snip) {
+  factory ChartSnapshot.fromSnip(Iterable<OhlcData> snip) {
     if (snip.isEmpty) {
       logWarn("no data");
-      return ChartSnapshot.fromSnip([OHLC.empty]);
+      return ChartSnapshot.fromSnip([OhlcData.empty]);
     }
 
     final times = snip.mapList((e) => e.timestamp);

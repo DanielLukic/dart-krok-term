@@ -25,7 +25,7 @@ String renderCanvas(
   int canvasWidth,
   int canvasHeight,
   ChartSnapshot snapshot,
-  OHLC latest,
+  OhlcData latest,
   double selected,
   List<AlertData> alerts,
 ) {
@@ -87,7 +87,7 @@ String renderPrices(
   AssetPairData pair,
   ChartSnapshot snapshot,
   int height,
-  OHLC last,
+  OhlcData last,
   double sp,
   List<AlertData> alerts,
 ) {
