@@ -2,8 +2,6 @@
 
 import 'dart:math';
 
-import 'package:dart_consul/dart_consul.dart';
-import 'package:krok_term/src/krok_term/repository/orders_repo.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -72,6 +70,13 @@ class OrdersWindow {
     );
   }
 
+  void selectById(String id) {
+    // final index = _entries.indexWhere((e) => e.id == id);
+    // if (index == -1) return;
+    _selected.value = id;
+    _open.add(id);
+    _keySelect(0);
+  }
   void _toggleSelected() {
     final s = _selected.value;
     if (s.isEmpty) return;

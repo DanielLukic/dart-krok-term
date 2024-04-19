@@ -1,5 +1,3 @@
-import 'package:dart_consul/dart_consul.dart';
-
 import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../repository/krok_repos.dart';
@@ -21,4 +19,11 @@ final _closedOrders = OrdersWindow(
     bottomOff: 8,
     refresh: () => closedOrdersRepo.refresh(userRequest: true));
 
-void openClosedOrders() => autoWindow(_window, _closedOrders.create);
+void openClosedOrders() {
+  autoWindow(_window, _closedOrders.create);
+  desktop.stream().listen((e) {
+    if (e case ('select-order', String id)) {
+      _closedOrders.selectById(id);
+    }
+  });
+}
