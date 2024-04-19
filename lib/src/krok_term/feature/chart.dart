@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:rxdart/rxdart.dart'
     hide SwitchMapExtension, ScanExtension, StartWithExtension;
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
-import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 import 'chart/chart_projection.dart';
 import 'chart/chart_rendering.dart';
@@ -45,6 +43,7 @@ void _create() {
 
   final chartData = combine([autoRefreshPair, _interval, refresh])
       .distinctUntilChanged()
+      .debounceTime(100.millis)
       .switchMap((e) => retrieve(e[0], e[1], e[2]))
       .doOnData((e) => _projection.setDataSize(e.$2.length));
 
