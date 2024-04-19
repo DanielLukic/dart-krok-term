@@ -10,9 +10,9 @@ class AlertTriggered extends BaseModel {
   List get fields => [alert, trigger];
 
   NotificationData asNotification() => NotificationData.now(
-        alert.pair,
+        alert.wsname,
         "price ${alert.mode} ${alert.price}: "
         "$trigger",
-        ('select-pair', alert.pair),
+        ('select-pair', alert.wsname),
       );
 }
