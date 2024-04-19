@@ -1,3 +1,4 @@
+import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
 
@@ -27,6 +28,7 @@ void _create() {
   scrolled(_window, () => _buffer);
   _window.autoDispose("update",
       ConcatStream([initial, updates]).listen((e) => _updateResult(e)));
+  _window.autoDispose("notifications", updates.listen((e) => _show(e)));
 }
 
 List<NotificationData> _list = [];
@@ -36,4 +38,16 @@ _updateResult(NotificationData it) {
   _list.insert(0, it);
   _buffer = _list.map((e) => e.toLogString()).join('\n');
   _window.requestRedraw();
+}
+
+_show(NotificationData it) {
+  desktop.notify(it.toDesktopNotification());
+}
+
+extension on NotificationData {
+  DesktopNotification toDesktopNotification() {
+    final ts = DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
+    final tag = ts.toLocal().toAutoStamp();
+    return DesktopNotification(header, tag, description, onClickMsg);
+  }
 }
