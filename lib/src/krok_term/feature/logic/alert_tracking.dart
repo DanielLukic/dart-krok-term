@@ -1,9 +1,6 @@
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
-import 'package:krok_term/src/krok_term/repository/ticker_repo.dart';
 import 'package:rxdart/rxdart.dart';
-
-import '../../repository/alerts_repo.dart';
 
 startAlertTracking() {
   combine([alerts, tickers]).debounceTime(1.seconds).listen((event) {

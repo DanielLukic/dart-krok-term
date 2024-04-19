@@ -12,6 +12,7 @@ import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/closed_orders.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
 import 'package:krok_term/src/krok_term/feature/logic/alert_tracking.dart';
+import 'package:krok_term/src/krok_term/feature/logic/order_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/notifications.dart';
 import 'package:krok_term/src/krok_term/feature/open_orders.dart';
 import 'package:krok_term/src/krok_term/feature/portfolio.dart';
@@ -100,4 +101,5 @@ _initKrokTerm() async {
   });
 
   startAlertTracking();
+  startOrderTracking();
 }

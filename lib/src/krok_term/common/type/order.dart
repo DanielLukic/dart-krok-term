@@ -13,6 +13,8 @@ class OrderData extends BaseModel {
 
   String pair() => data['descr']['pair'];
 
+  String status() => s('status');
+
   String type() => data['descr']['type'];
 
   OrderType ordertype() {
