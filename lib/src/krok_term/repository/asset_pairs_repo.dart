@@ -1,5 +1,4 @@
 import '../core/krok_core.dart';
-import '../core/selected_pair.dart';
 import 'auto_repo.dart';
 
 typedef AssetPairs = Map<Pair, AssetPairData>;

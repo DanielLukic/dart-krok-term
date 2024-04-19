@@ -4,6 +4,7 @@ import 'package:krok_term/src/krok_term/repository/orders_repo.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/storage.dart';
+import '../common/types.dart';
 import '../core/selected_pair.dart';
 import 'alerts_repo.dart';
 import 'asset_pairs_repo.dart';
