@@ -1,4 +1,27 @@
+import 'package:ansi/ansi.dart';
 import 'package:collection/collection.dart';
+import 'package:dart_consul/common.dart';
+import 'package:krok/extensions.dart';
+import 'package:krok/krok.dart';
+import 'package:krok_term/src/krok_term/common/extensions.dart';
+
+part 'type/alerts.dart';
+part 'type/assets.dart';
+part 'type/balance.dart';
+part 'type/notification.dart';
+part 'type/ohlc.dart';
+part 'type/orders.dart';
+part 'type/portfolio.dart';
+part 'type/ticker.dart';
+
+typedef Alerts = Map<Asset, List<AlertData>>;
+typedef Assets = Map<Asset, AssetData>;
+typedef AssetPairs = Map<Pair, AssetPairData>;
+typedef Balances = Map<Asset, BalanceData>;
+typedef Notifications = List<Notification>;
+typedef OrderId = String;
+typedef Orders = Map<OrderId, OrderData>;
+typedef Tickers = Map<Pair, TickerData>;
 
 /// Simplified type for JSON list. Mostly to document intent.
 typedef JsonList = List<dynamic>;

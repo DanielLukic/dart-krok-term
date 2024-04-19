@@ -18,7 +18,6 @@ import 'package:krok_term/src/krok_term/feature/portfolio.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/status.dart';
 import 'package:krok_term/src/krok_term/feature/ticker.dart';
-import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
 void main(List<String> args) async {

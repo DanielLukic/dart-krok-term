@@ -2,8 +2,8 @@ import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
 
 import '../common/desktop.dart';
+import '../common/types.dart';
 import '../common/window.dart';
-import '../repository/notifications_repo.dart';
 
 /// The idea is to have a dedicated log for all important notifications.
 /// Triggered alerts, triggered orders and completed orders. Canceled orders,

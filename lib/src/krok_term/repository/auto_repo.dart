@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dart_consul/dart_consul.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 
 import '../core/krok_core.dart';

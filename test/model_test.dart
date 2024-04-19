@@ -1,4 +1,4 @@
-import 'package:krok_term/src/krok_term/repository/assets_repo.dart';
+import 'package:krok_term/src/krok_term/common/types.dart';
 import 'package:test/test.dart';
 
 void main() {
