@@ -46,13 +46,7 @@ _initLog() {
   final logfile = fileSink('krok.log', truncate: true);
   sink = (e) {
     final filter = e.toString();
-    if (filter.contains("package:krok/")) {
-      krokLog.add(e);
-    } else if (filter.contains("[!]")) {
-      activityLog.add(e);
-    } else {
-      krokTermLog.add(e);
-    }
+    if (!filter.contains("package:krok/")) krokTermLog.add(e);
     logfile(e);
   };
   logLevel = LogLevel.verbose;
