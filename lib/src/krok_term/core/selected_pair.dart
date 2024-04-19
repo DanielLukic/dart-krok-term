@@ -6,6 +6,9 @@ late final TimestampedStorage<AssetPair> _selectedPair;
 
 Stream<AssetPair> get selectedPair => _selectedPair.stream;
 
+// TODO wsname seems to complicate everything now...
+// TODO go back to pair? why did i change this to wsname?
+
 selectPair(AssetPair pair) {
   logVerbose('select pair (wsname): $pair');
   _selectedPair.store(pair);
