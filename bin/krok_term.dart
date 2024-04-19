@@ -4,12 +4,14 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/core/selected_currency.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
+import 'package:krok_term/src/krok_term/feature/alerting.dart';
 import 'package:krok_term/src/krok_term/feature/alerts.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/closed_orders.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
+import 'package:krok_term/src/krok_term/feature/logic/alert_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/notifications.dart';
 import 'package:krok_term/src/krok_term/feature/open_orders.dart';
 import 'package:krok_term/src/krok_term/feature/portfolio.dart';
@@ -18,7 +20,6 @@ import 'package:krok_term/src/krok_term/feature/status.dart';
 import 'package:krok_term/src/krok_term/feature/ticker.dart';
 import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
-import 'package:rxdart/transformers.dart';
 
 void main(List<String> args) async {
   final conIO = MadConIO();
@@ -91,8 +92,10 @@ _initKrokTerm() async {
 
   desktop.focusById('chart');
 
-  desktop.stream().whereType<AlertAdd>().listen((event) {
-    logInfo('alert add ${event.presetPrice}');
-    onAlertAdd(event);
+  desktop.stream().listen((it) {
+    if (it is AlertAdd) onAlertAdd(it);
+    if (it is AlertTriggered) onNotification(it.asNotification());
   });
+
+  startAlertTracking();
 }

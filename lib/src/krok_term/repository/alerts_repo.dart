@@ -1,5 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok/extensions.dart';
+import 'package:krok_term/src/krok_term/repository/notifications_repo.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -14,6 +15,13 @@ class AlertTriggered extends BaseModel {
 
   @override
   List get fields => [alert, trigger];
+
+  Notification asNotification() => Notification.now(
+        alert.pair,
+        "price ${alert.mode} ${alert.price}: "
+        "$trigger",
+        ('select-pair', alert.pair),
+      );
 }
 
 class AlertAdd extends BaseModel {
