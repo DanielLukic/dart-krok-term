@@ -6,7 +6,9 @@ typedef JsonList = List<dynamic>;
 /// Simplified type for JSON objects/maps. Mostly to document intent.
 typedef JsonObject = Map<String, dynamic>;
 
-extension type AssetPair(String _wsname) {
+/// Attempt at simplifying the pair vs pair name vs wsname handling. Consider
+/// this a first step in the right(?) direction.
+extension type AssetPair._(String _wsname) {
   AssetPair.fromWsName(String wsname)
       : assert(wsname.contains("/")),
         _wsname = wsname;
