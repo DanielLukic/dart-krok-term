@@ -1,5 +1,7 @@
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
+import 'dart:math';
+
 import 'package:dart_consul/dart_consul.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -45,10 +47,15 @@ class ListWindow {
       return _clickSelect(e);
     });
 
+    final jump = max(3, _window.height - 4);
     _window.onKey('k',
         description: 'Select previous entry', action: () => _keySelect(-1));
     _window.onKey('j',
         description: 'Select next entry', action: () => _keySelect(1));
+    _window.onKey('<S-k>',
+        description: 'Select previous entry', action: () => _keySelect(-jump));
+    _window.onKey('<S-j>',
+        description: 'Select next entry', action: () => _keySelect(jump));
 
     _window.onKey('<Return>',
         aliases: ['<Space>'],
