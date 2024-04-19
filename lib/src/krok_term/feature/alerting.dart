@@ -35,7 +35,7 @@ class Alerting {
   }
 
   void onAdd(AlertAdd add) {
-    final lastPrice = add.pair.price(add.lastPrice);
+    final refPrice = add.pair.price(add.refPrice);
 
     final preset = add.presetPrice ?? '';
     final input = DuiTextInput(
@@ -59,7 +59,7 @@ class Alerting {
                 'Use <Escape> to cancel. Press <Return> to create alert.',
               ]),
               DuiSpace(),
-              DuiText('Last price: $lastPrice'),
+              DuiText('Price (${add.label}): $refPrice'),
               DuiSpace(),
               DuiRow(
                 [
@@ -80,7 +80,7 @@ class Alerting {
     dialog.attach(layout);
 
     void changePrice(int percent) {
-      final step = add.lastPrice * percent / 100;
+      final step = add.refPrice * percent / 100;
       final current = double.tryParse(input.input);
       if (current == null) return;
       input.input = add.pair.price(current + step);
@@ -121,14 +121,14 @@ class Alerting {
         var i = input.input;
 
         final op = switch (i) {
-          _ when i.startsWith('+') => (e) => add.lastPrice + e,
-          _ when i.startsWith('-') => (e) => add.lastPrice - e,
+          _ when i.startsWith('+') => (e) => add.refPrice + e,
+          _ when i.startsWith('-') => (e) => add.refPrice - e,
           _ => null,
         };
         if (op != null) i = i.drop(1);
 
         final pre = switch (i) {
-          _ when i.endsWith('%') => (e) => add.lastPrice * e / 100,
+          _ when i.endsWith('%') => (e) => add.refPrice * e / 100,
           _ => null,
         };
         if (pre != null) i = i.dropLast(1);
@@ -138,8 +138,8 @@ class Alerting {
           final abs = (pre ?? (e) => e)(price);
           final res = (op ?? (e) => e)(abs);
           final mode = switch (res) {
-            _ when res < add.lastPrice => 'below',
-            _ when res > add.lastPrice => 'above',
+            _ when res < add.refPrice => 'below',
+            _ when res > add.refPrice => 'above',
             _ => null,
           };
           if (mode == null) {
