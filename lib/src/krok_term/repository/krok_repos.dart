@@ -1,4 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:krok_term/src/krok_term/repository/notifications_repo.dart';
 import 'package:krok_term/src/krok_term/repository/orders_repo.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -17,6 +18,7 @@ late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
 late ClosedOrdersRepo closedOrdersRepo;
+late NotificationsRepo notificationsRepo;
 late OhlcRepo ohlcRepo;
 late OpenOrdersRepo openOrdersRepo;
 late PortfolioRepo portfolioRepo;
@@ -29,6 +31,8 @@ Stream<Assets> get assets => assetsRepo.subscribe();
 Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe();
 
 Stream<Balances> get balances => balancesRepo.subscribe();
+
+Stream<Notifications> get notifications => notificationsRepo.subscribe();
 
 Stream<Orders> get closedOrders => closedOrdersRepo.subscribe();
 
@@ -56,6 +60,7 @@ initKrokRepos(Storage storage) {
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
   closedOrdersRepo = ClosedOrdersRepo(storage);
+  notificationsRepo = NotificationsRepo(storage);
   ohlcRepo = OhlcRepo(storage);
   openOrdersRepo = OpenOrdersRepo(storage);
   portfolioRepo = PortfolioRepo(storage);

@@ -4,6 +4,7 @@
 .idea/
 cache/
 krok/
+tmp/
 *.exe
 *.iml
 *.log
