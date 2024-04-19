@@ -58,7 +58,7 @@ Future _process(QueuedRequest it) async {
 }
 
 const _defaultDelay = 1;
-const _ohlcDelay = 5;
+const _ohlcDelay = 4;
 
 Future _throttle(QueuedRequest it) async {
   final now = DateTime.now();
