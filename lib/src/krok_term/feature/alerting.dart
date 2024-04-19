@@ -114,7 +114,8 @@ void onAlertAdd(AlertAdd add) {
         if (mode == null) {
           desktop.toast('ignoring alert for same price');
         } else {
-          alertsRepo.addAlert(add.pair.pair, res, mode);
+          final data = add.pair;
+          alertsRepo.add(AlertData(data.pair, data.wsname, res, mode));
         }
         dialog.dismiss();
       } else {

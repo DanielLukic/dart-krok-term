@@ -58,14 +58,15 @@ typedef Alerts = Map<Asset, List<AlertData>>;
 
 class AlertData extends BaseModel {
   final Asset pair;
+  final String wsname;
   final double price;
   final String mode;
 
-  AlertData(this.pair, this.price, this.mode)
+  AlertData(this.pair, this.wsname, this.price, this.mode)
       : assert(!pair.contains('/'), 'pair expected instead of wsname: $pair');
 
   @override
-  List get fields => [pair, price, mode];
+  List get fields => [pair, wsname, price, mode];
 }
 
 final class AlertsRepo {
@@ -94,9 +95,6 @@ final class AlertsRepo {
   void add(AlertData alert) => _events.add(('add', alert));
 
   void remove(AlertData alert) => _events.add(('remove', alert));
-
-  void addAlert(Asset pair, double price, String mode) =>
-      add(AlertData(pair, price, mode));
 
   Alerts _add(Alerts alerts, AlertData alert) {
     final entries = alerts[alert.pair].clone();
@@ -136,7 +134,7 @@ final class AlertsRepo {
 
   Alerts _fromJson(JsonObject json) {
     fromJson(List<dynamic> list) =>
-        list.mapList((ad) => AlertData(ad[0], ad[1], ad[2]));
+        list.mapList((ad) => AlertData(ad[0], ad[1], ad[2], ad[3]));
     return json.mapValues((list) => fromJson(list));
   }
 }
