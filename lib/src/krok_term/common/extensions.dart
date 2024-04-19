@@ -150,6 +150,17 @@ extension SnakeCaseExtension on String {
 }
 
 extension AutoDateTimeFormatExtension on DateTime {
+  String toAutoStamp() {
+    final today = DateTime.now();
+    if (year == today.year && month == today.month && day == today.day) {
+      return DateFormat('HH:mm:ss').format(this);
+    } else if (year == today.year) {
+      return DateFormat('MM-dd HH:mm').format(this);
+    } else {
+      return DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
+    }
+  }
+
   String toTimestamp() => DateFormat('MM-dd HH:mm').format(this);
 
   String toLongStamp() => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
