@@ -39,6 +39,7 @@ void main(List<String> args) async {
 _addAutoHelp() => addAutoHelp(
       desktop,
       key: "gh",
+      aliases: ['<C-?>'],
       position: RelativePosition.fromBottomRight(),
     );
 
