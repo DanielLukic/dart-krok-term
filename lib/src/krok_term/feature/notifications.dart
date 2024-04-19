@@ -2,6 +2,7 @@ import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
 
+import '../common/list_window.dart';
 import '../common/window.dart';
 
 /// The idea is to have a dedicated log for all important notifications.
@@ -23,29 +24,30 @@ final initial =
 final updates = notificationsRepo.notifications;
 
 void _create() {
-  _scrolled = scrolled(_window, () => _buffer);
-  _window.chainOnMouseEvent((e) => e.isUp ? _trigger(e) : null);
+  _listed = ListWindow(
+    window: _window,
+    topOff: 2,
+    bottomOff: 2,
+    onSelect: (e) => _onSelect(e),
+  );
+
   _window.autoDispose("update",
       ConcatStream([initial, updates]).listen((e) => _updateResult(e)));
+
   _window.autoDispose("notifications", updates.listen((e) => _show(e)));
 }
 
-OngoingMouseAction? _trigger(MouseEvent e) {
-  final index = e.y - _scrolled.scrollOffset - 1; // 1 for being decorated
-  if (index >= 0 && index < _list.length) {
-    final msg = _list[index].onClickMsg;
-    desktop.sendMessage(msg);
-  }
-  return NopMouseAction(_window);
+void _onSelect(int index) {
+  if (index < 0 || index >= _list.length) return;
+  desktop.sendMessage(_list[index].onClickMsg);
 }
 
-late final ScrolledContent _scrolled;
+late final ListWindow _listed;
 List<NotificationData> _list = [];
-String _buffer = "";
 
 _updateResult(NotificationData it) {
   _list.insert(0, it);
-  _buffer = _list.map((e) => e.toLogString()).join('\n');
+  _listed.updateEntries(_list.mapList((e) => e.toLogString()));
   _window.requestRedraw();
 }
 
