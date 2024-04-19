@@ -46,7 +46,7 @@ class Notification extends BaseModel {
 
   String toLogString() {
     final ts = DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
-    return "${ts.toLongStamp()} $header $description";
+    return "${ts.toLocal().toLongStamp()} $header $description";
   }
 }
 

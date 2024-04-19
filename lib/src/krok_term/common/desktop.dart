@@ -6,6 +6,7 @@ final aKey = 'ga';
 final bKey = 'gb';
 final cKey = 'gc';
 final lKey = 'gm';
+final nKey = 'gn';
 final ocKey = 'gC';
 final ooKey = 'gO';
 final pKey = 'gp';
