@@ -5,6 +5,7 @@
 cache/
 krok/
 tmp/
+*.bak
 *.exe
 *.iml
 *.log
