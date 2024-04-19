@@ -94,6 +94,9 @@ _initKrokTerm() async {
   desktop.stream().listen((it) {
     if (it is AlertAdded) onAlertAdd(it);
     if (it is AlertTriggered) onNotification(it.asNotification());
+    if (it case ('select-pair', String wsname)) {
+      selectPair(AssetPair.fromWsName(wsname));
+    }
   });
 
   startAlertTracking();
