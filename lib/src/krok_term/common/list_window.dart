@@ -119,11 +119,11 @@ class ListWindow {
 
     final so = _scrolled.scrollOffset;
     final si = _indexes.indexWhere((e) => e == newIndex);
-    if (si < so + _topOff) {
+    if (si < so + _topOff + 1) {
       _scrolled.scrollOffset = si - _topOff;
     }
-    if (si > so + _bottomOff) {
-      _scrolled.scrollOffset = si - _bottomOff;
+    if (si > so + _window.height - _bottomOff - 1) {
+      _scrolled.scrollOffset = si - _window.height + _bottomOff + 1;
     }
 
     _refresh();
