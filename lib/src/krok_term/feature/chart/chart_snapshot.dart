@@ -14,16 +14,22 @@ class ChartSnapshot {
   final List<double> highs;
   final List<double> lows;
   final List<double> closes;
-  final double maxHigh;
-  final double minLow;
+  double maxHigh;
+  double minLow;
 
-  late final norm = (1.0 / (maxHigh - minLow));
+  late var norm = (1.0 / (maxHigh - minLow));
 
   int get length => opens.length;
 
   String get oldestDate => times.last.toKrakenDateTime().toTimestamp();
 
   String get newestDate => times.first.toKrakenDateTime().toTimestamp();
+
+  void override(double min, double max) {
+    minLow = min;
+    maxHigh = max;
+    norm = (1.0 / (maxHigh - minLow));
+  }
 
   ChartSnapshot(this.times, this.opens, this.highs, this.lows, this.closes,
       this.maxHigh, this.minLow);
