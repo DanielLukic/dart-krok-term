@@ -116,6 +116,9 @@ String _renderChart(
   final last = data.last;
   final snap = _sample(data, zoom, scroll, chartWidth);
 
+  final fixed = _selection.fixedScale;
+  if (fixed != null) snap.override(fixed[0], fixed[1]);
+
   _selection.useChartInfo(snap.minLow, snap.maxHigh, last.close, chartHeight);
 
   final loading = _loading(input, interval, refresh);
