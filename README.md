@@ -26,20 +26,3 @@ Screenshot of the app running:
 Animation of the app running:
 
 ![Screenshot](images/example-anim.gif)
-
-### To Do
-
-These are really "maybe"s only, depending on how much time I find.
-
-- Add alert
-- Show alerts, current and all pairs
-- Remove alert or all alerts (current pair vs all pairs)
-- Place basic order
-- Place complex order
-- Cancel order, Cancel all
-- Panic button (Sell all limited)
-- Investigate how to retrieve margin info
-- Market crawler to give decision suggestions (no AI, just some math)
-- Simple auto trading bots
-- AI
-- Other exchange(s)
