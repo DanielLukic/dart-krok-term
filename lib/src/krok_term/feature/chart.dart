@@ -61,6 +61,7 @@ void _create() {
     autoRefreshPair,
     _selection.selectedPrice,
     pairAlerts,
+    _redraw,
   ])
       .distinctUntilChanged()
       // assign pair, now that data is available/visible. pair is used for
@@ -86,6 +87,7 @@ AssetPairData? _pair;
 
 final _projection = ChartProjection(_window.width ~/ 2);
 final _refresh = BehaviorSubject.seeded(DateTime.timestamp());
+final _redraw = BehaviorSubject.seeded(DateTime.timestamp());
 final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 
 typedef _ChartData = (AssetPairData, List<OhlcData>, OhlcInterval, DateTime);
