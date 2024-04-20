@@ -7,10 +7,10 @@ class ChartSelection {
 
   List<double>? fixedScale;
 
-  double min = 0;
-  double max = 0;
+  double _min = 0;
+  double _max = 0;
   double last = 0;
-  int rows = 0;
+  int _rows = 0;
 
   Stream<double> get selectedPrice => _selectedPrice;
 
@@ -26,8 +26,8 @@ class ChartSelection {
   }
 
   void _initFixed() {
-    final max = _selection.max;
-    final min = _selection.min;
+    final max = _selection._max;
+    final min = _selection._min;
     if (max != 0 && min != 0) fixedScale = [min, max, min, max];
   }
 
@@ -54,18 +54,18 @@ class ChartSelection {
       });
 
   void useChartInfo(double min, double max, double last, int rows) {
-    if (this.min == min && this.max == max && this.last == last) {
+    if (_min == min && _max == max && this.last == last) {
       return;
     }
     this.last = last;
     if (min >= max) {
-      this.min = 0;
-      this.max = 0;
+      _min = 0;
+      _max = 0;
       return;
     }
-    this.min = min;
-    this.max = max;
-    this.rows = rows;
+    _min = min;
+    _max = max;
+    _rows = rows;
 
     // no selection, keep it like that:
     if (currentPrice == 0) return;
@@ -75,27 +75,27 @@ class ChartSelection {
   }
 
   void invalidate() {
-    min = 0;
-    max = 0;
+    _min = 0;
+    _max = 0;
     last = 0;
-    rows = 0;
+    _rows = 0;
     reset();
   }
 
   void reset() => _selectedPrice.value = 0;
 
   void change(int delta) {
-    if (min == 0 || max == 0 || min >= max || rows == 0) return;
+    if (_min == 0 || _max == 0 || _min >= _max || _rows == 0) return;
     if (currentPrice == 0) {
-      if (min <= last && last <= max) {
+      if (_min <= last && last <= _max) {
         _setPriceTo(last);
       } else {
-        _setPriceTo((max + min) / 2);
+        _setPriceTo((_max + _min) / 2);
       }
     } else {
-      final step = (max - min) / rows;
+      final step = (_max - _min) / _rows;
       final changed = currentPrice + step * delta;
-      _setPriceTo(changed.clamp(min, max));
+      _setPriceTo(changed.clamp(_min, _max));
     }
   }
 }
