@@ -4,6 +4,19 @@ extension on Window {
   void setupKeys() {
     onKey("u", description: "Update data", action: () => _triggerRefresh());
 
+    onKey('s', //
+        description: 'Move chart up',
+        action: () {
+          _selection.step(1);
+          _triggerRedraw();
+        });
+    onKey('w', //
+        description: 'Move chart down',
+        action: () {
+          _selection.step(-1);
+          _triggerRedraw();
+        });
+
     onKey('<S-h>', //
         aliases: ['<S-Left>'],
         description: 'Jump left',

@@ -74,7 +74,7 @@ extension on ChartSnapshot {
   double trendAt(int at) => closes[at] - opens[at];
 
   int scaled(double price, int height) =>
-      ((price - minLow) * norm * 0.95 * height + 1).round().clamp(1, height);
+      ((price - minLow) * norm * 0.95 * height + 1).round().clamp(-1, height);
 
   int scaledHighAt(int index, int height) => scaled(highs[index], height);
 

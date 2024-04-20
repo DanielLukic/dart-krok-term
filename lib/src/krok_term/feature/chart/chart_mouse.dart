@@ -73,8 +73,16 @@ class _DragChartAction extends BaseOngoingMouseAction {
   void onMouseEvent(MouseEvent event) {
     if (event.isUp) done = true;
 
-    final dx = event.x - this.event.x;
-    _projection.setScroll(_startScroll + dx * 2);
-    // the 2 is for the canvas pixel duplication ☝
+    // the 2 and 4 are for the canvas pixels per char
+
+    final dx = (event.x - this.event.x) * 2;
+    final dy = (event.y - this.event.y) * 4;
+    _projection.setScroll(_startScroll + dx);
+    _selection.step(dy - stepped);
+    stepped = dy;
+
+    _triggerRedraw();
   }
+
+  var stepped = 0;
 }

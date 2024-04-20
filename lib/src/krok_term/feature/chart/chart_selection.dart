@@ -18,6 +18,17 @@ class ChartSelection {
 
   double get currentPrice => _selectedPrice.value;
 
+  void step(int delta) {
+    if (fixedScale == null) _initFixed();
+    fixedScale?.let((f) {
+      final step = (_max - _min) / _rows;
+      final change = step * delta;
+      for (var i = 0; i < f.length; i++) {
+        f[i] += change;
+      }
+    });
+  }
+
   void resetFixed() => fixedScale = null;
 
   void _onScale(void Function(List<double>) scale) {
