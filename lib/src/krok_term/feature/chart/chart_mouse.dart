@@ -15,12 +15,12 @@ extension on Window {
       }
     });
 
-    final chartGestures = MouseGestures(this, desktop.resetMouseAction)
-      ..onDoubleClick = (() => _reset())
+    final chartGestures = MouseGestures(this, desktop)
+      ..onDoubleClick = ((_) => _reset())
       ..onDrag = (e) => _DragChartAction(_window, e, _projection.currentScroll);
 
-    final priceGestures = MouseGestures(this, desktop.resetMouseAction)
-      ..onDoubleClick = (() => _toggleFixed());
+    final priceGestures = MouseGestures(this, desktop)
+      ..onDoubleClick = ((_) => _toggleFixed());
 
     chainOnMouseEvent((e) {
       if (_isOnChart(e)) return chartGestures.process(e);
@@ -67,9 +67,7 @@ OngoingMouseAction? _changeInterval(MouseEvent event) {
 class _DragChartAction extends BaseOngoingMouseAction {
   final int _startScroll;
 
-  _DragChartAction(super.window, super.event, this._startScroll) {
-    sendMessage(("raise-window", _window));
-  }
+  _DragChartAction(super.window, super.event, this._startScroll);
 
   @override
   void onMouseEvent(MouseEvent event) {

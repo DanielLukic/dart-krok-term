@@ -64,7 +64,7 @@ void _stolen(KeyEvent it) {
     _filter.value = "";
   } else if (it.printable == "<C-k>") {
     _navigate(-1);
-  } else if (it.printable == "<Enter>" /*<C-j>*/) {
+  } else if (it.printable == "<C-j>") {
     _navigate(1);
   } else if (it is InputKey) {
     _filter.value = _filter.value + it.char;

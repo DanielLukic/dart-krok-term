@@ -6,17 +6,24 @@ void onAddAlert(AddAlert add) {
 
   final preset = add.presetPrice ?? '';
   final input = DuiTextInput(
+    id: 'input',
     limitLength: 20,
     preset: preset,
     filter: RegExp(r"[-+]?[0-9]*\.?[0-9]*%?"),
   );
 
+  final dialog = desktop.openDialog();
+  final state = DuiState(() => dialog.requestRedraw());
   final layout = DuiLayout(
-    DuiBorder(
+    state: state,
+    root: DuiBorder(
       DuiPadding.hv(
-        DuiColumn(
+        h: 2,
+        v: 1,
+        wrapped: DuiColumn(
           [
-            DuiPadding(DuiTitle('Create ${add.pair.wsname} alert'), bottom: 1),
+            DuiTitle('Create ${add.pair.wsname} alert'),
+            DuiSpace(),
             DuiText.fromLines([
               'Specify price as absolute value or +/-.',
               'Optionally use % with either absolute or +/-.',
@@ -31,19 +38,16 @@ void onAddAlert(AddAlert add) {
             DuiRow(
               [
                 input,
-                DuiSpace(2),
-                DuiButton("Create <Return>"),
+                DuiButton(id: 'confirm', text: "Create <Return>")
+                  ..onClick = () => _createAlert(input, add, dialog),
               ],
             ),
           ],
         ),
-        h: 2,
-        v: 1,
       ),
     ),
   );
 
-  final dialog = desktop.openDialog();
   dialog.attach(layout);
 
   void changePrice(int percent) {
@@ -84,41 +88,43 @@ void onAddAlert(AddAlert add) {
     '<Return>',
     aliases: ['a'],
     description: 'Confirm alert creation',
-    action: () {
-      var i = input.input;
-
-      final op = switch (i) {
-        _ when i.startsWith('+') => (e) => add.refPrice + e,
-        _ when i.startsWith('-') => (e) => add.refPrice - e,
-        _ => null,
-      };
-      if (op != null) i = i.drop(1);
-
-      final pre = switch (i) {
-        _ when i.endsWith('%') => (e) => add.refPrice * e / 100,
-        _ => null,
-      };
-      if (pre != null) i = i.dropLast(1);
-
-      final price = double.tryParse(i);
-      if (price != null) {
-        final abs = (pre ?? (e) => e)(price);
-        final res = (op ?? (e) => e)(abs);
-        final mode = switch (res) {
-          _ when res < add.refPrice => 'below',
-          _ when res > add.refPrice => 'above',
-          _ => null,
-        };
-        if (mode == null) {
-          desktop.toast('ignoring alert for same price');
-        } else {
-          final data = add.pair;
-          alertsRepo.add(AlertData(data.pair, data.wsname, res, mode));
-        }
-        dialog.dismiss();
-      } else {
-        desktop.toast('invalid price: $i');
-      }
-    },
+    action: () => _createAlert(input, add, dialog),
   );
+}
+
+void _createAlert(DuiTextInput input, AddAlert add, Dialog dialog) {
+  var i = input.input;
+
+  final op = switch (i) {
+    _ when i.startsWith('+') => (e) => add.refPrice + e,
+    _ when i.startsWith('-') => (e) => add.refPrice - e,
+    _ => null,
+  };
+  if (op != null) i = i.drop(1);
+
+  final pre = switch (i) {
+    _ when i.endsWith('%') => (e) => add.refPrice * e / 100,
+    _ => null,
+  };
+  if (pre != null) i = i.dropLast(1);
+
+  final price = double.tryParse(i);
+  if (price != null) {
+    final abs = (pre ?? (e) => e)(price);
+    final res = (op ?? (e) => e)(abs);
+    final mode = switch (res) {
+      _ when res < add.refPrice => 'below',
+      _ when res > add.refPrice => 'above',
+      _ => null,
+    };
+    if (mode == null) {
+      desktop.toast('ignoring alert for same price');
+    } else {
+      final data = add.pair;
+      alertsRepo.add(AlertData(data.pair, data.wsname, res, mode));
+    }
+    dialog.dismiss();
+  } else {
+    desktop.toast('invalid price: $i');
+  }
 }
