@@ -5,6 +5,8 @@ final _selection = ChartSelection();
 class ChartSelection {
   final _selectedPrice = BehaviorSubject.seeded(0.0);
 
+  List<double>? fixedScale;
+
   double min = 0;
   double max = 0;
   double last = 0;
@@ -15,6 +17,41 @@ class ChartSelection {
   void _setPriceTo(double price) => _selectedPrice.value = price;
 
   double get currentPrice => _selectedPrice.value;
+
+  void resetFixed() => fixedScale = null;
+
+  void _onScale(void Function(List<double>) scale) {
+    if (fixedScale == null) _initFixed();
+    fixedScale?.let(scale);
+  }
+
+  void _initFixed() {
+    final max = _selection.max;
+    final min = _selection.min;
+    if (max != 0 && min != 0) fixedScale = [min, max, min, max];
+  }
+
+  void toggleFixed() {
+    if (fixedScale != null) {
+      fixedScale = null;
+    } else {
+      _initFixed();
+    }
+  }
+
+  void scaleDown() => _onScale((f) {
+        final center = (f[2] + f[3]) / 2;
+        final span = (f[1] - f[0]) * 0.8;
+        f[0] = center - span / 2;
+        f[1] = center + span / 2;
+      });
+
+  void scaleUp() => _onScale((f) {
+        final center = (f[2] + f[3]) / 2;
+        final span = (f[1] - f[0]) * 1.2;
+        f[0] = center - span / 2;
+        f[1] = center + span / 2;
+      });
 
   void useChartInfo(double min, double max, double last, int rows) {
     if (this.min == min && this.max == max && this.last == last) {
