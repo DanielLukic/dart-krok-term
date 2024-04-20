@@ -129,7 +129,8 @@ String _renderChart(
   if (loading.isEmpty || input.$1 == ap) {
     final data = renderCanvas(chartWidth, chartHeight, snap, last, sp, alerts);
     buffer.drawBuffer(0, 1, data);
-    final prices = renderPrices(pair, snap, height, last, sp, alerts);
+    final prices =
+        renderPrices(pair, snap, height, last, sp, alerts, fixed != null);
     buffer.drawBuffer(split, 0, prices);
     buffer.drawBuffer(0, height - 2, renderTimeline(snap, width));
   }

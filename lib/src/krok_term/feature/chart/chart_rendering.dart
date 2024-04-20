@@ -90,6 +90,7 @@ String renderPrices(
   OhlcData last,
   double sp,
   List<AlertData> alerts,
+  bool fixed,
 ) {
   final scaleHeight = height - 3;
 
@@ -107,10 +108,15 @@ String renderPrices(
   final selected = selectedColor(pair.price(sp));
   final selectedY = snapshot.scaled(sp, scaleHeight);
 
-  final high = pair.price(snapshot.maxHigh);
-  final low = pair.price(snapshot.minLow);
+  var high = pair.price(snapshot.maxHigh);
+  var low = pair.price(snapshot.minLow);
   final showCurrent = snapshot.closes[0] > 0;
   final showSelected = sp > 0;
+
+  if (fixed) {
+    high = high.inverse();
+    low = low.inverse();
+  }
 
   final prices = Buffer(10, height);
   prices.fill(32);
