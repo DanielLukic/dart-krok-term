@@ -97,17 +97,17 @@ class ListWindow {
     _keySelect(0);
   }
 
-  NopMouseAction _clickSelect(MouseEvent e) {
+  ConsumedMouseAction _clickSelect(MouseEvent e) {
     final index = e.y - 1 + _scrolled.scrollOffset;
     if (index < 0 || index >= _entries.length) {
-      return NopMouseAction(_window);
+      return ConsumedMouseAction(_window);
     }
 
     final it = _indexes[index];
     _selected.value = it;
     _toggleAction();
 
-    return NopMouseAction(_window);
+    return ConsumedMouseAction(_window);
   }
 
   void _keySelect(int delta) {

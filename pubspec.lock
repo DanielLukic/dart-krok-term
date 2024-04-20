@@ -125,10 +125,10 @@ packages:
     dependency: "direct main"
     description:
       name: dart_consul
-      sha256: b4c63c88e70293010efc91c14f537dcbdcc34a77c53749e0d01df45839625c49
+      sha256: ff8235339c93bba3a808e2b97cc99123d3fbcddd0b45c3e0625b7c9a675076b7
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.12"
+    version: "0.0.13"
   dart_minilog:
     dependency: "direct main"
     description:

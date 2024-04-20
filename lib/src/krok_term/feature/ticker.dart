@@ -38,7 +38,7 @@ void _create() {
     if (y < 0 || y >= pick.length) return null;
     final picked = pick.toList()[y];
     selectPair(picked.ap);
-    return NopMouseAction(_window);
+    return ConsumedMouseAction(_window);
   });
 
   _window.autoDispose(

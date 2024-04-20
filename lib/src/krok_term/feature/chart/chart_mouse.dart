@@ -30,7 +30,7 @@ OngoingMouseAction? _changeInterval(MouseEvent event) {
   if (index >= OhlcInterval.values.length) return null;
 
   _interval.value = OhlcInterval.values[index];
-  return NopMouseAction(_window);
+  return ConsumedMouseAction(_window);
 }
 
 class _DragChartAction extends BaseOngoingMouseAction {
