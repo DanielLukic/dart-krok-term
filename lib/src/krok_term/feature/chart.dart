@@ -25,6 +25,8 @@ void openChart() => autoWindow(_window, () => _create());
 
 void _triggerRefresh() => _refresh.value = DateTime.timestamp();
 
+void _triggerRedraw() => _redraw.value = DateTime.timestamp();
+
 void _create() {
   _window.setupKeys();
   _window.setupMouse();

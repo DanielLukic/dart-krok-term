@@ -41,6 +41,19 @@ extension on Window {
         description: 'Price selection up',
         action: () => _selection.change(10));
 
+    onKey('<C-j>', //
+        aliases: ['<C-Down>'],
+        description: 'Scale price range up', action: () {
+      _selection.scaleUp();
+      _triggerRedraw();
+    });
+    onKey('<C-k>', //
+        aliases: ['<C-Up>'],
+        description: 'Scale price range down', action: () {
+      _selection.scaleDown();
+      _triggerRedraw();
+    });
+
     onKey('a', description: 'Add alert', action: _addAlert);
 
     changeInterval(int delta) {
@@ -58,6 +71,12 @@ extension on Window {
     onKey('-', description: 'Zoom in', action: () => _projection.zoomBy(1));
     onKey('=', description: 'Reset zoom', action: () => _projection.zoomBy(0));
     onKey('r', description: 'Reset scroll and zoom', action: _projection.reset);
+    onKey('<S-r>', description: 'Reset price scale, scroll and zoom',
+        action: () {
+      _projection.reset();
+      _selection.resetFixed();
+      _triggerRedraw();
+    });
 
     for (final i in OhlcInterval.values) {
       onKey((i.index + 1).toString(),

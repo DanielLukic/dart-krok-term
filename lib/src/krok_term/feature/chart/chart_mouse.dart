@@ -11,7 +11,7 @@ extension on Window {
       } else if (_isOnPrice(e)) {
         if (e.kind.isDown) _selection.scaleUp();
         if (e.kind.isUp) _selection.scaleDown();
-        _redraw.value = DateTime.timestamp();
+        _triggerRedraw();
       }
     });
 
