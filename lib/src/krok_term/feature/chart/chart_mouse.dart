@@ -8,20 +8,42 @@ extension on Window {
       if (_isOnChart(e)) {
         if (e.kind.isDown) _projection.zoomBy(1);
         if (e.kind.isUp) _projection.zoomBy(-1);
+      } else if (_isOnPrice(e)) {
+        if (e.kind.isDown) _selection.scaleUp();
+        if (e.kind.isUp) _selection.scaleDown();
+        _redraw.value = DateTime.timestamp();
       }
     });
 
     final chartGestures = MouseGestures(this, desktop.resetMouseAction)
+      ..onDoubleClick = (() => _reset())
       ..onDrag = (e) => _DragChartAction(_window, e, _projection.currentScroll);
+
+    final priceGestures = MouseGestures(this, desktop.resetMouseAction)
+      ..onDoubleClick = (() => _toggleFixed());
 
     chainOnMouseEvent((e) {
       if (_isOnChart(e)) return chartGestures.process(e);
+      if (_isOnPrice(e)) return priceGestures.process(e);
       return null;
     });
   }
 
+  void _toggleFixed() {
+    _selection.toggleFixed();
+    _redraw.value = DateTime.timestamp();
+  }
+
+  void _reset() {
+    _projection.reset();
+    _selection.resetFixed();
+  }
+
   bool _isOnChart(MouseEvent e) =>
       e.x < width - 10 && e.y > 1 && e.y < height - 2;
+
+  bool _isOnPrice(MouseEvent e) =>
+      e.x > width - 10 && e.y > 1 && e.y < height - 2;
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {
