@@ -6,13 +6,17 @@ extension on Window {
     onWheelDown(() => _projection.zoomBy(1));
     onWheelUp(() => _projection.zoomBy(-1));
 
-    chainOnMouseEvent((e) => _isChartClick(e)
-        ? _DragChartAction(_window, e, _projection.currentScroll)
-        : null);
+    final chartGestures = MouseGestures(this, desktop.resetMouseAction)
+      ..onDrag = (e) => _DragChartAction(_window, e, _projection.currentScroll);
+
+    chainOnMouseEvent((e) {
+      if (_isOnChart(e)) return chartGestures.process(e);
+      return null;
+    });
   }
 
-  bool _isChartClick(MouseEvent e) =>
-      e.isDown && e.x < width - 10 && e.y > 1 && e.y < height - 2;
+  bool _isOnChart(MouseEvent e) =>
+      e.x < width - 10 && e.y > 1 && e.y < height - 2;
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {
