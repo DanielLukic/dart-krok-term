@@ -5,17 +5,15 @@ extension on Window {
     onKey("u", description: "Update data", action: () => _triggerRefresh());
 
     onKey('d', //
-        description: 'Move chart down',
-        action: () {
-          _selection.step(1);
-          _triggerRedraw();
-        });
+        description: 'Move chart down', action: () {
+      _selection.step(1);
+      _triggerRedraw();
+    });
     onKey('e', //
-        description: 'Move chart up',
-        action: () {
-          _selection.step(-1);
-          _triggerRedraw();
-        });
+        description: 'Move chart up', action: () {
+      _selection.step(-1);
+      _triggerRedraw();
+    });
 
     onKey('<S-h>', //
         aliases: ['<S-Left>'],
@@ -68,6 +66,36 @@ extension on Window {
     });
 
     onKey('a', description: 'Add alert', action: _addAlert);
+    onKey('o', description: 'Place order', action: () => _placeOrder());
+
+    final kind = [('b', OrderDirection.buy), ('s', OrderDirection.sell)];
+    for (final (k, d) in kind) {
+      final n = d.name;
+      onKey('${k}m',
+          description: 'Place $n market order',
+          action: () => _placeOrder(dir: d, type: OrderType.market));
+      onKey('${k}l',
+          description: 'Place $n limit order',
+          action: () => _placeOrder(dir: d, type: OrderType.limit));
+      onKey('${k}p',
+          description: 'Place $n take profit order',
+          action: () => _placeOrder(dir: d, type: OrderType.takeProfit));
+      onKey('$k<S-p>',
+          description: 'Place $n take profit limit order',
+          action: () => _placeOrder(dir: d, type: OrderType.takeProfitLimit));
+      onKey('${k}sl',
+          description: 'Place $n stop loss order',
+          action: () => _placeOrder(dir: d, type: OrderType.stopLoss));
+      onKey('${k}ss',
+          description: 'Place $n stop loss limit order',
+          action: () => _placeOrder(dir: d, type: OrderType.stopLossLimit));
+      onKey('${k}ts',
+          description: 'Place $n trailing stop order',
+          action: () => _placeOrder(dir: d, type: OrderType.trailingStop));
+      onKey('${k}tt',
+          description: 'Place $n trailing stop limit order',
+          action: () => _placeOrder(dir: d, type: OrderType.trailingStopLimit));
+    }
 
     changeInterval(int delta) {
       final now = _interval.value.index;
@@ -105,4 +133,15 @@ void _addAlert() {
   desktop.sendMessage(
     AddAlert(pair, _selection.currentPrice, _selection.last),
   );
+}
+
+void _placeOrder({OrderDirection? dir, OrderType? type}) {
+  final ap = _pair;
+  if (ap == null) return;
+
+  final c = _selection.currentPrice.takeIf_((c) => c > 0);
+  final l = _selection.last;
+  final p = c ?? l;
+
+  desktop.sendMessage(PlaceOrder(ap, p, dir: dir, type: type));
 }

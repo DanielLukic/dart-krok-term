@@ -14,6 +14,7 @@ part 'type/balance.dart';
 part 'type/notification.dart';
 part 'type/ohlc.dart';
 part 'type/order.dart';
+part 'type/place_order.dart';
 part 'type/portfolio.dart';
 part 'type/ticker.dart';
 
