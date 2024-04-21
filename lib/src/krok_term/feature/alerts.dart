@@ -1,10 +1,10 @@
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
-import 'package:krok_term/src/krok_term/repository/alerts_repo.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../common/list_window.dart';
+import '../common/settings.dart';
 import '../common/window.dart';
 import '../core/krok_core.dart';
-import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
 
 final _window = window("alerts", 22, 25) //
@@ -32,6 +32,14 @@ void _create() {
   _window.onKey('<Escape>',
       description: 'Hide alerts window', action: minimize);
 
+  _window.onKey(
+    't',
+    description: 'Toggle show alerts for selected pair only',
+    action: () => settings
+        .b('alerts-selected-only')
+        .then((v) => settings.setSynced('alerts-selected-only', !(v ?? false))),
+  );
+
   _window.onKey('d', description: 'Delete selected alert', action: () {
     final s = list.selected;
     if (s < 0 || s >= _entries.length) return;
@@ -45,10 +53,14 @@ void _create() {
     wasFocused = _window.isFocused;
   });
 
+  final selected = settings
+      .stream('alerts-selected-only')
+      .switchMap((t) => (t ?? false) ? selectedPair : Stream.value(null));
+
   _window.autoDispose(
     "update",
-    combine([alerts, assetPairs])
-        .map((e) => _toEntries(e[0], e[1]))
+    combine([alerts, assetPairs, selected])
+        .map((e) => _toEntries(e[0], e[1], e[2]))
         .listen((e) => list.updateEntries(e)),
   );
 }
@@ -60,6 +72,7 @@ List<(AlertData, AssetPairData)> _entries = [];
 List<String> _toEntries(
   Alerts alerts,
   AssetPairs assetPairs,
+  AssetPair? selected,
 ) {
   _entries.clear();
 
@@ -70,6 +83,7 @@ List<String> _toEntries(
     for (final a in sorted) {
       final ap = assetPairs[a.pair];
       if (ap == null) continue;
+      if (selected != null && ap.wsname != selected.wsname) continue;
       _entries.add((a, ap));
       final p = ap.price(a.price);
       result.add("${ap.wsname}|$p".columns(_columns, '|'));
