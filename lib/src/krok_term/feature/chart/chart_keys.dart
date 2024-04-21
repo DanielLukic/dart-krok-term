@@ -70,5 +70,7 @@ extension on Window {
 void _addAlert() {
   final pair = _pair;
   if (pair == null) return;
-  desktop.sendMessage(AlertAdded(pair, _selection.currentPrice, _selection.last));
+  desktop.sendMessage(
+    AddAlert(pair, _selection.currentPrice, _selection.last),
+  );
 }

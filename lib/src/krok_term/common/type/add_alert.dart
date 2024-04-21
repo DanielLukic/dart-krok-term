@@ -1,6 +1,6 @@
 part of '../types.dart';
 
-class AlertAdded extends BaseModel {
+class AddAlert extends BaseModel {
   final AssetPairData pair;
   double selectedPrice;
   double lastPrice;
@@ -8,7 +8,7 @@ class AlertAdded extends BaseModel {
   String? presetPrice;
   String label = 'unknown';
 
-  AlertAdded(this.pair, this.selectedPrice, this.lastPrice) {
+  AddAlert(this.pair, this.selectedPrice, this.lastPrice) {
     final sp = selectedPrice.takeIf(selectedPrice > 0);
     if (sp != null) {
       refPrice = sp;

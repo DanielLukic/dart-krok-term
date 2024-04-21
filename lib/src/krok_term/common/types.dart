@@ -6,7 +6,7 @@ import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
 part 'type/alert.dart';
-part 'type/alert_added.dart';
+part 'type/add_alert.dart';
 part 'type/alert_triggered.dart';
 part 'type/asset.dart';
 part 'type/asset_pair.dart';

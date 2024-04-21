@@ -93,7 +93,7 @@ _initKrokTerm() async {
   desktop.focusById('chart');
 
   desktop.stream().listen((it) {
-    if (it is AlertAdded) onAlertAdd(it);
+    if (it is AddAlert) onAddAlert(it);
     if (it is AlertTriggered) onNotification(it.asNotification());
     if (it case ('select-pair', String wsname)) {
       selectPair(AssetPair.fromWsName(wsname));
