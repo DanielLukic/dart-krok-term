@@ -22,6 +22,10 @@ class ListWindow {
 
   bool get isEmpty => _entries.isEmpty;
 
+  String? get header => _scrolled.header;
+
+  set header(String? header) => _scrolled.header = header;
+
   ListWindow({
     required Window window,
     required int topOff,
