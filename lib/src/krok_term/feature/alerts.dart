@@ -40,6 +40,10 @@ void _create() {
         .then((v) => settings.setSynced('alerts-selected-only', !(v ?? false))),
   );
 
+  _window.onKey('<S-d>',
+      description: 'Delete all listed alerts',
+      action: () => alertsRepo.clear());
+
   _window.onKey('d', description: 'Delete selected alert', action: () {
     final s = list.selected;
     if (s < 0 || s >= _entries.length) return;

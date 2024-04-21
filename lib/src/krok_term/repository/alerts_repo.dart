@@ -22,6 +22,7 @@ final class AlertsRepo {
       switch (command.$1) {
         'restore' => command.$2,
         'add' => _add(alerts, command.$2),
+        'clear' => Alerts.from({}),
         'remove' => _remove(alerts, command.$2),
         _ => alerts,
       };
@@ -29,6 +30,8 @@ final class AlertsRepo {
   Stream<Alerts> subscribe() => _cache;
 
   void add(AlertData alert) => _events.add(('add', alert));
+
+  void clear() => _events.add(('clear', null));
 
   void remove(AlertData alert) => _events.add(('remove', alert));
 
