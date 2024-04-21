@@ -37,6 +37,8 @@ class OrdersWindow {
 
   bool get isEmpty => _entries.isEmpty;
 
+  OrderData? get first => _entries.firstOrNull;
+
   OrderData? get selected =>
       _entries.firstWhereOrNull((e) => e.id == _selected.value);
 
