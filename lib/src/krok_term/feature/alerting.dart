@@ -1,8 +1,6 @@
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
-import '../repository/alerts_repo.dart';
-
 void onAddAlert(AddAlert add) {
   final refPrice = add.pair.price(add.refPrice);
 
@@ -18,7 +16,7 @@ void onAddAlert(AddAlert add) {
       DuiPadding.hv(
         DuiColumn(
           [
-            DuiPadding(DuiTitle('Create alert'), bottom: 1),
+            DuiPadding(DuiTitle('Create ${add.pair.wsname} alert'), bottom: 1),
             DuiText.fromLines([
               'Specify price as absolute value or +/-.',
               'Optionally use % with either absolute or +/-.',
