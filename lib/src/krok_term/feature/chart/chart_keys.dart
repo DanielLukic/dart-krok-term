@@ -4,14 +4,14 @@ extension on Window {
   void setupKeys() {
     onKey("u", description: "Update data", action: () => _triggerRefresh());
 
-    onKey('s', //
-        description: 'Move chart up',
+    onKey('d', //
+        description: 'Move chart down',
         action: () {
           _selection.step(1);
           _triggerRedraw();
         });
-    onKey('w', //
-        description: 'Move chart down',
+    onKey('e', //
+        description: 'Move chart up',
         action: () {
           _selection.step(-1);
           _triggerRedraw();
@@ -43,7 +43,7 @@ extension on Window {
         action: () => _selection.change(-1));
     onKey('<S-j>', //
         aliases: ['<S-Down>'],
-        description: 'Price selection down',
+        description: 'Price selection down 10 steps',
         action: () => _selection.change(-10));
     onKey('k', //
         aliases: ['<Up>'],
@@ -51,7 +51,7 @@ extension on Window {
         action: () => _selection.change(1));
     onKey('<S-k>', //
         aliases: ['<S-Up>'],
-        description: 'Price selection up',
+        description: 'Price selection up 10 steps',
         action: () => _selection.change(10));
 
     onKey('<C-j>', //
