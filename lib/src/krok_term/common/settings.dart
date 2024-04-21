@@ -4,13 +4,18 @@ import 'dart:io';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:rxdart/rxdart.dart';
 
+final settings = PersistentSettings(path: 'krok/settings.json');
+
 class PersistentSettings {
   final File _file;
 
-  PersistentSettings({required String path}) : _file = File(path);
+  PersistentSettings({required String path}) : _file = File(path) {
+    _synced.asyncMap((e) async => await set(e.$2, e.$3)).listen((_) {});
+  }
 
   Map<String, dynamic>? _data;
   final _updates = PublishSubject<(DateTime, Map<String, dynamic>)>();
+  final _synced = PublishSubject<(DateTime, String, dynamic)>();
 
   Future<Map<String, dynamic>> _ensureLoaded() async {
     try {
@@ -29,6 +34,9 @@ class PersistentSettings {
   Stream<T?> stream<T>(String key) => _ensureLoaded()
       .asStream()
       .concatWith([_updates.map((d) => d.$2)]).map((m) => m[key]);
+
+  void setSynced(String key, dynamic value) =>
+      _synced.add((DateTime.timestamp(), key, value));
 
   Future set(String key, dynamic value) async {
     try {
