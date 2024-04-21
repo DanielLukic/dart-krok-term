@@ -13,10 +13,12 @@ final _window = window("alerts", 22, 25) //
 
 void openAlerts() => autoWindow(_window, _create);
 
+late ListWindow _list;
+
 void _create() {
   minimize() => desktop.minimizeWindow(_window);
 
-  final list = ListWindow(
+  _list = ListWindow(
     window: _window,
     topOff: 2,
     bottomOff: 2,
@@ -45,7 +47,7 @@ void _create() {
       action: () => alertsRepo.clear());
 
   _window.onKey('d', description: 'Delete selected alert', action: () {
-    final s = list.selected;
+    final s = _list.selected;
     if (s < 0 || s >= _entries.length) return;
     final alert = _entries[s].$1;
     alertsRepo.remove(alert);
@@ -65,7 +67,7 @@ void _create() {
     "update",
     combine([alerts, assetPairs, selected])
         .map((e) => _toEntries(e[0], e[1], e[2]))
-        .listen((e) => list.updateEntries(e)),
+        .listen((e) => _list.updateEntries(e)),
   );
 }
 
@@ -93,5 +95,12 @@ List<String> _toEntries(
       result.add("${ap.wsname}|$p".columns(_columns, '|'));
     }
   }
+
+  _list.header = switch (result) {
+    _ when result.isEmpty && alerts.isNotEmpty => 'Show all [t]',
+    _ when result.isEmpty => 'No alerts',
+    _ => "Asset Pair|Price".columns(_columns, '|'),
+  };
+
   return result;
 }
