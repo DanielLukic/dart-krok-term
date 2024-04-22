@@ -5,16 +5,15 @@ import 'package:rxdart/rxdart.dart';
 import '../notifications.dart';
 
 startOrderTracking() {
-  var seenOpen = <OrderData>[];
-  combine([openOrders, closedOrders]).debounceTime(100.millis).listen((e) {
-    final Orders closed = e[1];
-    final gotClosed = seenOpen.where((e) => closed.keys.contains(e.id));
-    for (final o in gotClosed.unique()) {
-      final c = closed[o.id];
-      if (c != null) _notifyOrder(c);
+  OrderId seen = '';
+  closedOrders.debounceTime(100.millis).listen((closed) {
+    if (seen.isNotEmpty) {
+      final todo = closed.keys.takeWhile((e) => e != seen);
+      for (final o in todo) {
+        closed[o]?.let(_notifyOrder);
+      }
     }
-    final Orders open = e[0];
-    seenOpen = List.from(open.values);
+    seen = closed.keys.firstOrNull ?? '';
   });
 }
 
