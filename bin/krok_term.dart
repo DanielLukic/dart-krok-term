@@ -15,6 +15,7 @@ import 'package:krok_term/src/krok_term/feature/logic/alert_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/logic/order_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/notifications.dart';
 import 'package:krok_term/src/krok_term/feature/open_orders.dart';
+import 'package:krok_term/src/krok_term/feature/ordering.dart';
 import 'package:krok_term/src/krok_term/feature/portfolio.dart';
 import 'package:krok_term/src/krok_term/feature/select_pair.dart';
 import 'package:krok_term/src/krok_term/feature/status.dart';
@@ -94,7 +95,10 @@ _initKrokTerm() async {
 
   desktop.stream().listen((it) {
     if (it is AddAlert) onAddAlert(it);
+    if (it is PlaceOrder) onPlaceOrder(it);
+
     if (it is AlertTriggered) onNotification(it.asNotification());
+
     if (it case ('select-pair', String wsname)) {
       selectPair(AssetPair.fromWsName(wsname));
     }
