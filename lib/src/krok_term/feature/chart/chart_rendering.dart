@@ -4,7 +4,6 @@ import 'package:dart_consul/dart_consul.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
 
-import '../../common/color_canvas.dart';
 import '../../common/types.dart';
 import 'chart_snapshot.dart';
 
