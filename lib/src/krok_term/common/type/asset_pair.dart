@@ -32,6 +32,8 @@ class AssetPairData extends BaseModel {
 
   AssetPair get ap => AssetPair.fromWsName(wsname);
 
+  String get quote_ => quote.startsWith('Z') ? quote.drop(1) : quote;
+
   String price(double price) => price.toStringAsFixed(pair_decimals);
 
   String volume(double volume) => volume.toStringAsFixed(lot_decimals);
