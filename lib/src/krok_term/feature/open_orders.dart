@@ -1,4 +1,3 @@
-import 'package:dart_consul/dart_consul.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 
 import '../common/window.dart';
@@ -25,9 +24,13 @@ final _openOrders = OrdersWindow(
 void openOpenOrders() => autoWindow(_window, () {
       _openOrders.create();
       _window.onKey('c',
-          description: 'Cancel selected order', action: _cancelSelected);
+          aliases: ['d'],
+          description: 'Cancel selected order',
+          action: _cancelSelected);
       _window.onKey('<S-c>',
-          description: 'Cancel all orders', action: _cancelAll);
+          aliases: ['<S-d>'],
+          description: 'Cancel all orders',
+          action: _cancelAll);
     });
 
 void _cancelSelected() {
