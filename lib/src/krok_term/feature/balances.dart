@@ -1,15 +1,10 @@
-import 'package:dart_consul/dart_consul.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/streams.dart';
 
 import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../core/selected_currency.dart';
-import '../repository/asset_pairs_repo.dart';
-import '../repository/assets_repo.dart';
-import '../repository/balances_repo.dart';
 import '../repository/krok_repos.dart';
-import '../repository/ticker_repo.dart';
 
 final _window = window("balances", 55, 10) //
   ..name = "Balances [$bKey]"
@@ -60,6 +55,8 @@ List<String> _toEntries(
 ) {
   _entries.clear();
 
+  final spot = <String>[];
+
   final result = <String>[];
   for (var b in balances.values) {
     final ap = assetPairs.values
@@ -86,6 +83,23 @@ List<String> _toEntries(
     _entries.add(ap);
   }
   result.sort();
+
+  final zs = knownCurrencies
+      .map((e) => (e, balances[e.z]))
+      .where((e) => e.$2 != null)
+      .where((e) => e.$2!.volume >= 1);
+  if (zs.isEmpty) return result;
+
+  result.add('');
+  result.add('Spot');
+  for (final z in zs) {
+    final v = z.$2?.volume;
+    if (v == null || v < 1) continue;
+    final a = z.$1.quote;
+    final bal = v.toStringAsFixed(2);
+    result.add("$a - - $bal $bal".columns(_columns));
+  }
+
   return result;
 }
 

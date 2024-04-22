@@ -2,7 +2,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 
 import 'krok_core.dart';
 
-extension type Currency(String _plain) {
+extension type Currency._(String _plain) {
   Currency.fromPlain(String currency)
       : assert(!currency.startsWith("Z")),
         _plain = currency;
@@ -18,7 +18,8 @@ extension type Currency(String _plain) {
   String get z => "Z$plain";
 }
 
-final knownCurrencies = ['AUD', 'CAD', 'EUR', 'GBP', 'USD', 'JPY'];
+final knownCurrencies = ['AUD', 'CAD', 'EUR', 'GBP', 'USD', 'JPY']
+    .mapList((e) => Currency.fromPlain(e));
 
 late final TimestampedStorage<Currency> _currency;
 
