@@ -20,7 +20,8 @@ extension on Window {
       ..onDrag = (e) => _DragChartAction(_window, e, _projection.currentScroll);
 
     final priceGestures = MouseGestures(this, desktop)
-      ..onDoubleClick = ((_) => _toggleFixed());
+      ..onDoubleClick = ((_) => _toggleFixed())
+      ..onDrag = (e) => _DragPriceAction(_window, e);
 
     chainOnMouseEvent((e) {
       if (_isOnChart(e)) return chartGestures.process(e);
@@ -85,6 +86,25 @@ class _DragChartAction extends BaseOngoingMouseAction {
       _selection.step(dy - stepped);
       stepped = dy;
     }
+
+    _triggerRedraw();
+  }
+
+  var stepped = 0;
+}
+
+class _DragPriceAction extends BaseOngoingMouseAction {
+  _DragPriceAction(super.window, super.event);
+
+  @override
+  void onMouseEvent(MouseEvent event) {
+    if (event.isUp) done = true;
+
+    final dy = event.y - this.event.y;
+    final actual = dy - stepped;
+    if (actual < 0) _selection.scaleDown();
+    if (actual > 0) _selection.scaleUp();
+    stepped = dy;
 
     _triggerRedraw();
   }
