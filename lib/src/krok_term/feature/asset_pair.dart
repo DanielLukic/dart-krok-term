@@ -49,7 +49,7 @@ _updateResult((AssetPairData, TickerData) data) {
   final t = data.$2;
   final currency = ap.wsname.split("/").last;
   final name = ap.wsname.highlightSuffix().fixDisplayPair().bold();
-  var last = t.last.toStringAsFixed(2);
+  var last = ap.price(t.last);
   if (t.last < t.priceToday) last = last.red();
   if (t.last > t.priceToday) last = last.green();
   final p = t.ansiPercent;
