@@ -76,10 +76,15 @@ class _DragChartAction extends BaseOngoingMouseAction {
     // the 2 and 4 are for the canvas pixels per char
 
     final dx = (event.x - this.event.x) * 2;
-    final dy = (event.y - this.event.y) * 4;
     _projection.setScroll(_startScroll + dx);
-    _selection.step(dy - stepped);
-    stepped = dy;
+
+    // only apply vertical movement if price scale has been fixed. otherwise we would always auto-start fixed price
+    // scale. which is confusing and not what we want.
+    if (_selection.fixedScale != null) {
+      final dy = (event.y - this.event.y) * 4;
+      _selection.step(dy - stepped);
+      stepped = dy;
+    }
 
     _triggerRedraw();
   }
