@@ -15,6 +15,11 @@ class OrderData extends BaseModel {
 
   String status() => s('status');
 
+  OrderDirection direction() {
+    final dir = data['descr']['type'];
+    return OrderDirection.values.singleWhere((e) => e.name == dir);
+  }
+
   String type() => data['descr']['type'];
 
   OrderType ordertype() {
@@ -24,11 +29,86 @@ class OrderData extends BaseModel {
 
   // TODO handle trailingStop here?
 
-  KrakenPrice price() =>
-      KrakenPrice.fromString(data['descr']['price'], trailingStop: false);
+  String? get _price => data['descr']['price'];
 
-  KrakenPrice price2() =>
-      KrakenPrice.fromString(data['descr']['price2'], trailingStop: false);
+  String? get _price2 => data['descr']['price2'];
+
+  bool _isTrailingPrice(String? p) =>
+      ordertype().name.startsWith('trailing') &&
+      p?.startsWith(_trailingPrefixes) == true;
+
+  final _trailingPrefixes = RegExp(r'[-+#]');
+
+  KrakenPrice? price() {
+    final String? price = _price;
+    if (price == null || price == '0') return null;
+    final trailing = _isTrailingPrice(price);
+    try {
+      return KrakenPrice.fromString(price, trailingStop: trailing);
+    } catch (it, t) {
+      logError('$price of $id (trailing? $trailing): $it', t);
+      return null;
+    }
+  }
+
+  KrakenPrice? price2() {
+    final price2 = data['descr']['price2'];
+    if (price2 == null || price2 == '0') return null;
+    final trailing = _isTrailingPrice(price2);
+    try {
+      return KrakenPrice.fromString(price2, trailingStop: trailing);
+    } catch (it, t) {
+      logError('$price2 of $id: $it (trailing? $trailing)', t);
+      return null;
+    }
+  }
+
+  double? resolvePriceAgainst(double latest) =>
+      resolve(direction(), price(), latest, price1: true);
+
+  double? resolvePrice2Against(double? latest) =>
+      resolve(direction(), price2(), latest, price1: false);
+
+  static double? resolve(
+    OrderDirection type,
+    KrakenPrice? price,
+    double? latest, {
+    required bool price1,
+  }) {
+    if (price == null || latest == null || latest == 0) return null;
+
+    final p = price;
+    if (p.it == '0') return null;
+
+    var dir = type == OrderDirection.sell ? -1 : 1;
+    final percent = p.percentage;
+    final v = percent ? latest * p.value / 100 : p.value;
+
+    if (p.trailingStopPrice) {
+      if (price1) {
+        if (p.it.startsWith('+')) {
+          return latest + v * dir;
+        } else {
+          throw ArgumentError('trailing stop price without +: ${p.it}');
+        }
+      } else if (p.it.startsWith('+')) {
+        return latest + v;
+      } else if (p.it.startsWith('-')) {
+        return latest - v;
+      } else {
+        throw ArgumentError('trailing stop limit without + or -: ${p.it}');
+      }
+    } else if (p.it.startsWith('+')) {
+      return latest + v;
+    } else if (p.it.startsWith('-')) {
+      return latest - v;
+    } else if (p.it.startsWith('#')) {
+      // TODO type
+      return latest + v * dir;
+    } else {
+      return v;
+    }
+  }
 
   String leverage() => data['descr']['leverage'];
 
