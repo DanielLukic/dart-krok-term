@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dart_consul/dart_consul.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
+import 'package:termlib/termlib.dart';
 
 import '../../common/types.dart';
 import 'chart_snapshot.dart';
@@ -27,6 +28,7 @@ String renderCanvas(
   OhlcData latest,
   double selected,
   List<AlertData> alerts,
+  (Orders, Orders) orders,
 ) {
   final canvas = ColorCanvas(canvasWidth, canvasHeight);
   final invertX = canvasWidth - 1;
@@ -50,6 +52,34 @@ String renderCanvas(
       canvas.set(invertX - x, invertY - y.round(), color);
     }
   }
+
+  final closed = orders.$2.values;
+  for (var x = 0; x < count; x++) {
+    final co = closed.where((e) => snapshot.inTime(x, e.d('closetm')));
+    for (final o in co.take(1)) {
+      final p = o.d('price');
+      final y = snapshot.scaled(p, canvasHeight);
+      final color = o.type() == 'sell' ? _sellColor : _buyColor;
+      for (var dx = 0; dx < 8; dx++) {
+        canvas.set(invertX - x - dx, invertY - y.round(), color);
+      }
+    }
+  }
+
+  final open = orders.$1.values;
+  for (final o in open) {
+    final p1 = o.resolvePriceAgainst(latest.close);
+    final p2 = o.resolvePrice2Against(latest.close);
+    final p = p2 ?? p1;
+    if (p == null) continue;
+    final y = snapshot.scaled(p, canvasHeight);
+
+    final color = o.type() == 'sell' ? _sellColor : _buyColor;
+    for (var x = 0; x < 4; x++) {
+      canvas.set(x, invertY - y.round(), color);
+    }
+  }
+
   return canvas.frame();
 }
 
@@ -80,6 +110,17 @@ extension on ChartSnapshot {
   int scaledLowAt(int index, int height) => scaled(lows[index], height);
 
   int scaledCloseAt(int index, int height) => scaled(closes[index], height);
+
+  bool inTime(int index, double time) {
+    if (index < 0 || index >= times.length) return false;
+    if (index == times.length - 1) return false;
+    final a = times[index];
+    final b = times[index + 1];
+    final delta = a - b;
+    if ((time - a).abs() < delta / 3) return true;
+    if ((time - b).abs() < delta / 3) return true;
+    return a >= time && time >= b;
+  }
 }
 
 String renderPrices(
@@ -135,4 +176,18 @@ String renderPrices(
   prices.set(0, height - 2, '┘');
   prices.set(0, height - 1, ' ');
   return prices.frame();
+}
+
+String _sellColor(e) {
+  final s = Style(e, profile: ProfileEnum.trueColor)
+    ..blink()
+    ..fg(TrueColor(128, 0, 0));
+  return s.toString();
+}
+
+String _buyColor(e) {
+  final s = Style(e, profile: ProfileEnum.trueColor)
+    ..blink()
+    ..fg(TrueColor(0, 128, 0));
+  return s.toString();
 }

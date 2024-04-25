@@ -52,6 +52,9 @@ void _create() {
   final pairAlerts = alerts.combineLatest(
       selectedAssetPair, (a, ap) => a[ap.pair] ?? <AlertData>[]);
 
+  final orders =
+      combine([selectedAssetPair, openOrders, closedOrders]).map(_orders);
+
   final zoom = _projection.zoom;
   final scroll = _projection.scroll;
   final withZoomAndScroll = combine([
@@ -63,16 +66,29 @@ void _create() {
     autoRefreshPair,
     _selection.selectedPrice,
     pairAlerts,
+    orders,
     _redraw,
   ])
       .distinctUntilChanged()
       // assign pair, now that data is available/visible. pair is used for
       // placing alerts only for now.
       .doOnData((e) => _setPairWhenDataAvailable(e[0], e[5]))
-      .map((e) => _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]));
+      .map((e) =>
+          _renderChart(e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8]));
 
   _window.autoDispose("update",
       withZoomAndScroll.listenSafely(_showChart, onError: _showError));
+}
+
+(Orders, Orders) _orders(List<dynamic> e) {
+  final AssetPairData ap = e[0];
+  final Orders open = e[1];
+  final Orders closed = e[2];
+  final o = open.where(
+      (e) => e.value.pair() == ap.pair && e.value.status() != 'canceled');
+  final c = closed.where(
+      (e) => e.value.pair() == ap.pair && e.value.status() != 'canceled');
+  return (o, c);
 }
 
 _setPairWhenDataAvailable(_ChartData data, AssetPairData pair) {
@@ -111,6 +127,7 @@ String _renderChart(
   AssetPairData ap,
   double sp,
   List<AlertData> alerts,
+  (Orders, Orders) orders,
 ) {
   final pair = input.$1;
   final data = input.$2;
@@ -137,7 +154,8 @@ String _renderChart(
   buffer.drawBuffer(0, 0, renderIntervalSelection(interval));
   buffer.drawBuffer(width - 20, 0, _zoomInfo(zoom));
   if (loading.isEmpty || input.$1 == ap) {
-    final data = renderCanvas(chartWidth, chartHeight, snap, last, sp, alerts);
+    final data =
+        renderCanvas(chartWidth, chartHeight, snap, last, sp, alerts, orders);
     buffer.drawBuffer(0, 1, data);
     final prices =
         renderPrices(pair, snap, height, last, sp, alerts, fixed != null);

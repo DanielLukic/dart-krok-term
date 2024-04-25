@@ -1,6 +1,7 @@
 import 'package:ansi/ansi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_consul/common.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok/extensions.dart';
 import 'package:krok/krok.dart';
 import 'package:krok_term/src/krok_term/common/extensions.dart';
