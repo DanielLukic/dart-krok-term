@@ -1,3 +1,11 @@
 dependency_overrides:
   dart_consul:
     path: ../dart-consul
+  krok:
+    path: ../dart-krok
+  termansi:
+    path: ../termkit/packages/termansi
+  termlib:
+    path: ../termkit/packages/termlib
+  termparser:
+    path: ../termkit/packages/termparser
