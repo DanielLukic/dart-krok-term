@@ -45,7 +45,8 @@ void _cancelSelected() {
   desktop.query(msg, (e) {
     if (e == QueryResult.positive) {
       logInfo("canceling ${o.id}");
-      retrieve(KrakenRequest.cancelOrder(txid: o.id)).listenSafely((e) {
+      retrieve(KrakenRequest.cancelOrder(txidOrUserref: o.id))
+          .listenSafely((e) {
         closedOrdersRepo.refresh(userRequest: true);
         openOrdersRepo.refresh(userRequest: true);
       });
