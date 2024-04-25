@@ -23,7 +23,7 @@ import 'package:krok_term/src/krok_term/feature/ticker.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
 void main(List<String> args) async {
-  final conIO = MadConIO();
+  final conIO = TermLibConIO();
   try {
     desktop = Desktop(conIO: conIO);
     desktop.setDefaultKeys();

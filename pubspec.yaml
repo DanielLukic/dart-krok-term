@@ -17,6 +17,7 @@ dependencies:
   krok: ^0.0.6
   rxdart: ^0.27.7
   stream_transform: ^2.1.0
+  termlib: ^0.1.1
 
 dev_dependencies:
   lints: ^3.0.0
