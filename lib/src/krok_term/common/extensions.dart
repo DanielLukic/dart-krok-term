@@ -193,7 +193,7 @@ extension PlusIterable<E> on Iterable<E> {
 extension SafeStreamExtension<T> on Stream<T> {
   StreamSubscription<T> listenSafely(
     Function(T) listener, {
-    void Function(dynamic)? onError,
+    void Function(dynamic, StackTrace?)? onError,
   }) {
     final oe = onError ?? logError;
 

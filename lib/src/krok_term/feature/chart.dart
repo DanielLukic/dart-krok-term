@@ -81,7 +81,7 @@ _setPairWhenDataAvailable(_ChartData data, AssetPairData pair) {
 
 _showChart(chart) => _window.update(() => chart);
 
-_showError(e) => _window
+_showError(e, trace) => _window
     .update(() => e.toString().split(':').map((e) => e.red()).join('\n'));
 
 /// Latest selected pair. Horrible. Used for placing alerts.
