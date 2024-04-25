@@ -9,3 +9,4 @@ tmp/
 *.exe
 *.iml
 *.log
+*.lock
