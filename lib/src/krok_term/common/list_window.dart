@@ -12,6 +12,7 @@ class ListWindow {
   String Function(String) asSelected;
   Function(int)? onSelect;
 
+  var _clearedAt = -1;
   final _selected = BehaviorSubject.seeded(-1);
   late final ScrolledContent _scrolled;
   String _buffer = "";
@@ -30,6 +31,7 @@ class ListWindow {
     required Window window,
     required int topOff,
     required int bottomOff,
+    bool escapeToClear = true,
     bool extendName = true,
     String? header,
     this.asSelected = inverse,
@@ -60,6 +62,14 @@ class ListWindow {
         description: 'Select previous entry', action: () => _keySelect(-jump));
     _window.onKey('<S-j>',
         description: 'Select next entry', action: () => _keySelect(jump));
+
+    if (escapeToClear) {
+      _window.onKey('<Escape>', description: 'Clear selection', action: () {
+        _clearedAt = _selected.value;
+        _selected.value = -1;
+        _refresh();
+      });
+    }
 
     _window.onKey('<Return>',
         aliases: ['<Space>'],
@@ -117,7 +127,13 @@ class ListWindow {
   void _keySelect(int delta) {
     if (_entries.isEmpty) return;
 
-    final target = _selected.value + delta;
+    var sv = _selected.value;
+    if (sv == -1) {
+      sv = _clearedAt;
+      _clearedAt = -1;
+    }
+
+    final target = sv + delta;
     final newIndex = target.clamp(0, _entries.length - 1);
     _selected.value = newIndex;
 

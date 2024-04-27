@@ -24,6 +24,7 @@ void _create() {
     bottomOff: 2,
     header: "Asset Pair|Price".columns(_columns, '|'),
     extendName: false,
+    escapeToClear: false,
     onSelect: (index) {
       if (index < 0 || index >= _entries.length) return null;
       selectPair(_entries[index].$2.ap);
