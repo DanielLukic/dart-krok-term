@@ -1,5 +1,3 @@
-import 'package:dart_consul/dart_consul.dart';
-import 'package:krok_term/src/krok_term/repository/portfolio_repo.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -8,19 +6,24 @@ import '../core/krok_core.dart';
 import '../repository/krok_repos.dart';
 
 final _window = window("portfolio", 40, 1) //
-  ..name = "Portfolio [$pKey]"
+  ..name = "Portfolio [$pKey] [e]"
   ..position = AbsolutePosition(105, 0)
   ..size = WindowSize.min(Size(40, 2));
 
 void openPortfolio() => autoWindow(_window, () => _create());
 
 void _create() {
+  _window.onKey('<Return>',
+      aliases: ['<Space>', 'e'],
+      description: 'Toggle expanded',
+      action: () => _expanded.value = !_expanded.value);
+
   _window.onKey("u",
       description: "Update data",
       action: () => portfolioRepo.refresh(userRequest: true));
 
-  _window.chainOnMouseEvent((p0) {
-    if (p0.isUp) {
+  _window.chainOnMouseEvent((e) {
+    if (e.isUp) {
       _expanded.value = !_expanded.value;
       _window.requestRedraw();
     }
