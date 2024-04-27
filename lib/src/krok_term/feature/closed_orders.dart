@@ -1,4 +1,5 @@
 import 'package:krok_term/src/krok_term/common/settings.dart';
+import 'package:krok_term/src/krok_term/feature/pick_order.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/window.dart';
@@ -12,7 +13,7 @@ final _window = window("closed-orders", 80, 14) //
     WindowFlag.minimizable,
     WindowFlag.resizable
   }
-  ..name = "Closed Orders [$ocKey]"
+  ..name = "Closed Orders [$ocKey] [/]"
   ..position = AbsolutePosition(105, 15);
 
 final _closedOrders = OrdersWindow(
@@ -37,6 +38,8 @@ Stream<Orders> _data() =>
 
 void openClosedOrders() {
   autoWindow(_window, () {
+    _window.onKey('/', description: 'Filter by order id', action: pickOrder);
+
     _window.onKey('r',
         description: 'Reset hidden orders to show all', action: _resetOrders);
     _window.onKey('h',
