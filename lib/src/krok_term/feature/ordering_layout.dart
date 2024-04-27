@@ -56,6 +56,9 @@ void _createLayout(
   final helpHint = '([?] for help)'.gray();
   final title = 'Create ${ap.wsname} ${state.dir.name} order $helpHint';
 
+  String result = state['z'];
+  if (result.isNotEmpty) result = ' ≈ $result';
+
   final confirm = DuiButton(
     id: 'confirm',
     text: 'Create order <Return>',
@@ -80,7 +83,7 @@ void _createLayout(
               if (state.needsPrice) DuiRow([pl, price, priceAck]),
               if (state.needsLimit) DuiRow([ll, limit, limitAck]),
               DuiSpace(),
-              DuiText(state.description),
+              DuiText(state.description + result),
               DuiSpace(),
               confirm,
             ],
@@ -129,6 +132,8 @@ void _addInputKeys(
     final f = layout.focused;
     final id = f?.id;
     if (f is DuiTextInput && id != null) state[id] = i;
+    if (id == 'z') state['volume'] = i;
+    if (id == 'volume') state['z'] = i;
   }
 
   final price = it.id == 'price' || it.id == 'limit';
