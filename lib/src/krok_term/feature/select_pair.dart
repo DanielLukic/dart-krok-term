@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:krok_term/src/krok_term/common/list_filter.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -8,23 +9,23 @@ import '../core/selected_currency.dart';
 import '../core/selected_pair.dart';
 import '../repository/krok_repos.dart';
 
-final _window = window("select-pair", 61, 25) //
+final _window = window("select-pair", 62, 25) //
   ..name = "Select Pair"
-  ..position = AbsolutePosition(43, 4);
+  ..position = AbsolutePosition(42, 4);
 
 void selectAssetPair() {
   autoWindow(_window, () => _create());
   _scrolled.scrollOffset = 0;
   _scrolled.header = "Start typing to filter...".italic();
-  _filter.value = "";
+  _filter.reset();
 }
 
 late ScrolledContent _scrolled;
+late ListFilter<AssetPairData> _filter;
 
-List<AssetPairData> _data = [];
+final List<AssetPairData> _data = [];
 
 String _buffer = "";
-final _filter = BehaviorSubject.seeded("");
 final _selection = BehaviorSubject<(int?, AssetPairData?)>.seeded((null, null));
 
 (int?, AssetPairData?) _resolveSelection({
@@ -46,82 +47,27 @@ final _selection = BehaviorSubject<(int?, AssetPairData?)>.seeded((null, null));
   }
 }
 
-void _navigate(int delta) {
-  final selection = _resolveSelection(selection: _selection.value, data: _data);
-  final currentIndex = selection.$1;
-  if (currentIndex == null) return;
-  final target = currentIndex + delta;
-  if (target < 0 || target >= _data.length) return;
-  _selection.value = (target, _data[target]);
-  _window.requestRedraw();
-}
-
-void _stolen(KeyEvent it) {
-  if (it.printable == "<C-u>") {
-    _filter.value = "";
-  } else if (it.printable == "<C-k>") {
-    _navigate(-1);
-  } else if (it.printable == "<C-j>") {
-    _navigate(1);
-  } else if (it is InputKey) {
-    _filter.value = _filter.value + it.char;
-  } else if (it.printable == "<Backspace>" || it.printable == "<C-h>") {
-    _filter.value = _filter.value.dropLast(1);
-  } else if (it.printable == "<C-u>") {
-    _filter.value = "";
-  } else if (it is ControlKey && it.printable == "<Escape>") {
-    desktop.minimizeWindow(_window);
-  } else if (it is ControlKey && it.printable == "<Up>") {
-    _navigate(-1);
-  } else if (it is ControlKey && it.printable == "<Down>") {
-    _navigate(1);
-  } else if (it is ControlKey && it.printable == "<Return>") {
-    final selection =
-        _resolveSelection(selection: _selection.value, data: _data);
-    final selected = selection.$2;
-    if (selected != null) _select(selected);
-  } else {
-    desktop.handleStolen(it);
-  }
-  final filter = _filter.value;
-  if (filter.isEmpty) {
-    _scrolled.header = "Start typing to filter...".italic();
-  } else {
-    _scrolled.header = filter.inverse();
-  }
-  _window.requestRedraw();
-}
-
 void _create() {
   _scrolled =
       scrolled(_window, () => _buffer, nameExtension: " ≡ ▼/▲ <C-j>/<C-k>");
 
+  _filter = ListFilter(
+    () => _resolveSelection(selection: _selection.value, data: _data),
+    (e) => _selection.value = e,
+    (e) => _select(e),
+    _data,
+    _scrolled,
+    minimizeOnCancel: true,
+  );
+
   _window.onFocusChanged.add(() {
-    if (_window.isFocused) {
-      _window.autoDispose("stealKeys", desktop.stealKeys((it) => _stolen(it)));
-    } else {
-      _window.dispose("stealKeys");
-      desktop.minimizeWindow(_window);
-    }
-  });
-
-  var maybeTrigger = false;
-
-  _window.chainOnMouseEvent((e) {
-    if (e.isDown) maybeTrigger = true;
-    if (e.isUp && maybeTrigger) {
-      final max = _data.length - 1;
-      final index = (_scrolled.scrollOffset + e.y - 2).clamp(0, max);
-      _select(_data[index]);
-      maybeTrigger = false;
-    }
-    return null;
+    if (!_window.isFocused) desktop.minimizeWindow(_window);
   });
 
   _window.autoDispose(
     "update",
     CombineLatestStream.list<dynamic>(
-            [currency, assetPairs, tickers, _filter, _selection])
+            [currency, assetPairs, tickers, _filter.value, _selection])
         .map((e) => _toEntries(e[0], e[1], e[2], e[3], e[4]))
         .listen((e) => _updateResult(e)),
   );
@@ -176,7 +122,8 @@ _updateResult((List<(AssetPairData, String)>, int?) it) {
   final entries = it.$1;
   final selectedIndex = it.$2;
 
-  _data = entries.mapList((e) => e.$1);
+  _data.clear();
+  _data.addAll(entries.mapList((e) => e.$1));
 
   final rows = entries
       .map((e) => e.$2.columns("L15|R15|R15").ansiPadRight(_window.width))
