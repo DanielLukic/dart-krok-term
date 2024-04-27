@@ -1,16 +1,14 @@
 import 'dart:math';
 
-import 'package:dart_consul/dart_consul.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../common/functions.dart';
 import '../common/window.dart';
 import '../core/krok_core.dart';
+import '../core/market_signal.dart';
 import '../core/selected_currency.dart';
-import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
-import '../repository/ticker_repo.dart';
 
 final _window = window("ticker", 41, 29) //
   ..name = "Ticker [$tKey]"
@@ -93,12 +91,29 @@ void _updateHeaderMarketIndicator(
   final int all = data.length;
   final gg = "${gainers.length}/$all".green();
   final ll = "${losers.length}/$all".red();
+  var signal = MarketSignal.undecided;
   var m1 = "MAR";
   var m2 = "KET";
-  if (gainers.length > data.length / 2) m1 = m1.green();
-  if (gainers.length > data.length / 2 && losers.isEmpty) m2 = m2.green();
-  if (losers.length > data.length / 2) m2 = m2.red();
-  if (losers.length > data.length / 2 && gainers.isEmpty) m1 = m1.red();
+  if (gainers.length > data.length / 2) {
+    signal = MarketSignal.buy;
+    m1 = m1.green();
+    if (losers.isEmpty) {
+      signal = MarketSignal.buyBuy;
+      m2 = m2.green();
+    }
+  }
+  if (losers.length > data.length / 2) {
+    if (signal == MarketSignal.undecided) {
+      signal = MarketSignal.sell;
+    } else {
+      signal = MarketSignal.undecided;
+    }
+    m2 = m2.red();
+    if (gainers.isEmpty) {
+      signal = MarketSignal.sellSell;
+      m1 = m1.red();
+    }
+  }
   _scrolled.header = "$gg $m1│$m2 $ll".columns("L15|C11|R15");
 }
 
