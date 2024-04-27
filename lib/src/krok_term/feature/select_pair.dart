@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:dart_consul/dart_consul.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -7,9 +6,7 @@ import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../core/selected_currency.dart';
 import '../core/selected_pair.dart';
-import '../repository/asset_pairs_repo.dart';
 import '../repository/krok_repos.dart';
-import '../repository/ticker_repo.dart';
 
 final _window = window("select-pair", 61, 25) //
   ..name = "Select Pair"
@@ -102,7 +99,6 @@ void _create() {
   _window.onFocusChanged.add(() {
     if (_window.isFocused) {
       _window.autoDispose("stealKeys", desktop.stealKeys((it) => _stolen(it)));
-      return;
     } else {
       _window.dispose("stealKeys");
       desktop.minimizeWindow(_window);
