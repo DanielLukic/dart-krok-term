@@ -1,3 +1,4 @@
+import 'package:krok_term/src/krok_term/common/list_window.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/streams.dart';
 
@@ -12,24 +13,18 @@ final _window = window("balances", 55, 10) //
 
 void openBalances() => autoWindow(_window, _create);
 
-String _buffer = "";
-
 final _columns = "L6|R10|R9|R15|R15";
 
-void _create() {
-  scrolled(
-    _window,
-    () => _buffer,
-    header: "Coin Price 24H Balance EST.VALUE".columns(_columns),
-  );
+late final ListWindow _list;
 
-  _window.chainOnMouseEvent((e) {
-    if (!e.isUp || e.y <= 1) return null;
-    final index = e.y - 2;
-    if (index < 0 || index >= _entries.length) return null;
-    selectPair(_entries[index].ap);
-    return null;
-  });
+void _create() {
+  _list = ListWindow(
+    window: _window,
+    topOff: 2,
+    bottomOff: 3,
+    header: "Coin Price 24H Balance EST.VALUE".columns(_columns),
+    onSelect: (e) => selectPair(_entries[e].ap),
+  );
 
   _window.onKey("u",
       description: "Update balances now",
@@ -44,7 +39,7 @@ void _create() {
   );
 }
 
-List<AssetPairData> _entries = [];
+final List<AssetPairData> _entries = [];
 
 List<String> _toEntries(
   Assets assets,
@@ -54,8 +49,6 @@ List<String> _toEntries(
   Tickers tickers,
 ) {
   _entries.clear();
-
-  final spot = <String>[];
 
   final result = <String>[];
   for (var b in balances.values) {
@@ -110,6 +103,6 @@ AssetData? _assetByName(Assets assets, Asset a) =>
     assets.values.where((e) => e.name == a).singleOrNull;
 
 _updateResult(List<String> entries) {
-  _buffer = entries.join("\n");
+  _list.updateEntries(entries);
   _window.requestRedraw();
 }
