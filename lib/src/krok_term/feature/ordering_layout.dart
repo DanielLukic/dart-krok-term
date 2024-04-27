@@ -97,7 +97,7 @@ void _createLayout(
   _addInputKeys(state, layout, price);
   _addInputKeys(state, layout, limit);
 
-  layout.onKey('?', description: 'Toggle help', action: () {
+  layout.onKey('?', aliases: ['<C-?>'], description: 'Toggle help', action: () {
     state['help'] = !state['help'];
   });
 
