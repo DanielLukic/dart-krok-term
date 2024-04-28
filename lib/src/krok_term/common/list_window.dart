@@ -112,7 +112,8 @@ class ListWindow {
   }
 
   ConsumedMouseAction _clickSelect(MouseEvent e) {
-    final index = e.y - 1 + _scrolled.scrollOffset;
+    final offset = header != null ? 2 : 1;
+    final index = e.y - offset + _scrolled.scrollOffset;
     if (index < 0 || index >= _entries.length) {
       return ConsumedMouseAction(_window);
     }
