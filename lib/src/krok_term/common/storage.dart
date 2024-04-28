@@ -60,6 +60,18 @@ class Storage {
     await file.writeAsString(jsonEncode(json));
   }
 
+  Future saveList(String key, Iterable<String> lines) async {
+    final exists = await _directory.exists();
+    if (!exists) await _directory.create();
+
+    final file = _file(key);
+    if (await file.exists()) {
+      await file.rename("${file.path}.bak");
+    }
+
+    await file.writeAsString(lines.join('\n'));
+  }
+
   Future append(String key, String data) async {
     final exists = await _directory.exists();
     if (!exists) await _directory.create();

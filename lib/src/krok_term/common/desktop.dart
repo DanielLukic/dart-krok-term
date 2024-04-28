@@ -4,6 +4,7 @@ export 'package:dart_consul/dart_consul.dart';
 
 final aKey = 'ga';
 final bKey = 'gb';
+final bbKey = 'gB';
 final cKey = 'gc';
 final lKey = 'gm';
 final nKey = 'gn';

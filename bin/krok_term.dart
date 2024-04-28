@@ -8,6 +8,7 @@ import 'package:krok_term/src/krok_term/feature/alerting.dart';
 import 'package:krok_term/src/krok_term/feature/alerts.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
+import 'package:krok_term/src/krok_term/feature/bots.dart';
 import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:krok_term/src/krok_term/feature/closed_orders.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
@@ -67,6 +68,7 @@ _initKrokTerm() async {
   desktop.onKey("/", description: "Select asset pair", action: selectAssetPair);
   desktop.onKey(aKey, description: "Go to alerts", action: openAlerts);
   desktop.onKey(bKey, description: "Go to balances", action: openBalances);
+  desktop.onKey('g<S-b>', description: "Go to bots", action: openBots);
   desktop.onKey(cKey, description: "Go to chart", action: openChart);
   desktop.onKey(lKey, description: "Go to log", action: openLog);
   desktop.onKey("g<S-c>",
@@ -82,6 +84,7 @@ _initKrokTerm() async {
   openAlerts();
   openAssetPair();
   openBalances();
+  openBots();
   openChart();
   openLog();
   openClosedOrders();
@@ -91,7 +94,9 @@ _initKrokTerm() async {
   openStatus();
   openTicker();
 
+  desktop.focusById('log');
   desktop.focusById('chart');
+  desktop.focusById('bots');
 
   desktop.stream().listen((it) {
     if (it is AddAlert) onAddAlert(it);

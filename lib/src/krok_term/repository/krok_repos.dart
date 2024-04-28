@@ -10,6 +10,7 @@ import 'alerts_repo.dart';
 import 'asset_pairs_repo.dart';
 import 'assets_repo.dart';
 import 'balances_repo.dart';
+import 'bots_repo.dart';
 import 'ohlc_repo.dart';
 import 'portfolio_repo.dart';
 import 'ticker_repo.dart';
@@ -18,6 +19,7 @@ late AlertsRepo alertsRepo;
 late AssetsRepo assetsRepo;
 late AssetPairsRepo assetPairsRepo;
 late BalancesRepo balancesRepo;
+late BotsRepo botsRepo;
 late ClosedOrdersRepo closedOrdersRepo;
 late NotificationsRepo notificationsRepo;
 late OhlcRepo ohlcRepo;
@@ -32,6 +34,8 @@ Stream<Assets> get assets => assetsRepo.subscribe();
 Stream<AssetPairs> get assetPairs => assetPairsRepo.subscribe();
 
 Stream<Balances> get balances => balancesRepo.subscribe();
+
+Stream<Bots> get bots => botsRepo.subscribe();
 
 Stream<Notifications> get notifications => notificationsRepo.subscribe();
 
@@ -61,6 +65,7 @@ initKrokRepos(Storage storage) {
   assetsRepo = AssetsRepo(storage);
   assetPairsRepo = AssetPairsRepo(storage);
   balancesRepo = BalancesRepo(storage);
+  botsRepo = BotsRepo(storage);
   closedOrdersRepo = ClosedOrdersRepo(storage);
   notificationsRepo = NotificationsRepo(storage);
   ohlcRepo = OhlcRepo(storage);
