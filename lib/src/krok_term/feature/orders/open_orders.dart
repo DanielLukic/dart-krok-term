@@ -1,9 +1,9 @@
 import 'package:dart_minilog/dart_minilog.dart';
 
-import '../common/window.dart';
-import '../core/krok_core.dart';
-import '../repository/krok_repos.dart';
-import 'orders/orders_window.dart';
+import '../../common/window.dart';
+import '../../core/krok_core.dart';
+import '../../repository/krok_repos.dart';
+import 'orders_window.dart';
 
 final _window = window("open-orders", 80, 9) //
   ..flags = {

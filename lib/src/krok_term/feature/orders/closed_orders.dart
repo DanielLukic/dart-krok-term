@@ -1,11 +1,11 @@
 import 'package:krok_term/src/krok_term/common/settings.dart';
-import 'package:krok_term/src/krok_term/feature/pick_order.dart';
+import 'package:krok_term/src/krok_term/feature/orders/pick_order.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../common/window.dart';
-import '../core/krok_core.dart';
-import '../repository/krok_repos.dart';
-import 'orders/orders_window.dart';
+import '../../common/window.dart';
+import '../../core/krok_core.dart';
+import '../../repository/krok_repos.dart';
+import 'orders_window.dart';
 
 final _window = window("closed-orders", 80, 14) //
   ..flags = {
