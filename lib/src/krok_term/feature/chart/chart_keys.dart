@@ -68,35 +68,6 @@ extension on Window {
     onKey('a', description: 'Add alert', action: _addAlert);
     onKey('o', description: 'Place order', action: () => _placeOrder());
 
-    final kind = [('b', OrderDirection.buy), ('s', OrderDirection.sell)];
-    for (final (k, d) in kind) {
-      final n = d.name;
-      onKey('${k}m',
-          description: 'Place $n market order',
-          action: () => _placeOrder(dir: d, type: OrderType.market));
-      onKey('${k}l',
-          description: 'Place $n limit order',
-          action: () => _placeOrder(dir: d, type: OrderType.limit));
-      onKey('${k}p',
-          description: 'Place $n take profit order',
-          action: () => _placeOrder(dir: d, type: OrderType.takeProfit));
-      onKey('$k<S-p>',
-          description: 'Place $n take profit limit order',
-          action: () => _placeOrder(dir: d, type: OrderType.takeProfitLimit));
-      onKey('${k}sl',
-          description: 'Place $n stop loss order',
-          action: () => _placeOrder(dir: d, type: OrderType.stopLoss));
-      onKey('${k}ss',
-          description: 'Place $n stop loss limit order',
-          action: () => _placeOrder(dir: d, type: OrderType.stopLossLimit));
-      onKey('${k}ts',
-          description: 'Place $n trailing stop order',
-          action: () => _placeOrder(dir: d, type: OrderType.trailingStop));
-      onKey('${k}tt',
-          description: 'Place $n trailing stop limit order',
-          action: () => _placeOrder(dir: d, type: OrderType.trailingStopLimit));
-    }
-
     changeInterval(int delta) {
       final now = _interval.value.index;
       final change = (now + delta).clamp(0, OhlcInterval.values.length - 1);
@@ -124,6 +95,16 @@ extension on Window {
           description: 'Switch to ${i.label}',
           action: () => _interval.value = i);
     }
+
+    autoDispose(
+        'order-shortcuts',
+        desktop.stream().mapNotNull((e) {
+          if (e case ('place-order', OrderDirection d, OrderType t)) {
+            return ('place-order', d, t);
+          } else {
+            return null;
+          }
+        }).listenSafely((e) => _placeOrder(dir: e.$2, type: e.$3)));
   }
 }
 

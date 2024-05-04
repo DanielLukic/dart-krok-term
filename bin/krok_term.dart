@@ -111,4 +111,37 @@ _initKrokTerm() async {
 
   startAlertTracking();
   startOrderTracking();
+
+  final kind = [('b', OrderDirection.buy), ('s', OrderDirection.sell)];
+  for (final (k, d) in kind) {
+    final n = d.name;
+    desktop.onKey('${k}m',
+        description: 'Place $n market order',
+        action: () => _placeOrder(dir: d, type: OrderType.market));
+    desktop.onKey('${k}l',
+        description: 'Place $n limit order',
+        action: () => _placeOrder(dir: d, type: OrderType.limit));
+    desktop.onKey('${k}p',
+        description: 'Place $n take profit order',
+        action: () => _placeOrder(dir: d, type: OrderType.takeProfit));
+    desktop.onKey('$k<S-p>',
+        description: 'Place $n take profit limit order',
+        action: () => _placeOrder(dir: d, type: OrderType.takeProfitLimit));
+    desktop.onKey('${k}sl',
+        description: 'Place $n stop loss order',
+        action: () => _placeOrder(dir: d, type: OrderType.stopLoss));
+    desktop.onKey('${k}ss',
+        description: 'Place $n stop loss limit order',
+        action: () => _placeOrder(dir: d, type: OrderType.stopLossLimit));
+    desktop.onKey('${k}ts',
+        description: 'Place $n trailing stop order',
+        action: () => _placeOrder(dir: d, type: OrderType.trailingStop));
+    desktop.onKey('${k}tt',
+        description: 'Place $n trailing stop limit order',
+        action: () => _placeOrder(dir: d, type: OrderType.trailingStopLimit));
+  }
+}
+
+void _placeOrder({required OrderDirection dir, required OrderType type}) {
+  desktop.sendMessage(('place-order', dir, type));
 }
