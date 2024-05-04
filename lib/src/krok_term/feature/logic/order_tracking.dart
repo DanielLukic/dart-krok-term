@@ -24,4 +24,6 @@ void _notifyOrder(OrderData o) {
   final description = o.order();
   onNotification(
       NotificationData.now(header, description, ('select-order', o.id)));
+
+  desktop.sendMessage('order-executed');
 }

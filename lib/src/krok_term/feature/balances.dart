@@ -37,6 +37,14 @@ void _create() {
         .map((e) => _toEntries(e[0], e[1], e[2], e[3], e[4]))
         .listen((e) => _updateResult(e)),
   );
+
+  _window.autoDispose(
+    'order-executed',
+    desktop.subscribe(
+      'order-executed',
+      (e) => balancesRepo.refresh(force: true),
+    ),
+  );
 }
 
 final List<AssetPairData> _entries = [];
