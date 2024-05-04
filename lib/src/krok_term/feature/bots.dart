@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 
-import '../common/list_window.dart';
 import '../common/settings.dart';
 import '../common/window.dart';
 import '../core/krok_core.dart';

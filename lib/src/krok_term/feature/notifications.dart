@@ -2,7 +2,6 @@ import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
 
-import '../common/list_window.dart';
 import '../common/window.dart';
 
 /// The idea is to have a dedicated log for all important notifications.

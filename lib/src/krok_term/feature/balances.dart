@@ -1,4 +1,3 @@
-import 'package:krok_term/src/krok_term/common/list_window.dart';
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/streams.dart';
 

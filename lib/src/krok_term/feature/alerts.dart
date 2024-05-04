@@ -1,7 +1,6 @@
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../common/list_window.dart';
 import '../common/settings.dart';
 import '../common/window.dart';
 import '../core/krok_core.dart';
