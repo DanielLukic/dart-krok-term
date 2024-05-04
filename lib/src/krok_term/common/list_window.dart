@@ -10,6 +10,7 @@ class ListWindow {
   final int _topOff;
   final int _bottomOff;
   String Function(String) asSelected;
+  String Function(String) asUnfocusedSelected;
   Function(int)? onSelect;
 
   var _clearedAt = -1;
@@ -27,6 +28,8 @@ class ListWindow {
 
   set header(String? header) => _scrolled.header = header;
 
+  static String _grayInverse(String e) => gray(inverse(e));
+
   ListWindow({
     required Window window,
     required int topOff,
@@ -35,6 +38,7 @@ class ListWindow {
     bool extendName = true,
     String? header,
     this.asSelected = inverse,
+    this.asUnfocusedSelected = _grayInverse,
     this.onSelect,
   })  : _window = window,
         _topOff = topOff,
@@ -75,6 +79,8 @@ class ListWindow {
         aliases: ['<Space>'],
         description: 'Toggle entry action',
         action: () => _toggleAction());
+
+    _window.onFocusChanged.add(_refresh);
   }
 
   void updateEntries(List<String> entries) {
@@ -90,8 +96,10 @@ class ListWindow {
       final lines = e.split('\n');
       for (final l in lines) {
         _indexes.add(i);
-        if (i == _selected.value) {
+        if (i == _selected.value && _window.isFocused) {
           output.add(asSelected(l));
+        } else if (i == _selected.value) {
+          output.add(asUnfocusedSelected(l));
         } else {
           output.add(l);
         }
