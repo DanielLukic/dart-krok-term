@@ -20,7 +20,7 @@ void _create() {
 
   _window.onKey("u",
       description: "Update data",
-      action: () => portfolioRepo.refresh(userRequest: true));
+      action: () => portfolioRepo.refresh(force: true));
 
   _window.chainOnMouseEvent((e) {
     if (e.isUp) {

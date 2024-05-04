@@ -21,7 +21,7 @@ final _closedOrders = OrdersWindow(
     input: _data(),
     topOff: 3,
     bottomOff: 8,
-    refresh: () => closedOrdersRepo.refresh(userRequest: true));
+    refresh: () => closedOrdersRepo.refresh(force: true));
 
 Stream<Orders> _data() =>
     settings.stream('hide_orders_id').switchMap((id) => closedOrders.map((o) {

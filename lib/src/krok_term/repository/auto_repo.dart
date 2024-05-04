@@ -58,9 +58,9 @@ abstract base class KrokAutoRepo<T> with AutoDispose {
   }
 
   /// Refresh data from API. [refresh] calls will be ignored if data is no
-  /// older than [freshDuration] (unless [userRequest] is true).
-  void refresh({bool userRequest = false}) {
-    if (!userRequest && _storage.stillFresh(_freshDuration)) {
+  /// older than [freshDuration] (unless [force] is true).
+  void refresh({bool force = false}) {
+    if (!force && _storage.stillFresh(_freshDuration)) {
       logVerbose('$_key still fresh');
       return;
     }

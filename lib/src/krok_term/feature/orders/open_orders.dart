@@ -19,7 +19,7 @@ final _openOrders = OrdersWindow(
     input: openOrders,
     topOff: 1,
     bottomOff: 4,
-    refresh: () => openOrdersRepo.refresh(userRequest: true));
+    refresh: () => openOrdersRepo.refresh(force: true));
 
 void openOpenOrders() => autoWindow(_window, () {
       _openOrders.create();
@@ -47,8 +47,8 @@ void _cancelSelected() {
       logInfo("canceling ${o.id}");
       retrieve(KrakenRequest.cancelOrder(txidOrUserref: o.id))
           .listenSafely((e) {
-        closedOrdersRepo.refresh(userRequest: true);
-        openOrdersRepo.refresh(userRequest: true);
+        closedOrdersRepo.refresh(force: true);
+        openOrdersRepo.refresh(force: true);
       });
     }
   });
@@ -63,8 +63,8 @@ void _cancelAll() {
     if (e == QueryResult.positive) {
       logInfo("canceling all orders");
       retrieve(KrakenRequest.cancelAll()).listenSafely((e) {
-        closedOrdersRepo.refresh(userRequest: true);
-        openOrdersRepo.refresh(userRequest: true);
+        closedOrdersRepo.refresh(force: true);
+        openOrdersRepo.refresh(force: true);
       });
     }
   });

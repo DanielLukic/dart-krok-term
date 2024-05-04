@@ -26,7 +26,7 @@ void _create() {
 
   _window.onKey("u",
       description: "Update ticker data",
-      action: () => tickersRepo.refresh(userRequest: true));
+      action: () => tickersRepo.refresh(force: true));
 
   _window.chainOnMouseEvent((e) {
     if (!e.isUp) return null;

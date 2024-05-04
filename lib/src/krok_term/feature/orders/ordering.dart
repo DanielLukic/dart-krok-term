@@ -62,7 +62,7 @@ void onPlaceOrder(PlaceOrder place) {
 void _refreshOrdersOnSuccess((ExecuteState, dynamic) e) {
   if (e.$1 != ExecuteState.complete) return;
   Future.delayed(1.seconds, () {
-    openOrdersRepo.refresh(userRequest: true);
-    closedOrdersRepo.refresh(userRequest: true);
+    openOrdersRepo.refresh(force: true);
+    closedOrdersRepo.refresh(force: true);
   });
 }
