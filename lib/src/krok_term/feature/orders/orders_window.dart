@@ -62,6 +62,8 @@ class OrdersWindow {
     _window.onKey("u",
         description: "Update orders now", action: () => _refreshData());
 
+    _window.onFocusChanged.add(() => _refresh.value = DateTime.timestamp());
+
     _window.autoDispose(
       "update",
       _refresh
@@ -79,6 +81,7 @@ class OrdersWindow {
     _open.add(id);
     _keySelect(0);
   }
+
   void _toggleSelected() {
     final s = _selected.value;
     if (s.isEmpty) return;
@@ -181,12 +184,24 @@ class OrdersWindow {
       if (order.startsWith("sell ")) order = order.red();
       final close = o.close();
 
+      String highlight(String e) {
+        if (_window.isFocused) {
+          if (o.direction() == OrderDirection.buy) {
+            return green(inverse(e.stripped()));
+          } else {
+            return red(inverse(e.stripped()));
+          }
+        } else {
+          return e;
+        }
+      }
+
       if (_open.contains(o.id)) {
         final vp = vol_exec * 100 ~/ vol;
         final buffer = Buffer(80, max(4, 2 + times.length));
 
         var header = "▲ $order $status$reason";
-        if (selected == o.id) header = header.inverse();
+        if (selected == o.id) header = highlight(header);
         buffer.drawBuffer(0, 0, header);
 
         for (final (i, t) in times.indexed) {
@@ -205,7 +220,7 @@ class OrdersWindow {
         repeat(buffer.height, () => _entries.add(o));
       } else {
         var header = "▼ $order $status$reason";
-        if (selected == o.id) header = header.inverse();
+        if (selected == o.id) header = highlight(header);
         result.add(header);
         _entries.add(o);
       }
