@@ -80,10 +80,18 @@ void _renderExecuting(
 
   if (es == ExecuteState.executing) return;
 
-  layout.onKey('<Escape>',
-      aliases: ['<Return>', 'q'],
-      description: 'Back to order form',
-      action: () => state.clearExecution());
+  layout.onKey(
+    '<Escape>',
+    aliases: ['<Return>', 'q'],
+    description: 'Back to order form',
+    action: () {
+      if (status.$1 == ExecuteState.complete) {
+        dialog.dismiss();
+      } else {
+        state.clearExecution();
+      }
+    },
+  );
 
   return;
 }
