@@ -57,7 +57,21 @@ class ListWindow {
       return _clickSelect(e);
     });
 
+    void gotoFirst() {
+      if (_entries.isEmpty) return;
+      _selected.value = 0;
+      _keySelect(0);
+    }
+
+    void gotoLast() {
+      if (_entries.isEmpty) return;
+      _selected.value = _entries.length - 1;
+      _keySelect(0);
+    }
+
     final jump = max(3, _window.height - 4);
+    _window.onKey('gg', description: 'Select first entry', action: gotoFirst);
+    _window.onKey('<S-g>', description: 'Select last entry', action: gotoLast);
     _window.onKey('k',
         description: 'Select previous entry', action: () => _keySelect(-1));
     _window.onKey('j',
