@@ -80,7 +80,7 @@ void _renderExecuting(
 
   if (es == ExecuteState.executing) return;
 
-  layout.onKey('<Esc>',
+  layout.onKey('<Escape>',
       aliases: ['<Return>', 'q'],
       description: 'Back to order form',
       action: () => state.clearExecution());
