@@ -59,6 +59,11 @@ class OrdersWindow {
         description: 'Toggle order expansion',
         action: () => _toggleSelected());
 
+    _window.onKey('<Escape>', description: 'Clear selection', action: () {
+      _selected.value = '';
+      // TODO clearedAt handling like in orders window for consistency
+    });
+
     _window.onKey("u",
         description: "Update orders now", action: () => _refreshData());
 
