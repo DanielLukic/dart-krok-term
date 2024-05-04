@@ -7,8 +7,9 @@ import '../core/krok_core.dart';
 import '../core/selected_currency.dart';
 import '../repository/krok_repos.dart';
 
-final _window = window("balances", 55, 10) //
+final _window = window("balances", 55, 7) //
   ..name = "Balances [$bKey]"
+  ..size = WindowSize.min(Size(55, 7))
   ..position = AbsolutePosition(0, 31);
 
 void openBalances() => autoWindow(_window, _create);

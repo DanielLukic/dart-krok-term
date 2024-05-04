@@ -12,7 +12,7 @@ import '../common/window.dart';
 
 void onNotification(NotificationData it) => notificationsRepo.add(it);
 
-final _window = window("notifications", 129, 10) //
+final _window = window("notifications", 129, 7) //
   ..name = "Notifications [$nKey]"
   ..position = AbsolutePosition(56, 31);
 

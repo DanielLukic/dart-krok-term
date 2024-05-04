@@ -24,7 +24,7 @@ _openLog() {
     log: krokTermLog,
     name: "Log [$lKey] [v,d,i,w,e] [x]",
     position: AbsolutePosition(56, 31),
-    size: Size(129, 10),
+    size: Size(129, 7),
     filter: filterLogEntry,
   );
   w.flags = {
