@@ -34,11 +34,15 @@ void _create() {
   Stream<_ChartData> retrieve(AssetPairData s, OhlcInterval i, DateTime r) =>
       ohlcRepo.retrieve(s, i).map((list) => (s, list, i, r));
 
-  final autoRefreshPair = selectedAssetPair
-      .doOnData((_) => _selection.invalidate())
-      .doOnData((_) => _triggerRefresh())
-      // reset pair when switching. will be assigned after data arrived.
-      .doOnData((e) => _pair = null);
+  final autoRefreshPair = selectedAssetPair.doOnData((_) {
+    _selection.invalidate();
+    _selection.resetFixed();
+    _projection.reset();
+    _interval.value = OhlcInterval.oneHour;
+    _triggerRefresh();
+    // reset pair when switching. will be assigned after data arrived.
+    _pair = null;
+  });
 
   final refresh = _refresh.switchMap((e) =>
       Stream.periodic(1.minutes).map((_) => DateTime.timestamp()).startWith(e));
