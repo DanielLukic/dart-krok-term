@@ -55,9 +55,7 @@ void _createLayout(
 
   final helpHint = '([?] for help)'.gray();
   final title = 'Create ${ap.wsname} ${state.dir.name} order $helpHint';
-
-  String result = state['z'];
-  if (result.isNotEmpty) result = ' ≈ $result';
+  final result = ' ≈ ${state.result} USD';
 
   final confirm = DuiButton(
     id: 'confirm',

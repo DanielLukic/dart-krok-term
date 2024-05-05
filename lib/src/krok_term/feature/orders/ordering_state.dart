@@ -168,6 +168,8 @@ extension on DuiState {
     }
   }
 
+  String get result => zAck.$1?.toStringAsFixed(2) ?? '?';
+
   String get description {
     final va = volumeAck.$1 ?? '<vol>'.red();
     var d = '${dir.name} $va ${ap.pair} @ $descType';
