@@ -1,4 +1,4 @@
-part of '../chart.dart';
+part of 'chart.dart';
 
 ChartSnapshot _sample(List<OhlcData> data, int zoom, int scroll, int count) {
   final zoomed = _zoomed(data.reversedList(), zoom);

@@ -1,4 +1,4 @@
-part of '../chart.dart';
+part of 'chart.dart';
 
 extension on Window {
   void setupMouse() {

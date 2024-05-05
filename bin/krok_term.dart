@@ -9,7 +9,7 @@ import 'package:krok_term/src/krok_term/feature/alerts.dart';
 import 'package:krok_term/src/krok_term/feature/asset_pair.dart';
 import 'package:krok_term/src/krok_term/feature/balances.dart';
 import 'package:krok_term/src/krok_term/feature/bots.dart';
-import 'package:krok_term/src/krok_term/feature/chart.dart';
+import 'package:krok_term/src/krok_term/feature/chart/chart.dart';
 import 'package:krok_term/src/krok_term/feature/debug_log.dart';
 import 'package:krok_term/src/krok_term/feature/logic/alert_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/logic/order_tracking.dart';

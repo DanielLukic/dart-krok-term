@@ -1,4 +1,4 @@
-part of '../chart.dart';
+part of 'chart.dart';
 
 final _selection = ChartSelection();
 

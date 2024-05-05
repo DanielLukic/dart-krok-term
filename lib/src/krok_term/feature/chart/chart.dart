@@ -5,17 +5,17 @@ import 'package:rxdart/rxdart.dart'
     hide SwitchMapExtension, ScanExtension, StartWithExtension;
 import 'package:stream_transform/stream_transform.dart';
 
-import '../common/window.dart';
-import '../core/krok_core.dart';
-import '../repository/krok_repos.dart';
-import 'chart/chart_projection.dart';
-import 'chart/chart_rendering.dart';
-import 'chart/chart_snapshot.dart';
+import '../../common/window.dart';
+import '../../core/krok_core.dart';
+import '../../repository/krok_repos.dart';
+import 'chart_projection.dart';
+import 'chart_rendering.dart';
+import 'chart_snapshot.dart';
 
-part 'chart/chart_keys.dart';
-part 'chart/chart_mouse.dart';
-part 'chart/chart_sampling.dart';
-part 'chart/chart_selection.dart';
+part 'chart_keys.dart';
+part 'chart_mouse.dart';
+part 'chart_sampling.dart';
+part 'chart_selection.dart';
 
 final _window = window('chart', 62, 25) //
   ..name = "Chart [$cKey] [1-9]"
