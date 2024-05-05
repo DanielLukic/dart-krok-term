@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:krok_term/src/krok_term/common/list_filter.dart';
-import 'package:krok_term/src/krok_term/feature/chart.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/window.dart';
@@ -75,7 +74,6 @@ void _create() {
 
 _select(AssetPairData it) {
   desktop.minimizeWindow(_window);
-  openChart();
   selectPair(it.ap);
 }
 
