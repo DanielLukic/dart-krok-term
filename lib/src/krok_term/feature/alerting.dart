@@ -1,3 +1,4 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 
@@ -113,10 +114,11 @@ void _createAlert(DuiTextInput input, AddAlert add, Dialog dialog) {
     final abs = (pre ?? (e) => e)(price);
     final res = (op ?? (e) => e)(abs);
     final mode = switch (res) {
-      _ when res < add.refPrice => 'below',
-      _ when res > add.refPrice => 'above',
+      _ when res < add.lastPrice => 'below',
+      _ when res > add.lastPrice => 'above',
       _ => null,
     };
+    logVerbose('alter at: $res last: ${add.lastPrice} => mode: $mode');
     if (mode == null) {
       desktop.toast('ignoring alert for same price');
     } else {
