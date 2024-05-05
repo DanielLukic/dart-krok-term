@@ -1,13 +1,14 @@
 import 'package:krok_term/src/krok_term/core/selected_pair.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../common/auto_hide.dart';
 import '../common/settings.dart';
 import '../common/window.dart';
 import '../core/krok_core.dart';
 import '../repository/krok_repos.dart';
 
 final _window = window("alerts", 22, 25) //
-  ..name = "Alerts [$aKey]"
+  ..name = "Alerts [$aKey] [a,d,t]"
   ..position = AbsolutePosition(19, 4);
 
 void openAlerts() => autoWindow(_window, _create);
@@ -27,9 +28,13 @@ void _create() {
     onSelect: (index) {
       if (index < 0 || index >= _entries.length) return null;
       selectPair(_entries[index].$2.ap);
-      minimize();
+      _window.onAutoHide('alerts', (e) {
+        if (e != false) minimize();
+      });
     },
   );
+
+  _window.addAutoHide('a', 'alerts');
 
   _window.onKey('<Escape>',
       description: 'Hide alerts window', action: minimize);
@@ -51,12 +56,6 @@ void _create() {
     if (s < 0 || s >= _entries.length) return;
     final alert = _entries[s].$1;
     alertsRepo.remove(alert);
-  });
-
-  var wasFocused = false;
-  _window.onStateChanged.add(() {
-    if (wasFocused && !_window.isFocused) minimize();
-    wasFocused = _window.isFocused;
   });
 
   final selected = settings

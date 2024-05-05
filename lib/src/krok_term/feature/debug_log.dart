@@ -1,6 +1,7 @@
 import 'package:dart_consul/common.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 
+import '../common/auto_hide.dart';
 import '../common/desktop.dart';
 
 final _toastDuration = Duration(milliseconds: 600);
@@ -32,6 +33,7 @@ _openLog() {
     WindowFlag.resizable,
     WindowFlag.maximizable
   };
+  w.addAutoHide('a', 'debug-log');
 
   void set(int l) {
     _level = l;

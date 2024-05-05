@@ -1,4 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:krok_term/src/krok_term/common/auto_hide.dart';
 
 import '../../common/window.dart';
 import '../../core/krok_core.dart';
@@ -23,6 +24,7 @@ final _openOrders = OrdersWindow(
 
 void openOpenOrders() => autoWindow(_window, () {
       _openOrders.create();
+      _window.addAutoHide('a', 'open-orders', hideByDefault: false);
       _window.onKey('c',
           aliases: ['d'],
           description: 'Cancel selected order',

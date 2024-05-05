@@ -1,3 +1,4 @@
+import 'package:krok_term/src/krok_term/common/auto_hide.dart';
 import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:krok_term/src/krok_term/repository/krok_repos.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
@@ -29,6 +30,8 @@ void _create() {
     bottomOff: 2,
     onSelect: (e) => _onSelect(e),
   );
+
+  _window.addAutoHide('a', 'notifications', hideByDefault: false);
 
   _window.autoDispose("update",
       ConcatStream([initial, updates]).listen((e) => _updateResult(e)));

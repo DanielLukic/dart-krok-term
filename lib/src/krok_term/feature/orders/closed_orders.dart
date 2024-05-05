@@ -1,3 +1,4 @@
+import 'package:krok_term/src/krok_term/common/auto_hide.dart';
 import 'package:krok_term/src/krok_term/common/settings.dart';
 import 'package:krok_term/src/krok_term/feature/orders/pick_order.dart';
 import 'package:rxdart/rxdart.dart';
@@ -38,6 +39,8 @@ Stream<Orders> _data() =>
 
 void openClosedOrders() {
   autoWindow(_window, () {
+    _window.addAutoHide('a', 'closed-orders', hideByDefault: false);
+
     _window.onKey('/', description: 'Filter by order id', action: pickOrder);
 
     _window.onKey('r',

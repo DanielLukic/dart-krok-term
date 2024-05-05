@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:krok_term/src/krok_term/common/auto_hide.dart';
 
 import '../common/settings.dart';
 import '../common/window.dart';
@@ -27,11 +28,7 @@ void _create() {
     onSelect: (e) => _onSelect(e),
   );
 
-  var wasFocused = false;
-  _window.onStateChanged.add(() {
-    if (wasFocused && !_window.isFocused) desktop.minimizeWindow(_window);
-    wasFocused = _window.isFocused;
-  });
+  _window.addAutoHide('a', 'bots');
 
   _window.autoDispose("update", bots.listen((e) => _updateResult(e)));
 
