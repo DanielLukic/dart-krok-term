@@ -168,6 +168,21 @@ extension on DuiState {
     }
   }
 
+  (KrakenTime?, String?) _tmAck(String key) {
+    final it = this[key]?.toString();
+    if (it == null || it.isEmpty) return (null, null);
+    try {
+      final kt = KrakenTime.forOrderPlacement(it);
+      return (kt, null);
+    } catch (_) {
+      return (null, 'invalid');
+    }
+  }
+
+  (KrakenTime?, String?) get starttmAck => _tmAck('starttm');
+
+  (KrakenTime?, String?) get expiretmAck => _tmAck('expiretm');
+
   String get result => zAck.$1?.toStringAsFixed(2) ?? '?';
 
   String get description {
@@ -228,6 +243,15 @@ extension on DuiState {
         'Direction and Type:'.bold().italic(),
         '',
         'Use j/k to step through available options.',
+      ];
+    } else if (focusedId == 'starttm' || focusedId == 'expiretm') {
+      help = [
+        'Start and expire time:'.bold().italic(),
+        '',
+        'Specify values as +<seconds>',
+        'or as <count>[dhms].',
+        'Optionally enter a unix timestamp',
+        'or ISO8601 date or datetime.',
       ];
     } else {
       help = [];

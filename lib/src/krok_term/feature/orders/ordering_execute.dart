@@ -44,6 +44,8 @@ Stream _executeOrder(DuiState s) {
     pair: pair,
     price: price,
     price2: price2,
+    startTime: s.starttmAck.$1,
+    expireTime: s.expiretmAck.$1,
   );
 
   return retrieve(request);

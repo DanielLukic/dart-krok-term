@@ -47,20 +47,44 @@ void _createLayout(
   final z = state.makeInput('z', plusMinus: false)
     ..chain((e) => state.updateVolumeFromZ(e));
 
+  logInfo(state.starttmAck.$1?.toApiString());
+  logInfo(state.expiretmAck.$1?.toApiString());
+
   final priceInfo = DuiText('Latest price:\n${ask.green()}\n${bid.red()}');
-  final pl = DuiText('Price [?]:');
-  final ll = DuiText('Limit [?]:');
+  final pl = DuiText('Price:');
+  final ll = DuiText('Limit:');
   final vl = DuiText('Volume ${ap.base}:\n${volMax.gray()}\n${volMin.gray()}');
   final zl = DuiText('Volume ${ap.quote_}:\n${zMax.gray()}\n${zMin.gray()}');
+  final sl = DuiText('Start:');
+  final el = DuiText('End:');
+  final starttm = DuiTextInput(
+    id: 'starttm',
+    limitLength: 20,
+    preset: state['starttm'],
+    filter: RegExp(r'\+?[+0-9:T-]*[dhms]?'),
+  );
+  starttm.onChange = (e) => state['starttm'] = e;
+  final expiretm = DuiTextInput(
+    id: 'expiretm',
+    limitLength: 20,
+    preset: state['expiretm'],
+    filter: RegExp(r'\+?[+0-9:T-]*[dhms]?'),
+  );
+  expiretm.onChange = (e) => state['expiretm'] = e;
+  final se = DuiText(red(state.starttmAck.$2 ?? ''));
+  final ee = DuiText(red(state.expiretmAck.$2 ?? ''));
 
   final helpHint = '([?] for help)'.gray();
   final title = 'Create ${ap.wsname} ${state.dir.name} order $helpHint';
   final result = ' ≈ ${state.result} USD';
 
+  final validDescr = !state.description.contains('<');
+  final validStarttm = state.starttmAck.$2 == null;
+  final validExpiretm = state.expiretmAck.$2 == null;
   final confirm = DuiButton(
     id: 'confirm',
     text: 'Create order <Return>',
-    enabled: !state.description.contains('<'),
+    enabled: validDescr && validStarttm && validExpiretm,
   )..onClick = () => state.triggerExecuteOrder();
 
   final layout = DuiLayout(
@@ -80,6 +104,7 @@ void _createLayout(
               if (!state['vol_mode']) DuiRow([zl, z, zAck]),
               if (state.needsPrice) DuiRow([pl, price, priceAck]),
               if (state.needsLimit) DuiRow([ll, limit, limitAck]),
+              DuiRow([sl, starttm, se, el, expiretm, ee]),
               DuiSpace(),
               DuiText(state.description + result),
               DuiSpace(),
