@@ -34,23 +34,23 @@ extension on Window {
 
     onKey('<Escape>', //
         description: 'Clear price selection',
-        action: _selection.reset);
+        action: _selection.resetSelectedPrice);
     onKey('j', //
         aliases: ['<Down>'],
         description: 'Price selection down',
-        action: () => _selection.change(-1));
+        action: () => _selection.changeSelectedPrice(-1));
     onKey('<S-j>', //
         aliases: ['<S-Down>'],
         description: 'Price selection down 10 steps',
-        action: () => _selection.change(-10));
+        action: () => _selection.changeSelectedPrice(-10));
     onKey('k', //
         aliases: ['<Up>'],
         description: 'Price selection up',
-        action: () => _selection.change(1));
+        action: () => _selection.changeSelectedPrice(1));
     onKey('<S-k>', //
         aliases: ['<S-Up>'],
         description: 'Price selection up 10 steps',
-        action: () => _selection.change(10));
+        action: () => _selection.changeSelectedPrice(10));
 
     onKey('<C-j>', //
         aliases: ['<C-Down>'],

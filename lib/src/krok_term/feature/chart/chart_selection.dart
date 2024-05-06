@@ -90,12 +90,12 @@ class ChartSelection {
     _max = 0;
     last = 0;
     _rows = 0;
-    reset();
+    resetSelectedPrice();
   }
 
-  void reset() => _selectedPrice.value = 0;
+  void resetSelectedPrice() => _selectedPrice.value = 0;
 
-  void change(int delta) {
+  void changeSelectedPrice(int delta) {
     if (_min == 0 || _max == 0 || _min >= _max || _rows == 0) return;
     if (currentPrice == 0) {
       if (_min <= last && last <= _max) {
