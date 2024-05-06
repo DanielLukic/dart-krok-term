@@ -16,6 +16,7 @@ extension on Window {
     });
 
     final chartGestures = MouseGestures(this, desktop)
+      ..onClick = ((e) => _setSelection(e))
       ..onDoubleClick = ((_) => _reset())
       ..onDrag = (e) => _DragChartAction(_window, e, _projection.currentScroll);
 
@@ -30,6 +31,15 @@ extension on Window {
     });
   }
 
+  void _setSelection(MouseEvent e) {
+    final blocks = _chartHeightBlocks;
+    final rows = _chartHeightPixels;
+    if (blocks == null || rows == null) return;
+    final y = e.y - 2;
+    if (y < 0 || y >= blocks) return;
+    _selection.selectByRow(y / (blocks - 1));
+  }
+
   void _toggleFixed() {
     _scaling.toggleFixed();
     _redraw.value = DateTime.timestamp();
@@ -41,10 +51,10 @@ extension on Window {
   }
 
   bool _isOnChart(MouseEvent e) =>
-      e.x < width - 10 && e.y > 1 && e.y < height - 2;
+      e.x < width - 10 && e.y > 1 && e.y < height - 1;
 
   bool _isOnPrice(MouseEvent e) =>
-      e.x > width - 10 && e.y > 1 && e.y < height - 2;
+      e.x > width - 10 && e.y > 1 && e.y < height - 1;
 }
 
 OngoingMouseAction? _changeInterval(MouseEvent event) {

@@ -58,9 +58,15 @@ class PriceSelection {
         _setPriceTo((_max + _min) / 2);
       }
     } else {
-      final step = (_max - _min) / _rows;
-      final changed = currentPrice + step * delta;
+      final changed = currentPrice + priceStep! * delta;
       _setPriceTo(changed.clamp(_min, _max));
     }
+  }
+
+  void selectByRow(double row) {
+    final step = priceStep;
+    if (step == null) return;
+    final changed = _max - row * (_max - _min);
+    _setPriceTo(changed.clamp(_min, _max));
   }
 }

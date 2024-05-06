@@ -124,6 +124,10 @@ final _interval = BehaviorSubject.seeded(OhlcInterval.oneHour);
 
 typedef _ChartData = (AssetPairData, List<OhlcData>, OhlcInterval, DateTime);
 
+int? _chartHeightBlocks;
+
+int? get _chartHeightPixels => _chartHeightBlocks?.let((it) => it * 4);
+
 String _renderChart(
   _ChartData input,
   OhlcInterval interval,
@@ -142,9 +146,11 @@ String _renderChart(
   final width = _window.width;
   final height = _window.height;
 
+  _chartHeightBlocks = height - 3;
+
   final split = width - 10;
   final chartWidth = split * 2;
-  final chartHeight = (height - 3) * 4;
+  final chartHeight = _chartHeightPixels!;
 
   final last = data.last;
   final snap = _sample(data, zoom, scroll, chartWidth);
