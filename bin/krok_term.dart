@@ -15,6 +15,7 @@ import 'package:krok_term/src/krok_term/feature/logic/alert_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/logic/order_tracking.dart';
 import 'package:krok_term/src/krok_term/feature/notifications.dart';
 import 'package:krok_term/src/krok_term/feature/orders/closed_orders.dart';
+import 'package:krok_term/src/krok_term/feature/orders/editing.dart';
 import 'package:krok_term/src/krok_term/feature/orders/open_orders.dart';
 import 'package:krok_term/src/krok_term/feature/orders/ordering.dart';
 import 'package:krok_term/src/krok_term/feature/portfolio.dart';
@@ -100,6 +101,7 @@ _initKrokTerm() async {
 
   desktop.stream().listen((it) {
     if (it is AddAlert) onAddAlert(it);
+    if (it is EditOrder) onEditOrder(it);
     if (it is PlaceOrder) onPlaceOrder(it);
 
     if (it is AlertTriggered) onNotification(it.asNotification());

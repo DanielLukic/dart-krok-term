@@ -29,6 +29,8 @@ void openOpenOrders() => autoWindow(_window, () {
           aliases: ['d'],
           description: 'Cancel selected order',
           action: _cancelSelected);
+      _window.onKey('e',
+          description: 'Edit selected order', action: _editSelected);
       _window.onKey('<S-c>',
           aliases: ['<S-d>'],
           description: 'Cancel all orders',
@@ -53,6 +55,18 @@ void _cancelSelected() {
         openOrdersRepo.refresh(force: true);
       });
     }
+  });
+}
+
+void _editSelected() {
+  final o = _openOrders.selected;
+  if (o == null) return;
+
+  assetPairs.first.then((aps) {
+    final ap = aps[o.pair()];
+    if (ap == null) logWarn('unknown pair: ${o.pair()}');
+    if (ap == null) return;
+    desktop.sendMessage(EditOrder(o, ap));
   });
 }
 

@@ -11,6 +11,8 @@ class OrderData extends BaseModel {
 
   dynamic operator [](String key) => data[key];
 
+  double? get volume => double.tryParse(data['vol']);
+
   String pair() => data['descr']['pair'];
 
   String status() => s('status');
