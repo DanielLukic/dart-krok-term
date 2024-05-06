@@ -6,12 +6,12 @@ extension on Window {
 
     onKey('d', //
         description: 'Move chart down', action: () {
-      _selection.step(1);
+      _scaling.step(1);
       _triggerRedraw();
     });
     onKey('e', //
         description: 'Move chart up', action: () {
-      _selection.step(-1);
+      _scaling.step(-1);
       _triggerRedraw();
     });
 
@@ -55,13 +55,13 @@ extension on Window {
     onKey('<C-j>', //
         aliases: ['<C-Down>'],
         description: 'Scale price range up', action: () {
-      _selection.scaleUp();
+      _scaling.scaleUp();
       _triggerRedraw();
     });
     onKey('<C-k>', //
         aliases: ['<C-Up>'],
         description: 'Scale price range down', action: () {
-      _selection.scaleDown();
+      _scaling.scaleDown();
       _triggerRedraw();
     });
 
@@ -86,7 +86,7 @@ extension on Window {
     onKey('<S-r>', description: 'Reset price scale, scroll and zoom',
         action: () {
       _projection.reset();
-      _selection.resetFixed();
+      _scaling.resetFixed();
       _triggerRedraw();
     });
 

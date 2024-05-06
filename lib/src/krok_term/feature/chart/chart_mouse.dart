@@ -9,8 +9,8 @@ extension on Window {
         if (e.kind.isDown) _projection.zoomBy(1);
         if (e.kind.isUp) _projection.zoomBy(-1);
       } else if (_isOnPrice(e)) {
-        if (e.kind.isDown) _selection.scaleUp();
-        if (e.kind.isUp) _selection.scaleDown();
+        if (e.kind.isDown) _scaling.scaleUp();
+        if (e.kind.isUp) _scaling.scaleDown();
         _triggerRedraw();
       }
     });
@@ -31,13 +31,13 @@ extension on Window {
   }
 
   void _toggleFixed() {
-    _selection.toggleFixed();
+    _scaling.toggleFixed();
     _redraw.value = DateTime.timestamp();
   }
 
   void _reset() {
     _projection.reset();
-    _selection.resetFixed();
+    _scaling.resetFixed();
   }
 
   bool _isOnChart(MouseEvent e) =>
@@ -81,9 +81,9 @@ class _DragChartAction extends BaseOngoingMouseAction {
 
     // only apply vertical movement if price scale has been fixed. otherwise we would always auto-start fixed price
     // scale. which is confusing and not what we want.
-    if (_selection.fixedScale != null) {
+    if (_scaling.fixedScale != null) {
       final dy = (event.y - this.event.y) * 4;
-      _selection.step(dy - stepped);
+      _scaling.step(dy - stepped);
       stepped = dy;
     }
 
@@ -102,8 +102,8 @@ class _DragPriceAction extends BaseOngoingMouseAction {
 
     final dy = event.y - this.event.y;
     final actual = dy - stepped;
-    if (actual < 0) _selection.scaleDown();
-    if (actual > 0) _selection.scaleUp();
+    if (actual < 0) _scaling.scaleDown();
+    if (actual > 0) _scaling.scaleUp();
     stepped = dy;
 
     _triggerRedraw();

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:rxdart/rxdart.dart'
     hide SwitchMapExtension, ScanExtension, StartWithExtension;
 import 'package:stream_transform/stream_transform.dart';
@@ -15,7 +16,8 @@ import 'chart_snapshot.dart';
 part 'chart_keys.dart';
 part 'chart_mouse.dart';
 part 'chart_sampling.dart';
-part 'chart_selection.dart';
+part 'price_scaling.dart';
+part 'price_selection.dart';
 
 final _window = window('chart', 62, 25) //
   ..name = "Chart [$cKey] [1-9]"
@@ -36,7 +38,7 @@ void _create() {
 
   final autoRefreshPair = selectedAssetPair.doOnData((_) {
     _selection.invalidate();
-    _selection.resetFixed();
+    _scaling.resetFixed();
     _projection.reset();
     _interval.value = OhlcInterval.oneHour;
     _triggerRefresh();
@@ -147,7 +149,7 @@ String _renderChart(
   final last = data.last;
   final snap = _sample(data, zoom, scroll, chartWidth);
 
-  final fixed = _selection.fixedScale;
+  final fixed = _scaling.fixedScale;
   if (fixed != null) snap.override(fixed[0], fixed[1]);
 
   _selection.useChartInfo(snap.minLow, snap.maxHigh, last.close, chartHeight);
