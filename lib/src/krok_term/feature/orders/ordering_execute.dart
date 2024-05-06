@@ -29,11 +29,11 @@ Stream _executeOrder(DuiState s) {
   if (s.needsPrice) {
     final ts = s.isTrailing;
     price = KrakenPrice.fromString(s['price'], trailingStop: ts);
-    logInfo('price $price');
+    logVerbose('price $price');
     if (s.needsLimit) {
       // TODO this was different, right? ts does not apply here?
       price2 = KrakenPrice.fromString(s['limit'], trailingStop: ts);
-      logInfo('price2 $price2');
+      logVerbose('price2 $price2');
     }
   }
 
