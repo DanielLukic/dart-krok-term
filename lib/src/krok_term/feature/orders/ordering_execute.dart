@@ -82,12 +82,13 @@ void _renderExecuting(
 
   if (es == ExecuteState.executing) return;
 
+  final complete = status.$1 == ExecuteState.complete;
   layout.onKey(
     '<Escape>',
     aliases: ['<Return>', 'q'],
-    description: 'Back to order form',
+    description: complete ? 'Back to main screen' : 'Back to order form',
     action: () {
-      if (status.$1 == ExecuteState.complete) {
+      if (complete) {
         dialog.dismiss();
       } else {
         state.clearExecution();
