@@ -40,6 +40,10 @@ void _create() {
       description: 'Create simple trader for currently selected pair',
       action: _createSimpleTrader);
 
+  _window.onKey('ct',
+      description: 'Create auto trader trading across all pairs',
+      action: _createAutoTrader);
+
   _window.onKey('d', description: 'Delete selected bot', action: _deleteBot);
 }
 
@@ -68,42 +72,60 @@ _updateResult(List<BotData> it) {
       alive.add(_createBot(bd));
     }
   }
-  logInfo('keeping alive: $alive');
 
   final aliveRefs = alive.map((e) => e.userref);
   final dead = _bots.whereNot((e) => aliveRefs.contains(e.userref));
-  logInfo('shutting down: $dead');
+  if (alive.isNotEmpty) logInfo('keeping: $alive');
+  if (dead.isNotEmpty) logInfo('killing: $dead');
   for (final d in dead) {
     d.shutdown();
   }
   _bots.clear();
   _bots.addAll(alive);
 
+  if (alive.isNotEmpty) {
+    final maxRef = alive.map((e) => e.userref).maxOrNull;
+    if (maxRef != null) {
+      settings.set('bots::userref', maxRef + 1).then((_) {
+        logInfo('updated userref to ${maxRef + 1}');
+      });
+    }
+  }
+
   _listed.updateEntries(_bots.mapList((e) {
     return e.toString().columns(_columns, '|');
   }));
+
   _window.requestRedraw();
 }
 
-Bot _createBot(BotData bd) {
-  return switch (bd.type) {
-    BotType.dipper => Dipper.from(bd),
-    BotType.simpleTrader => SimpleTrader.from(bd),
-  };
+Bot _createBot(BotData bd) => switch (bd.type) {
+      BotType.autoTrader => AutoTrader.from(bd),
+      BotType.dipper => Dipper.from(bd),
+      BotType.simpleTrader => SimpleTrader.from(bd),
+    };
+
+Future<int> _nextUserref() async {
+  final userref = await settings.i('bots::userref') ?? 0;
+  await settings.set('bots::userref', userref + 1);
+  return userref;
+}
+
+Future _createAutoTrader() async {
+  int userref = await _nextUserref();
+  botsRepo.add(BotData(BotType.autoTrader, userref, {}));
 }
 
 Future _createDipper() async {
-  final userref = await settings.i('bots::userref') ?? 0;
+  int userref = await _nextUserref();
   final ap = await selectedAssetPair.first;
   botsRepo.add(BotData(BotType.dipper, userref, {'pair': ap.pair}));
-  await settings.set('bots::userref', userref + 1);
 }
 
 _createSimpleTrader() async {
-  final userref = await settings.i('bots::userref') ?? 0;
+  int userref = await _nextUserref();
   final ap = await selectedAssetPair.first;
   botsRepo.add(BotData(BotType.simpleTrader, userref, {'pair': ap.pair}));
-  await settings.set('bots::userref', userref + 1);
 }
 
 _deleteBot() {
@@ -119,6 +141,27 @@ abstract interface class Bot {
   int get userref;
 
   Future shutdown();
+}
+
+class AutoTrader implements Bot {
+  @override
+  late final int userref;
+
+  AutoTrader.from(BotData bd) {
+    userref = bd.userref;
+    tickers.listenSafely((e) {
+      final td = e['WUSD'];
+      logInfo('WUSD last ${td?.last} pt ${td?.priceToday} p24 ${td?.priceLast24}');
+    });
+  }
+
+  @override
+  Future shutdown() async {
+    logWarn("TODO shutdown");
+  }
+
+  @override
+  String toString() => 'AutoTrader|$userref|NOT READY|';
 }
 
 class Dipper implements Bot {

@@ -5,6 +5,7 @@ import 'package:krok_term/src/krok_term/core/krok_core.dart';
 import 'package:rxdart/rxdart.dart' hide Notification;
 
 enum BotType {
+  autoTrader,
   dipper,
   simpleTrader,
 }
